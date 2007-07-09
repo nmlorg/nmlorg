@@ -36,7 +36,7 @@ Back to what you type:
 
 {{{
 echo "Added from n-test1" >> trunk/myfile
-[at this point https://nmlorg.googlecode.com/svn/trunk/MyFile is modified by someone else]
+[at this point https://nmlorg.googlecode.com/svn/trunk/myfile is modified by someone else]
 nvn sync
 }}}
 
