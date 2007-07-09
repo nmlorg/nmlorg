@@ -77,6 +77,11 @@ class Client(object):
     return self.Repository + '/clients/' + self.Name
 
 
+  @property
+  def rootstub(self):
+    return os.path.join(self.Root, '.nvn/rootstub')
+
+
   def __getspec(self, k):
     if not hasattr(self, '__clientspec'):
       p = os.path.join(self.Root, '.nvn', 'clientspec.pickle')
@@ -142,6 +147,8 @@ class Client(object):
       svn('remove', '-m', 'Moving client ' + self.Name + ' to ' + self.rullroot, oldroot)
 
     svn('mkdir', '-m', 'Creating client ' + self.Name, self.fullroot)
+    os.spawnvp(os.P_WAIT, 'rm', [ 'rm', '-r', self.rootstub ])
+    svn('checkout', '-N', self.fullroot, self.rootstub)
 
   Repository = property(__getrepo, __setrepo)
 
@@ -150,10 +157,8 @@ class Client(object):
     return svn('propget', k, self.fullroot);
 
   def __setprop(self, k, v):
-    p = os.path.join(self.Root, '.nvn/rootstub')
-
-    svn('propset', k, v, p)
-    svn('commit', '-m', 'Set prop ' + k, p)
+    svn('propset', k, v, self.rootstub)
+    svn('commit', '-m', 'Set prop ' + k, self.rootstub)
 
 
   def __getdesc(self):
