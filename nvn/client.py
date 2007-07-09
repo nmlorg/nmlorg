@@ -2,7 +2,7 @@
 
 import os
 import re
-from string import Template
+import cPickle
 from gflags import gflags
 
 def findroot(d=None):
@@ -19,19 +19,34 @@ def findroot(d=None):
 
   return None
 
-def parsebash(p):
-  file = open(p)
-  s = file.read()
-  file.close()
+def guessname():
+  cwd = os.getcwd()
+  home = os.getenv('HOME')
 
-  lines = [ x.strip() for x in s.split('\n') if x.strip() != '' and x.strip()[0] != '#' ]
+  if cwd == home:
+    return os.uname()[1]
+  return os.path.basename(cwd)
+
+def parsespec(s):
+  lines = [ x for x in s.split('\n') if x.strip() != '' and x.strip()[0] != '#' ]
   spec = {}
 
+  k = None
   for line in lines:
-    m = re.match(r'^(\w*)="?(.*[^"])"?$', line)
+    m = re.match(r'^(\w*):\s*(.*)$', line.rstrip())
     if m:
       k, v = m.groups()
-      spec[k] = Template(v).safe_substitute(spec)
+      spec[k] = []
+      if v != '':
+        spec[k].append(v)
+      continue
+
+    m = re.match(r'^\s+(.*)$', line.rstrip())
+    if m:
+      spec[k].append(m.groups()[0])
+      continue
+
+    print 'Unknown line:', line
 
   return spec
 
@@ -53,31 +68,61 @@ class Client(object):
 
     return self.__root
 
+
   def __getspec(self, k):
     if not hasattr(self, '__clientspec'):
-      p = os.path.join(self.Root, '.nvn', 'clientspec')
-      self.__clientspec = os.path.isfile(p) and parsebash(p) or {}
+      p = os.path.join(self.Root, '.nvn', 'clientspec.pickle')
+      if os.path.isfile(p):
+        file = open(p)
+        self.__clientspec = cPickle.load(file)
+        file.close()
+      else:
+        self.__clientspec = {}
 
     return k in self.__clientspec and self.__clientspec[k] or ''
 
-  def __setspec(self, k, v):
-    print 'hi'
-    self.__getspec(k)
-    self.__clientspec[k] = v
-    p = os.path.join(self.Root, '.nvn', 'clientspec')
-    print p
+  def __setspec(self, k=None, v=None):
+    if k and v:
+      self.__getspec(k)
+      self.__clientspec[k] = v
+
+    p = os.path.join(self.Root, '.nvn', 'clientspec.pickle')
     file = open(p, 'w')
-    print '\n'.join([ '#!/bin/sh', '' ] + [ k + '="' + v + '"' for (k, v) in self.__clientspec.iteritems() ])
-    file.write('\n'.join([ '#!/bin/sh', '' ] + [ k + '="' + v + '"' for (k, v) in self.__clientspec.iteritems() ]))
+    cPickle.dump(self.__clientspec, file)
     file.close()
 
+
   def __getname(self):
-    return self.__getspec('CLIENT')
+    name = self.__getspec('Name')
+
+    if not name:
+      name = self.__clientspec['Name'] = guessname()
+
+    return name
 
   def __setname(self, val):
-    self.__setspec('CLIENT', val)
+    self.__setspec('Name', val)
 
   Name = property(__getname, __setname)
+
+
+  def __getdesc(self):
+    return self.__getspec('Description')
+
+  def __setdesc(self, val):
+    self.__setspec('Description', val)
+
+  Description = property(__getdesc, __setdesc)
+
+
+  def __getmapping(self):
+    return self.__getspec('Mapping')
+
+  def __setmapping(self, val):
+    self.__setspec('Mapping', val)
+
+  Mapping = property(__getmapping, __setmapping)
+
 
   def __str__(self):
     s = [ '# ' + x for x in self.__doc__.split('\n')[:-1] ]
@@ -87,12 +132,27 @@ class Client(object):
     for attr in dir(self):
       if attr[0].isupper():
         s.append('')
-        s.append(attr + ': ' + getattr(self, attr) or '')
+        val = getattr(self, attr).split('\n')
+        if len(val) == 1:
+          s.append(attr + ':\t' + val[0])
+        else:
+          s.append(attr + ':')
+          s += [ '\t' + x for x in val ]
 
     return '\n'.join(s)
 
-  def fromspec(s):
-    pass
+  def fromspec(self, s):
+    spec = parsespec(s)
+
+    for k, v in spec.iteritems():
+      spec[k] = '\n'.join(v)
+
+    if not all(map(lambda x: x in spec, [ 'Name', 'Root', 'Description', 'Mapping' ])):
+      return False
+
+    self.__clientspec = spec
+    self.__setspec()
+    return True
 
 def cmd_client(argv):
   argv = gflags.FLAGS(argv)
@@ -116,12 +176,15 @@ def cmd_client(argv):
   os.system(gflags.FLAGS.editor + ' ' + f)
 
   file = open(f)
-  client.fromspec(file.read())
+  s = file.read()
   file.close()
 
-  print 'remove', f
   os.remove(f)
-  print 'rmdir', p
   os.rmdir(p)
+
+  if client.fromspec(s):
+    print 'Client ' + client.Name + ' updated.'
+  else:
+    print 'Error updating client.'
 
   return 0
