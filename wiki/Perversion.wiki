@@ -53,6 +53,6 @@ in order to incorporate the changes made from the committed version of myfile.
 Since there is a colliding merge, you will be offered the choice to force your version (replacing myfile with myfile.working), discard your changes (replacing myfile with myfile.merge-right.r13), or manually resolve (invoking $EDITOR on myfile to let you resolve the conflict). After any of these returns and validates, nvn will call svn resolved trunk/myfile to get rid of the trunk/myfile.?? files. The next time you nvn upload (or directly call svn commit, though that command will be deprecated), the post-merge version of trunk/myfile will go into your branch at the same time the LASTREVISION property is updated to reflect the version you most recently synched.
 
 {{{
-/home/n/n-test1/trunk/myfile - merging //nmlorg/trunk/myfile@12,13
+/home/n/n-test1/trunk/myfile - merging //nmlorg/trunk/myfile@12:13
 Accept(a) Diff(d) Edit(e) Merge(m) Skip(s) Help(?) e:
 }}}
