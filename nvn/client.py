@@ -76,6 +76,7 @@ class Client(object):
   def fullroot(self):
     return self.Repository + '/clients/' + self.Name
 
+
   def __getspec(self, k):
     if not hasattr(self, '__clientspec'):
       p = os.path.join(self.Root, '.nvn', 'clientspec.pickle')
@@ -145,13 +146,23 @@ class Client(object):
   Repository = property(__getrepo, __setrepo)
 
 
-  #def __getdesc(self):
-  #  return self.__getspec('Description')
+  def __getprop(self, k):
+    return svn('propget', k, self.fullroot);
 
-  #def __setdesc(self, val):
-  #  self.__setspec('Description', val)
+  def __setprop(self, k, v):
+    p = os.path.join(self.Root, '.nvn/rootstub')
 
-  #Description = property(__getdesc, __setdesc)
+    svn('propset', k, v, p)
+    svn('commit', '-m', 'Set prop ' + k, p)
+
+
+  def __getdesc(self):
+    return self.__getprop('Description')
+
+  def __setdesc(self, val):
+    self.__setprop('Description', val)
+
+  Description = property(__getdesc, __setdesc)
 
 
   #def __getmapping(self):

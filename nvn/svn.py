@@ -11,4 +11,7 @@ def svn(*args):
     newargs.append(arg)
     lastarg = arg
 
-  return os.spawnvp(os.P_WAIT, 'svn', [ 'svn' ] + newargs)
+  #return os.spawnvp(os.P_WAIT, 'svn', [ 'svn' ] + newargs)
+  w, r = os.popen2([ 'svn' ] + newargs)
+
+  return r.read()
