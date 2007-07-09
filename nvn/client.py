@@ -25,7 +25,7 @@ def guessname():
 
   if cwd == home:
     return os.uname()[1]
-  return os.path.basename(cwd)
+  return os.getlogin() + '-' + os.path.basename(cwd)
 
 def parsespec(s):
   lines = [ x for x in s.split('\n') if x.strip() != '' and x.strip()[0] != '#' ]
@@ -50,11 +50,13 @@ def parsespec(s):
 
   return spec
 
+
 class Client(object):
   """ Client specification.
 
     Root: The base directory of the client workspace.
     Name: The client name.
+    Repository: The URL to the root of the Subversion repository.
   """
   @property
   def Root(self):
@@ -101,27 +103,42 @@ class Client(object):
     return name
 
   def __setname(self, val):
+    if not re.match(r'^[a-zA-Z0-9-_]*$', val):
+      raise Exception('Client name must match ^[a-zA-Z0-9-_]*$')
+
     self.__setspec('Name', val)
 
   Name = property(__getname, __setname)
 
 
-  def __getdesc(self):
-    return self.__getspec('Description')
+  def __getrepo(self):
+    return self.__getspec('Repository')
 
-  def __setdesc(self, val):
-    self.__setspec('Description', val)
+  def __setrepo(self, val):
+    if not re.match(r'^https?://', val):
+      raise Exception('Repository URL must match ^https?://')
 
-  Description = property(__getdesc, __setdesc)
+    self.__setspec('Repository', val)
+
+  Repository = property(__getrepo, __setrepo)
 
 
-  def __getmapping(self):
-    return self.__getspec('Mapping')
+  #def __getdesc(self):
+  #  return self.__getspec('Description')
 
-  def __setmapping(self, val):
-    self.__setspec('Mapping', val)
+  #def __setdesc(self, val):
+  #  self.__setspec('Description', val)
 
-  Mapping = property(__getmapping, __setmapping)
+  #Description = property(__getdesc, __setdesc)
+
+
+  #def __getmapping(self):
+  #  return self.__getspec('Mapping')
+
+  #def __setmapping(self, val):
+  #  self.__setspec('Mapping', val)
+
+  #Mapping = property(__getmapping, __setmapping)
 
 
   def __str__(self):
@@ -147,12 +164,18 @@ class Client(object):
     for k, v in spec.iteritems():
       spec[k] = '\n'.join(v)
 
-    if not all(map(lambda x: x in spec, [ 'Name', 'Root', 'Description', 'Mapping' ])):
+    if not all(map(lambda x: x in spec, [ x for x in dir(self) if x[0].isupper() ])):
       return False
 
-    self.__clientspec = spec
-    self.__setspec()
+    for k, v in spec.iteritems():
+      if not hasattr(self, k) or getattr(self, k) != v:
+        try:
+          setattr(self, k, v)
+        except Exception, e:
+          return False, e
+
     return True
+
 
 def cmd_client(argv):
   argv = gflags.FLAGS(argv)
@@ -182,9 +205,11 @@ def cmd_client(argv):
   os.remove(f)
   os.rmdir(p)
 
-  if client.fromspec(s):
+  ret = client.fromspec(s)
+
+  if ret == True:
     print 'Client ' + client.Name + ' updated.'
   else:
-    print 'Error updating client.'
+    print 'Error updating client:', ret
 
   return 0
