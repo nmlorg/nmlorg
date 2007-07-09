@@ -4,6 +4,7 @@ import os
 import re
 import cPickle
 from gflags import gflags
+from svn import svn
 
 def findroot(d=None):
   if not d:
@@ -71,6 +72,10 @@ class Client(object):
     return self.__root
 
 
+  @property
+  def fullroot(self):
+    return self.Repository + '/clients/' + self.Name
+
   def __getspec(self, k):
     if not hasattr(self, '__clientspec'):
       p = os.path.join(self.Root, '.nvn', 'clientspec.pickle')
@@ -106,7 +111,13 @@ class Client(object):
     if not re.match(r'^[a-zA-Z0-9-_]*$', val):
       raise Exception('Client name must match ^[a-zA-Z0-9-_]*$')
 
+    oldname = self.Name
+    oldroot = self.fullroot
+
     self.__setspec('Name', val)
+
+    if self.Repository:
+      svn('move', '-m', 'Renaming client from ' + oldname + ' to ' + val, oldroot, self.fullroot)
 
   Name = property(__getname, __setname)
 
@@ -115,10 +126,21 @@ class Client(object):
     return self.__getspec('Repository')
 
   def __setrepo(self, val):
+    if val == self.Repository:
+      return
+
     if not re.match(r'^https?://', val):
       raise Exception('Repository URL must match ^https?://')
 
+    oldrepo = self.Repository
+    oldroot = self.fullroot
+
     self.__setspec('Repository', val)
+
+    if oldrepo:
+      svn('remove', '-m', 'Moving client ' + self.Name + ' to ' + self.rullroot, oldroot)
+
+    svn('mkdir', '-m', 'Creating client ' + self.Name, self.fullroot)
 
   Repository = property(__getrepo, __setrepo)
 
