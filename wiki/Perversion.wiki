@@ -1,0 +1,54 @@
+#summary Perforce-like workflow with a Subversion backend
+
+=Goals=
+
+  * Create a system that emulates the revision-controlled-file modification workflow used at Google using the googlecode.com Subversion repository instead of Perforce.
+
+=Notes=
+
+{{{
+mkdir n-test1
+cd n-test1
+mkdir .nvn
+nvn client
+}}}
+
+At this point $EDITOR will be invoked on a file in /tmp that will allow you to provide a client name and possibly other attributes about your new Perversion client. Assuming you provide:
+
+{{{
+Client: n-test1
+View:
+        //nmlorg/trunk/... //n-test1/trunk/...
+        //nmlorg/wiki/... //n-test1/wiki/...
+}}}
+
+nvn will perform:
+
+{{{
+svn mkdir https://nmlorg.googlecode.com/svn/clients/n-test1
+svn copy https://nmlorg.googlecode.com/svn/trunk https://nmlorg.googlecode.com/svn/clients/n-test1
+svn copy https://nmlorg.googlecode.com/svn/wiki https://nmlorg.googlecode.com/svn/clients/n-test1
+svn checkout https://nmlorg.googlecode.com/svn/clients/n-test1/trunk trunk
+svn checkout https://nmlorg.googlecode.com/svn/clients/n-test1/wiki wiki
+}}}
+
+Back to what you type:
+
+{{{
+cd trunk
+echo "Added from n-test1" >> MyFile
+[at this point https://nmlorg.googlecode.com/svn/trunk/MyFile is modified by someone else, possibly using a Perversion client or possibly just using standard Subversion]
+nvn sync
+}}}
+
+nvn will then execute:
+
+{{{
+svn propget LASTREVISION MyFile
+svn merge https://nmlorg.googlecode.com/svn/trunk/MyFile@12 https://nmlorg.googlecode.com/svn/trunk/MyFile MyFile
+svn propset LASTREVISION 13 MyFile
+}}}
+
+in order to incorporate the changes made from the committed version of MyFile. Since there is a colliding merge, you will be offered the choice to force your version (replacing MyFile with MyFile.working), discard your changes (replacing MyFile with MyFile.merge-right.r13), or manually resolve (invoking $EDITOR on MyFile to let you resolve the conflict). After any of these returns and validates, nvn will call svn resolved MyFile to get rid of the MyFile.?? files. The next time you nvn upload (or directly call svn commit, though that command will be deprecated), the post-merge version of MyFile will go into your branch at the same time the LASTREVISION property is updated to reflect the version you most recently synched.
+
+
