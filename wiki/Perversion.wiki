@@ -43,7 +43,7 @@ nvn sync
 nvn will then execute:
 
 {{{
-svn propget LASTREVISION trunk/mile
+svn propget LASTREVISION trunk/myfile
 svn merge https://nmlorg.googlecode.com/svn/trunk/myfile@12 https://nmlorg.googlecode.com/svn/trunk/myfile trunk/myfile
 svn propset LASTREVISION 13 trunk/myfile
 }}}
