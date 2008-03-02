@@ -57,18 +57,17 @@ class PCMAccessor(object):
 
 def main(argv):
   devs = {}
+  files = {}
 
   for filename in argv[1:]:
-    f = ogg.vorbis.VorbisFile(filename)
-    finfo = f.info()
+    if filename not in files:
+      f = ogg.vorbis.VorbisFile(filename)
+      files[filename] = (f, f.info())
+    f, finfo = files[filename]
     bits = 16
 
     if (bits, finfo.rate, finfo.channels) not in devs:
-      print 'Opening alsa09 with bits=%i, rate=%i, channels=%i' % (bits, finfo.rate, finfo.channels)
       devs[bits, finfo.rate, finfo.channels] = ao.AudioDevice('alsa09', bits=bits, rate=finfo.rate, channels=finfo.channels)
-    else:
-      print 'Reusing bits=%i, rate=%i, channels=%i device driver from a previous run' % (bits, finfo.rate, finfo.channels)
-
     dev = devs[bits, finfo.rate, finfo.channels]
 
     accessor = PCMAccessor(bits=bits, rate=finfo.rate, channels=finfo.channels)
