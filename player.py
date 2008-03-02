@@ -88,20 +88,19 @@ def main(argv):
         break
 
       if not buflen:
-        print 'Got a buffer with buflen=0'
         break
 
       buf = buffer(buf, 0, buflen)
       dev.play(buf)
       sample = accessor.Sample(buf)
       spectrum = spectralyzer.Spectrum(sample, 128)
-      print ('%5i  %8i  %10.4f  %8i  %8i  %8i  %8i  %8i  %8i\r' % (
-             buflen,
+      print ('%5i (%5i)  %8i  %10.4f  %5i  %5i  %4i  %4i  %4i  %4i\r' % (
+             buflen, len(sample),
              f.bitrate_instant(),
              f.time_tell(),
-             f.pcm_tell(),
-             f.raw_tell(),
-             max(spectrum[0]), max(spectrum[1]), sum(spectrum[0]), sum(spectrum[1]))),
+             f.pcm_tell()/1024,
+             f.raw_tell()/1024,
+             max(spectrum[0])/10000, max(spectrum[1])/10000, sum(spectrum[0])/10000, sum(spectrum[1])/10000)),
 
 if __name__ == '__main__':
   sys.exit(main(sys.argv))
