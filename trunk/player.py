@@ -66,6 +66,8 @@ def main(argv):
   files = {}
 
   for filename in argv[1:]:
+    print 'Playing', filename
+
     if filename not in files:
       f = ogg.vorbis.VorbisFile(filename)
       files[filename] = (f, f.info())
@@ -89,16 +91,16 @@ def main(argv):
         print 'Got a buffer with buflen=0'
         break
 
-      print '%i\t%i\t%i\t%i\t%f\t%f\t%i\t%i\t%i\t%i' % (
-          buflen, bitstreamval,
-          f.bitrate_instant(), f.bitrate(),
-          f.time_tell(), f.time_total(),
-          f.pcm_tell(), f.pcm_total(),
-          f.raw_tell(), f.raw_total())
-
       buf = buffer(buf, 0, buflen)
       sample = accessor.Sample(buf)
-      spectrum = spectralyzer.Spectrum(sample)
+      spectrum = spectralyzer.Spectrum(sample, 128)
+      print ('%5i %8i %2.6f %8i %8i %8i %8i %8i %8i\r' % (
+             buflen,
+             f.bitrate_instant(),
+             f.time_tell(),
+             f.pcm_tell(),
+             f.raw_tell(),
+             max(spectrum[0]), max(spectrum[1]), sum(spectrum[0]), sum(spectrum[1]))),
       dev.play(buf)
 
 if __name__ == '__main__':
