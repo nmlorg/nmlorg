@@ -4,6 +4,8 @@ import ao
 import ogg.vorbis
 import sys
 
+import spectralyzer
+
 
 class Sample(object):
   def __init__(self, buf, bits, rate, channels):
@@ -12,6 +14,7 @@ class Sample(object):
     self.rate = rate
     self.channels = channels
     self.stride = self.bytes * channels
+    self.len = len(buf) / self.stride
 
   def toint(self, s):
     assert len(s) in [1, 2]
@@ -43,6 +46,9 @@ class Sample(object):
       return ret, ret
     else:
       return self.toint(buf[:self.bytes]), self.toint(buf[self.bytes:])
+
+  def __len__(self):
+    return self.len
 
 
 class PCMAccessor(object):
@@ -92,6 +98,7 @@ def main(argv):
 
       buf = buffer(buf, 0, buflen)
       sample = accessor.Sample(buf)
+      spectrum = spectralyzer.Spectrum(sample)
       dev.play(buf)
 
 if __name__ == '__main__':
