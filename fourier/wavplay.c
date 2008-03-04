@@ -1,10 +1,9 @@
+#include <ao/ao.h>
 #include <assert.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <sys/ioctl.h>
-#include <sys/soundcard.h>
 
 const int samplespersec = 20;
 
@@ -23,15 +22,6 @@ typedef struct {
 	unsigned char Subchunk2ID[4];
 	uint32_t Subchunk2Size;
 } riff_wave_t;
-
-static void ioctl2(int d, int request, int val) {
-	int	val2 = val, ret;
-
-	printf("ioctl(d=%i, request=%#X, val=%i)\n", d, request, val);
-	ret = ioctl(d, request, &val);
-	assert(ret == 0);
-	assert(val == val2);
-}
 
 void	magic_init(const int samplespersec, const uint32_t samplelen, const int bitspersample, const int numchannels);
 void	magic_sample(const void *buf);
@@ -60,24 +50,21 @@ int	main(void) {
 		header.Subchunk2Size = 0;
 
 	{
-		int	dspfd, docontinue = 1;
+		int	docontinue = 1;
 		unsigned char buf[header.ByteRate/samplespersec];
 		uint32_t len = 0;
+		ao_device *dev;
+		ao_sample_format sample_format;
+		ao_option options[] = {
+			{ "buf_time", "30", NULL },
+		};
 
-		printf("open(pathname=\"%s\", flags=%i)\n", "/dev/dsp", O_WRONLY);
-		dspfd = open("/dev/dsp", O_WRONLY);
-		assert(dspfd >= 0);
-
-		ioctl2(dspfd, SOUND_PCM_WRITE_BITS, header.BitsPerSample);
-		ioctl2(dspfd, SOUND_PCM_WRITE_CHANNELS, header.NumChannels);
-		ioctl2(dspfd, SOUND_PCM_WRITE_RATE, header.SampleRate);
-		ioctl2(dspfd, SNDCTL_DSP_SPEED, header.SampleRate);
-		ioctl2(dspfd, SNDCTL_DSP_STEREO, (header.NumChannels == 2)?1:0);
-		if (header.BitsPerSample == 8)
-			ioctl2(dspfd, SNDCTL_DSP_SETFMT, AFMT_U8);
-		else if (header.BitsPerSample == 16)
-			ioctl2(dspfd, SNDCTL_DSP_SETFMT, AFMT_S16_NE);
-		ioctl2(dspfd, SNDCTL_DSP_SETFRAGMENT, 0x0008 | ((sizeof(buf)/(1 << 8) + 1) << 16));
+		ao_initialize();
+		sample_format.bits = header.BitsPerSample;
+		sample_format.rate = header.SampleRate;
+		sample_format.channels = header.NumChannels;
+		sample_format.byte_format = AO_FMT_NATIVE;
+		dev = ao_open_live(ao_driver_id("alsa09"), &sample_format, options);
 
 		magic_init(samplespersec, sizeof(buf), header.BitsPerSample, header.NumChannels);
 
@@ -89,7 +76,8 @@ int	main(void) {
 				if (ret2 < 1) {
 					if (header.Subchunk2Size > 0) {
 						printf("unexpected end of file\n");
-						close(dspfd);
+						ao_close(dev);
+						dev = NULL;
 						magic_end();
 						return(1);
 					} else {
@@ -100,9 +88,9 @@ int	main(void) {
 				ret += ret2;
 			}
 			len += ret;
+			ret2 = ao_play(dev, buf, ret);
+			assert(ret2 != 0);
 			magic_sample(buf);
-			ret2 = write(dspfd, buf, ret);
-			assert(ret2 == ret);
 		}
 
 		printf("\n");
@@ -112,9 +100,10 @@ int	main(void) {
 			assert(len == 0);
 		}
 
-		ioctl(dspfd, SOUND_PCM_SYNC, NULL);
+		//ioctl(dspfd, SOUND_PCM_SYNC, NULL);
 
-		close(dspfd);
+		ao_close(dev);
+		dev = NULL;
 
 		magic_end();
 	}
