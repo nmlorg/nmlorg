@@ -19,7 +19,7 @@ static struct {
 static struct {
 	GLfloat	pos[4], width;
 	unsigned int right:1, up:1;
-} flecs[2000];
+} flecs[0];
 
 void	xapple_init(const int _N, const int _samplespersec, const int _samplelen, const int _bitspersample, const int _numchannels) {
 	int	i;
