@@ -9,7 +9,7 @@
 
   echo
   for i in $(find static -type f | grep -v '\.svn/' | sed s#^static/## | sort); do
-    PREFIX=$(echo ${i} | sed 's/\..*$//')
+    PREFIX=$(echo ${i} | sed 's/\.[^.]*$//')
     echo "- url: /${PREFIX}"
     echo "  static_files: static/${i}"
     echo "  upload: static/${i}"
