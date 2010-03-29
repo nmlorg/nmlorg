@@ -14,6 +14,10 @@ handlers:
   static_files: static/about.html
   upload: static/about.html
 
+- url: /download
+  static_files: static/download.html
+  upload: static/download.html
+
 - url: /icons/sound1
   static_files: static/icons/sound1.gif
   upload: static/icons/sound1.gif
