@@ -206,21 +206,21 @@ handlers:
   static_files: static/screenimages/andrewchin.net/tmp/inaim.jpg
   upload: static/screenimages/andrewchin.net/tmp/inaim.jpg
 
-- url: /screenimages/chadp.net/~chad/images/naim-uptime
-  static_files: static/screenimages/chadp.net/~chad/images/naim-uptime.jpg
-  upload: static/screenimages/chadp.net/~chad/images/naim-uptime.jpg
+- url: /screenimages/chadp.net/chad/images/naim-uptime
+  static_files: static/screenimages/chadp.net/chad/images/naim-uptime.jpg
+  upload: static/screenimages/chadp.net/chad/images/naim-uptime.jpg
 
-- url: /screenimages/derceto.net/~cleaner/naim
-  static_files: static/screenimages/derceto.net/~cleaner/naim.png
-  upload: static/screenimages/derceto.net/~cleaner/naim.png
+- url: /screenimages/derceto.net/cleaner/naim
+  static_files: static/screenimages/derceto.net/cleaner/naim.png
+  upload: static/screenimages/derceto.net/cleaner/naim.png
 
-- url: /screenimages/eminence32.net/~achin/naim
-  static_files: static/screenimages/eminence32.net/~achin/naim.jpg
-  upload: static/screenimages/eminence32.net/~achin/naim.jpg
+- url: /screenimages/eminence32.net/achin/naim
+  static_files: static/screenimages/eminence32.net/achin/naim.jpg
+  upload: static/screenimages/eminence32.net/achin/naim.jpg
 
-- url: /screenimages/hobbes.unprompted.com/~cory/naim
-  static_files: static/screenimages/hobbes.unprompted.com/~cory/naim.png
-  upload: static/screenimages/hobbes.unprompted.com/~cory/naim.png
+- url: /screenimages/hobbes.unprompted.com/cory/naim
+  static_files: static/screenimages/hobbes.unprompted.com/cory/naim.png
+  upload: static/screenimages/hobbes.unprompted.com/cory/naim.png
 
 - url: /screenimages/naim1
   static_files: static/screenimages/naim1.png
