@@ -18,20 +18,96 @@ handlers:
   static_files: static/download.html
   upload: static/download.html
 
+- url: /icons/small/broken
+  static_files: static/icons/small/broken.gif
+  upload: static/icons/small/broken.gif
+
+- url: /icons/small/goldstar
+  static_files: static/icons/small/goldstar.png
+  upload: static/icons/small/goldstar.png
+
+- url: /icons/small/star_silver
+  static_files: static/icons/small/star_silver.gif
+  upload: static/icons/small/star_silver.gif
+
 - url: /icons/sound1
   static_files: static/icons/sound1.gif
   upload: static/icons/sound1.gif
+
+- url: /images/Sorcerer
+  static_files: static/images/Sorcerer.png
+  upload: static/images/Sorcerer.png
+
+- url: /images/archlinux-logo
+  static_files: static/images/archlinux-logo.png
+  upload: static/images/archlinux-logo.png
 
 - url: /images/background
   static_files: static/images/background.png
   upload: static/images/background.png
 
+- url: /images/bebits-mainlogo
+  static_files: static/images/bebits-mainlogo.gif
+  upload: static/images/bebits-mainlogo.gif
+
+- url: /images/debian
+  static_files: static/images/debian.jpg
+  upload: static/images/debian.jpg
+
+- url: /images/freebsd-powerlogo
+  static_files: static/images/freebsd-powerlogo.gif
+  upload: static/images/freebsd-powerlogo.gif
+
+- url: /images/freshmeat-logo
+  static_files: static/images/freshmeat-logo.gif
+  upload: static/images/freshmeat-logo.gif
+
+- url: /images/gentoo-project
+  static_files: static/images/gentoo-project.gif
+  upload: static/images/gentoo-project.gif
+
+- url: /images/gnu-head-sm
+  static_files: static/images/gnu-head-sm.png
+  upload: static/images/gnu-head-sm.png
+
+- url: /images/header-fedora_logo01
+  static_files: static/images/header-fedora_logo01.png
+  upload: static/images/header-fedora_logo01.png
+
+- url: /images/linuxorg
+  static_files: static/images/linuxorg.gif
+  upload: static/images/linuxorg.gif
+
 - url: /images/naimlogo_nobubble_smaller
   static_files: static/images/naimlogo_nobubble_smaller.png
   upload: static/images/naimlogo_nobubble_smaller.png
 
+- url: /images/netbsd
+  static_files: static/images/netbsd.jpg
+  upload: static/images/netbsd.jpg
+
 - url: /images/nlogoeyes_small
   static_files: static/images/nlogoeyes_small.png
   upload: static/images/nlogoeyes_small.png
+
+- url: /images/opendarwin-hexley-1
+  static_files: static/images/opendarwin-hexley-1.png
+  upload: static/images/opendarwin-hexley-1.png
+
+- url: /images/smgl_logo
+  static_files: static/images/smgl_logo.png
+  upload: static/images/smgl_logo.png
+
+- url: /images/sourcemage_banner
+  static_files: static/images/sourcemage_banner.png
+  upload: static/images/sourcemage_banner.png
+
+- url: /images/tucows-logo
+  static_files: static/images/tucows-logo.gif
+  upload: static/images/tucows-logo.gif
+
+- url: /packages
+  static_files: static/packages.html
+  upload: static/packages.html
 
 # END AUTO STATIC
