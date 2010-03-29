@@ -106,6 +106,10 @@ handlers:
   static_files: static/images/tucows-logo.gif
   upload: static/images/tucows-logo.gif
 
+- url: /lists
+  static_files: static/lists.html
+  upload: static/lists.html
+
 - url: /packages
   static_files: static/packages.html
   upload: static/packages.html
