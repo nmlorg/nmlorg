@@ -5,8 +5,29 @@ api_version: 1
 
 handlers:
 - url: /
-  static_files: static/index.html
-  upload: static/index.html
+  static_files: static/about.html
+  upload: static/about.html
 
-- url: /
-  static_dir: static
+# BEGIN AUTO STATIC
+
+- url: /about
+  static_files: static/about.html
+  upload: static/about.html
+
+- url: /icons/sound1
+  static_files: static/icons/sound1.gif
+  upload: static/icons/sound1.gif
+
+- url: /images/background
+  static_files: static/images/background.png
+  upload: static/images/background.png
+
+- url: /images/naimlogo_nobubble_smaller
+  static_files: static/images/naimlogo_nobubble_smaller.png
+  upload: static/images/naimlogo_nobubble_smaller.png
+
+- url: /images/nlogoeyes_small
+  static_files: static/images/nlogoeyes_small.png
+  upload: static/images/nlogoeyes_small.png
+
+# END AUTO STATIC
