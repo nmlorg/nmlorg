@@ -110,4 +110,8 @@ handlers:
   static_files: static/packages.html
   upload: static/packages.html
 
+- url: /quickstart
+  static_files: static/quickstart.html
+  upload: static/quickstart.html
+
 # END AUTO STATIC
