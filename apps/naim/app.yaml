@@ -118,4 +118,176 @@ handlers:
   static_files: static/quickstart.html
   upload: static/quickstart.html
 
+- url: /screenimages/216.37.254.153/vince/stuff/naim
+  static_files: static/screenimages/216.37.254.153/vince/stuff/naim.png
+  upload: static/screenimages/216.37.254.153/vince/stuff/naim.png
+
+- url: /screenimages/250/2003.07.26_shot1
+  static_files: static/screenimages/250/2003.07.26_shot1.jpg
+  upload: static/screenimages/250/2003.07.26_shot1.jpg
+
+- url: /screenimages/250/achin-naim
+  static_files: static/screenimages/250/achin-naim.jpg
+  upload: static/screenimages/250/achin-naim.jpg
+
+- url: /screenimages/250/aimisland-naimwindows
+  static_files: static/screenimages/250/aimisland-naimwindows.png
+  upload: static/screenimages/250/aimisland-naimwindows.png
+
+- url: /screenimages/250/chad-naim-uptime
+  static_files: static/screenimages/250/chad-naim-uptime.jpg
+  upload: static/screenimages/250/chad-naim-uptime.jpg
+
+- url: /screenimages/250/cleaner-naim
+  static_files: static/screenimages/250/cleaner-naim.png
+  upload: static/screenimages/250/cleaner-naim.png
+
+- url: /screenimages/250/cory-naim
+  static_files: static/screenimages/250/cory-naim.png
+  upload: static/screenimages/250/cory-naim.png
+
+- url: /screenimages/250/kassah-naim
+  static_files: static/screenimages/250/kassah-naim.jpg
+  upload: static/screenimages/250/kassah-naim.jpg
+
+- url: /screenimages/250/naim1
+  static_files: static/screenimages/250/naim1.png
+  upload: static/screenimages/250/naim1.png
+
+- url: /screenimages/250/naim2
+  static_files: static/screenimages/250/naim2.png
+  upload: static/screenimages/250/naim2.png
+
+- url: /screenimages/250/naim3
+  static_files: static/screenimages/250/naim3.png
+  upload: static/screenimages/250/naim3.png
+
+- url: /screenimages/250/naim4
+  static_files: static/screenimages/250/naim4.png
+  upload: static/screenimages/250/naim4.png
+
+- url: /screenimages/250/naim5
+  static_files: static/screenimages/250/naim5.png
+  upload: static/screenimages/250/naim5.png
+
+- url: /screenimages/250/naim6
+  static_files: static/screenimages/250/naim6.png
+  upload: static/screenimages/250/naim6.png
+
+- url: /screenimages/250/studycisco-naim
+  static_files: static/screenimages/250/studycisco-naim.png
+  upload: static/screenimages/250/studycisco-naim.png
+
+- url: /screenimages/250/vagabond-screenshot
+  static_files: static/screenimages/250/vagabond-screenshot.png
+  upload: static/screenimages/250/vagabond-screenshot.png
+
+- url: /screenimages/250/vince-naim
+  static_files: static/screenimages/250/vince-naim.png
+  upload: static/screenimages/250/vince-naim.png
+
+- url: /screenimages/250/vinceflash-snapshot3
+  static_files: static/screenimages/250/vinceflash-snapshot3.jpg
+  upload: static/screenimages/250/vinceflash-snapshot3.jpg
+
+- url: /screenimages/250/vinceflash-usingnaim
+  static_files: static/screenimages/250/vinceflash-usingnaim.jpg
+  upload: static/screenimages/250/vinceflash-usingnaim.jpg
+
+- url: /screenimages/aimisland.com/naimwindows
+  static_files: static/screenimages/aimisland.com/naimwindows.gif
+  upload: static/screenimages/aimisland.com/naimwindows.gif
+
+- url: /screenimages/andrewchin.net/personal/naim3
+  static_files: static/screenimages/andrewchin.net/personal/naim3.jpg
+  upload: static/screenimages/andrewchin.net/personal/naim3.jpg
+
+- url: /screenimages/andrewchin.net/tmp/inaim
+  static_files: static/screenimages/andrewchin.net/tmp/inaim.jpg
+  upload: static/screenimages/andrewchin.net/tmp/inaim.jpg
+
+- url: /screenimages/chadp.net/~chad/images/naim-uptime
+  static_files: static/screenimages/chadp.net/~chad/images/naim-uptime.jpg
+  upload: static/screenimages/chadp.net/~chad/images/naim-uptime.jpg
+
+- url: /screenimages/derceto.net/~cleaner/naim
+  static_files: static/screenimages/derceto.net/~cleaner/naim.png
+  upload: static/screenimages/derceto.net/~cleaner/naim.png
+
+- url: /screenimages/eminence32.net/~achin/naim
+  static_files: static/screenimages/eminence32.net/~achin/naim.jpg
+  upload: static/screenimages/eminence32.net/~achin/naim.jpg
+
+- url: /screenimages/hobbes.unprompted.com/~cory/naim
+  static_files: static/screenimages/hobbes.unprompted.com/~cory/naim.png
+  upload: static/screenimages/hobbes.unprompted.com/~cory/naim.png
+
+- url: /screenimages/naim1
+  static_files: static/screenimages/naim1.png
+  upload: static/screenimages/naim1.png
+
+- url: /screenimages/naim2
+  static_files: static/screenimages/naim2.png
+  upload: static/screenimages/naim2.png
+
+- url: /screenimages/naim3
+  static_files: static/screenimages/naim3.png
+  upload: static/screenimages/naim3.png
+
+- url: /screenimages/naim4
+  static_files: static/screenimages/naim4.png
+  upload: static/screenimages/naim4.png
+
+- url: /screenimages/naim5
+  static_files: static/screenimages/naim5.png
+  upload: static/screenimages/naim5.png
+
+- url: /screenimages/naim6
+  static_files: static/screenimages/naim6.png
+  upload: static/screenimages/naim6.png
+
+- url: /screenimages/pqse-iphone
+  static_files: static/screenimages/pqse-iphone.jpg
+  upload: static/screenimages/pqse-iphone.jpg
+
+- url: /screenimages/studycisco.sitesled.com/naim
+  static_files: static/screenimages/studycisco.sitesled.com/naim.png
+  upload: static/screenimages/studycisco.sitesled.com/naim.png
+
+- url: /screenimages/tlp.lickwid.net/jornada/screenshots/j720naim1
+  static_files: static/screenimages/tlp.lickwid.net/jornada/screenshots/j720naim1.jpg
+  upload: static/screenimages/tlp.lickwid.net/jornada/screenshots/j720naim1.jpg
+
+- url: /screenimages/vagabond.apocalyptic-high.org/screenshot
+  static_files: static/screenimages/vagabond.apocalyptic-high.org/screenshot.png
+  upload: static/screenimages/vagabond.apocalyptic-high.org/screenshot.png
+
+- url: /screenimages/vinceflash.tripod.com/snapshot3
+  static_files: static/screenimages/vinceflash.tripod.com/snapshot3.jpg
+  upload: static/screenimages/vinceflash.tripod.com/snapshot3.jpg
+
+- url: /screenimages/vinceflash.tripod.com/usingnaim
+  static_files: static/screenimages/vinceflash.tripod.com/usingnaim.jpg
+  upload: static/screenimages/vinceflash.tripod.com/usingnaim.jpg
+
+- url: /screenimages/wbru.com/achin/naimshot
+  static_files: static/screenimages/wbru.com/achin/naimshot.jpg
+  upload: static/screenimages/wbru.com/achin/naimshot.jpg
+
+- url: /screenimages/will.kassah.net/share/naim
+  static_files: static/screenimages/will.kassah.net/share/naim.jpg
+  upload: static/screenimages/will.kassah.net/share/naim.jpg
+
+- url: /screenimages/www.cknoerle.gmxhome.de/2003.07.26_shot1
+  static_files: static/screenimages/www.cknoerle.gmxhome.de/2003.07.26_shot1.jpg
+  upload: static/screenimages/www.cknoerle.gmxhome.de/2003.07.26_shot1.jpg
+
+- url: /screenimages/www.notebookreview.com/assets/29913
+  static_files: static/screenimages/www.notebookreview.com/assets/29913.jpg
+  upload: static/screenimages/www.notebookreview.com/assets/29913.jpg
+
+- url: /screenshots
+  static_files: static/screenshots.html
+  upload: static/screenshots.html
+
 # END AUTO STATIC
