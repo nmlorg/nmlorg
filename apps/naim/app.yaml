@@ -62,10 +62,6 @@ handlers:
   static_files: static/images/freshmeat-logo.gif
   upload: static/images/freshmeat-logo.gif
 
-- url: /images/gentoo-project
-  static_files: static/images/gentoo-project.gif
-  upload: static/images/gentoo-project.gif
-
 - url: /images/gnu-head-sm
   static_files: static/images/gnu-head-sm.png
   upload: static/images/gnu-head-sm.png
