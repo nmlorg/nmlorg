@@ -21,8 +21,8 @@ def main(argv):
           ('NaimWiki', 'http://code.google.com/p/naim/w/list'),
           ('Issue Tracker', 'http://code.google.com/p/naim/issues/list'),
           ('Screenshots', 'screenshots'),
-          ('Mailing Lists', 'lists'),
-          ('Additional Docs', 'docs/'),
+          #('Mailing Lists', 'lists'),
+          #('Additional Docs', 'docs/'),
       ],
   }
 
