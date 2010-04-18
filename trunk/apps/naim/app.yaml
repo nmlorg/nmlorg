@@ -34,6 +34,10 @@ handlers:
   static_files: static/icons/sound1.gif
   upload: static/icons/sound1.gif
 
+- url: /images/35px-Wikipedia-logo
+  static_files: static/images/35px-Wikipedia-logo.png
+  upload: static/images/35px-Wikipedia-logo.png
+
 - url: /images/Sorcerer
   static_files: static/images/Sorcerer.png
   upload: static/images/Sorcerer.png
