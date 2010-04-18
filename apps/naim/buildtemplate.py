@@ -11,7 +11,22 @@ from google.appengine.ext.webapp import template
 
 
 def main(argv):
-  print template.render(argv[1], {})
+  values = {
+      'section': argv[1][len('templates/'):].rsplit('.', 1)[0],
+      'sections': [
+          ('About', 'about'),
+          ('Downloads', 'download'),
+          ('OS Packages', 'packages'),
+          ('Quickstart', 'quickstart'),
+          ('NaimWiki', 'http://code.google.com/p/naim/w/list'),
+          ('Issue Tracker', 'http://code.google.com/p/naim/issues/list'),
+          ('Screenshots', 'screenshots'),
+          ('Mailing Lists', 'lists'),
+          ('Additional Docs', 'docs/'),
+      ],
+  }
+
+  print template.render(argv[1], values)
 
 
 if __name__ == '__main__':
