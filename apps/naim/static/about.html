@@ -24,10 +24,12 @@
 
   (function() {
     var ga = document.createElement('script');
+    ga.type = 'text/javascript';
+    ga.async = true;
     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 
         'http://www') + '.google-analytics.com/ga.js';
-    ga.setAttribute('async', 'true');
-    document.documentElement.firstChild.appendChild(ga);
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(ga, s);
   })();
 
   // Google Friend Connect
@@ -69,10 +71,12 @@
 
   (function() {
     var fc = document.createElement('script');
+    fc.type = 'text/javascript';
+    fc.async = true;
     fc.src = 'http://www.google.com/friendconnect/script/friendconnect.js';
     fc.onload = startFriendConnect;
-    fc.setAttribute('async', 'true');
-    document.documentElement.firstChild.appendChild(fc);
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(fc, s);
   })();
 </script>
 
