@@ -16,12 +16,15 @@ nmlorg.game.camera.Camera = function(canvas, x, y, z) {
   this.x = x;
   this.y = y;
   this.z = z;
+  this.dx = -x;
+  this.dy = -y;
+  this.dz = -z;
 };
 
 
 nmlorg.game.camera.Camera.prototype.getScreenCoords = function(x, y, z) {
   this.canvas.setCamera(this.x, this.y, this.z,
-                        this.x, this.y + 100, this.z - 25,
+                        this.x + this.dx, this.y + this.dy, this.z + this.dz,
                         0, 0, 1);
   return this.canvas.getScreenCoords(x, y, z);
 };

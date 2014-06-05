@@ -22,7 +22,7 @@ nmlorg.game.mob.Mobile.prototype.stepHeight = .5;
 nmlorg.game.mob.Mobile.prototype.walkSpeed = 3.08;
 nmlorg.game.mob.Mobile.prototype.runSpeed = 12.42;
 nmlorg.game.mob.Mobile.prototype.turnSpeed = 45;
-nmlorg.game.mob.Mobile.prototype.jumpVelocity = 7;
+nmlorg.game.mob.Mobile.prototype.jumpVelocity = 4;
 nmlorg.game.mob.Mobile.prototype.dz = 0;
 nmlorg.game.mob.Mobile.prototype.maxJumps = 1;
 nmlorg.game.mob.Mobile.prototype.jumps = 0;
@@ -60,10 +60,10 @@ nmlorg.game.mob.Mobile.prototype.eachFrame = function(
 
   if (this.state.run && (this.state.walk || this.state.slide) && !this.pos.z) {
     this.runTime += timeStep;
-    this.stamina = Math.max(.1, this.stamina - timeStep / this.maxRunTime);
+    this.stamina = Math.max(.1, this.stamina - timeStep / 3 / this.maxRunTime);
   } else {
     this.runTime = 0;
-    this.stamina = Math.min(1, this.stamina + 2 * timeStep / this.maxRunTime);
+    this.stamina = Math.min(1, this.stamina + timeStep / this.maxRunTime);
   }
 
   if (this.state.turn > 0)
