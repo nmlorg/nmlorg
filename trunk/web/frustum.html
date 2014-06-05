@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+
+<body>
+
+<script src="nmlorg.js"></script>
+<script>
+nmlorg.require('nmlorg.threed.gl');
+nmlorg.require('nmlorg.threed.projection');
+nmlorg.require('nmlorg.threed.shape');
+nmlorg.require('nmlorg.threed.world');
+</script>
+<script>
+var mainCanvas = new nmlorg.threed.gl.Canvas(1000, 300);
+var cameraCanvas = new nmlorg.threed.gl.Canvas(1000, 300);
+var world = new nmlorg.threed.world.World([mainCanvas, cameraCanvas]);
+
+function rotateSlowly(timeStep) {
+  this.rotate(timeStep, 0, 1, 0);
+}
+
+for (var i = 0; i < 5; i++) {
+  for (var j = 0; j < 5; j++) {
+    var cubeShape = new nmlorg.threed.shape.Shape(
+        ['position', 'color'],
+        'triangle strip',
+        [
+            -25, -25, 25, 0, (6 - i) / 12, 0, 1,
+            -25, 25, 25, (6 - j) * (6 - i) / 36, 0, 0, 1,
+            25, -25, 25, 0, 0, (6 - i) * (j + 2) / 36, 1,
+            25, 25, 25, (6 - j) * (6 - i) / 36, 0, (6 - i) * (j + 2) / 36, 1,
+            25, -25, -25, 0, (6 - i) / 12, 0, 1,
+            25, 25, -25, (6 - j) * (6 - i) / 36, 0, 0, 1,
+            -25, -25, -25, 0, 0, (6 - i) * (j + 2) / 36, 1,
+            -25, 25, -25, (6 - j) * (6 - i) / 36, 0, (6 - i) * (j + 2) / 36, 1,
+            -25, -25, 25, 0, (6 - i) / 12, 0, 1,
+            -25, 25, 25, (6 - j) * (6 - i) / 36, 0, 0, 1,
+        ]);
+    var cube = world.addObject(cubeShape, rotateSlowly);
+
+    cube.translate((j - 2) * 200, (i - 2) * 50, i * -50);
+  }
+}
+
+var perspective = [20, 100, 2000];
+var cameraPosition = [0, 0, 200];
+
+mainCanvas.setPerspective(perspective[0], perspective[1], perspective[2]);
+mainCanvas.setCamera(cameraPosition[0], cameraPosition[1], cameraPosition[2]);
+
+var frustum = nmlorg.threed.projection.Frustum.fromPerspective(perspective[0], mainCanvas.width / mainCanvas.height, perspective[1], perspective[2]);
+var farleft = frustum.left * frustum.farPlane / frustum.nearPlane;
+var farright = frustum.right * frustum.farPlane / frustum.nearPlane;
+var farbottom = frustum.bottom * frustum.farPlane / frustum.nearPlane;
+var fartop = frustum.top * frustum.farPlane / frustum.nearPlane;
+var frustumShape = new nmlorg.threed.shape.Shape(
+    ['position', 'color'],
+    'triangles',
+    [
+        frustum.left, frustum.top, -frustum.nearPlane, 1, 0, 1, 1,
+        frustum.right, frustum.top, -frustum.nearPlane, 0, 1, 1, 1,
+        frustum.left, frustum.bottom, -frustum.nearPlane, 1, 0, 1, 1,
+
+        frustum.right, frustum.top, -frustum.nearPlane, 0, 1, 1, 1,
+        frustum.left, frustum.bottom, -frustum.nearPlane, 1, 0, 1, 1,
+        frustum.right, frustum.bottom, -frustum.nearPlane, 0, 1, 1, 1,
+
+        farleft, fartop, -frustum.farPlane, 1, 0, 0, 1,
+        farright, fartop, -frustum.farPlane, 0, 1, 0, 1,
+        farleft, farbottom, -frustum.farPlane, 1, 0, 0, 1,
+
+        farright, fartop, -frustum.farPlane, 0, 1, 0, 1,
+        farleft, farbottom, -frustum.farPlane, 1, 0, 0, 1,
+        farright, farbottom, -frustum.farPlane, 0, 1, 0, 1,
+
+        frustum.left, frustum.bottom, -frustum.nearPlane, 1, 0, 1, 1,
+        farleft, farbottom, -frustum.farPlane, 1, 0, 0, 1,
+        farleft, fartop, -frustum.farPlane, 1, 0, 0, 1,
+
+        frustum.left, frustum.top, -frustum.nearPlane, 1, 0, 1, 1,
+        frustum.left, frustum.bottom, -frustum.nearPlane, 1, 0, 1, 1,
+        farleft, fartop, -frustum.farPlane, 1, 0, 0, 1,
+
+        frustum.right, frustum.top, -frustum.nearPlane, 0, 1, 1, 1,
+        farright, farbottom, -frustum.farPlane, 0, 1, 0, 1,
+        frustum.right, frustum.bottom, -frustum.nearPlane, 0, 1, 1, 1,
+
+        frustum.right, frustum.top, -frustum.nearPlane, 0, 1, 1, 1,
+        farright, fartop, -frustum.farPlane, 0, 1, 0, 1,
+        farright, farbottom, -frustum.farPlane, 0, 1, 0, 1,
+
+        frustum.left, frustum.top, -frustum.nearPlane, 1, 0, 1, 1,
+        farleft, fartop, -frustum.farPlane, 1, 0, 0, 1,
+        farright, fartop, -frustum.farPlane, 0, 1, 0, 1,
+
+        farright, fartop, -frustum.farPlane, 0, 1, 0, 1,
+        frustum.right, frustum.top, -frustum.nearPlane, 0, 1, 1, 1,
+        frustum.left, frustum.top, -frustum.nearPlane, 1, 0, 1, 1,
+
+        farleft, farbottom, -frustum.farPlane, 1, 0, 0, 1,
+        frustum.left, frustum.bottom, -frustum.nearPlane, 1, 0, 1, 1,
+        (frustum.left + frustum.right) / 2, frustum.bottom, -frustum.nearPlane, .5, .5, 1, 1,
+
+        (frustum.left + frustum.right) / 2, frustum.bottom, -frustum.nearPlane, .5, .5, 1, 1,
+        (farleft + farright) / 2, farbottom, -frustum.farPlane, .5, .5, 0, 1,
+        farleft, farbottom, -frustum.farPlane, 1, 0, 0, 1,
+
+        (farleft + farright) / 2, farbottom, -frustum.farPlane, .5, .5, 0, 1,
+        (frustum.left + frustum.right) / 2, frustum.bottom, -frustum.nearPlane, .5, .5, 1, 1,
+        farright, farbottom, -frustum.farPlane, 0, 1, 0, 1,
+
+        (frustum.left + frustum.right) / 2, frustum.bottom, -frustum.nearPlane, .5, .5, 1, 1,
+        frustum.right, frustum.bottom, -frustum.nearPlane, 0, 1, 1, 1,
+        farright, farbottom, -frustum.farPlane, 0, 1, 0, 1,
+    ]);
+var frustumObj = world.addObject(world.addShape([cameraCanvas], frustumShape));
+
+frustumObj.translate(cameraPosition[0], cameraPosition[1], cameraPosition[2]);
+
+//cameraCanvas.setPerspective(90, .1, 1000000);
+//cameraCanvas.setCamera(cameraPosition[0] + 100, cameraPosition[1] + 100, cameraPosition[2] + 100, 0, 0, 0);
+cameraCanvas.setCamera(0, 0, cameraPosition[2] + 100, 0, 0, 0);
+
+world.addControls();
+world.start();
+
+</script>

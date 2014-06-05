@@ -13,11 +13,11 @@ nmlorg.threed.world = nmlorg.threed.world || {};
 
 
 /**
- * A collection of objects and canvases ({@link nmlorg.gl.Canvas}). When a shape is added to a world, 
+ * A collection of objects and canvases ({@link nmlorg.threed.gl.Canvas}). When a shape is added to a world, 
  * its geometry, color, etc. information (as vertex buffers) is added to each canvas. When the world is 
  * rendered, each object is rendered to each canvas.
  * @constructor
- * @param {Array.<nmlorg.gl.Canvas>} canvases A list of canvases to render to.
+ * @param {Array.<nmlorg.threed.gl.Canvas>} canvases A list of canvases to render to.
  */
 nmlorg.threed.world.World = function(canvases) {
   this.canvases = canvases || [];
@@ -38,7 +38,7 @@ nmlorg.threed.world.World.prototype.addShape = function(shape) {
   var canvases;
   var args = Array.prototype.slice.call(arguments);
 
-  if ((shape instanceof Array) && (shape[0] instanceof nmlorg.gl.Canvas)) {
+  if ((shape instanceof Array) && (shape[0] instanceof nmlorg.threed.gl.Canvas)) {
     canvases = args.shift();
     shape = args[0];
   } else
