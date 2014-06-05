@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+
+<body>
+
+<script src="http://n.ml.org/nmlorg.js"></script>
+<script>
+nmlorg.require('nmlorg.threed.gl');
+nmlorg.require('nmlorg.threed.shape');
+nmlorg.require('nmlorg.test');
+</script>
+<script>
+function testSimple() {
+  var canvas = new nmlorg.threed.gl.Canvas(10, 10);
+
+  canvas.reset();
+}
+
+
+function getGetPixel(canvas) {
+  var gl = canvas.gl;
+  var imageData = new Uint8Array(4 * canvas.width * canvas.height);
+
+  gl.readPixels(0, 0, 100, 100, gl.RGBA, gl.UNSIGNED_BYTE, imageData);
+  imageData = Array.prototype.slice.call(imageData);
+
+  return function getPixel(x, y) {
+    var pixel = imageData.slice((y * canvas.width + x) * 4, (y * canvas.width + x + 1) * 4);
+
+    console.log('(' + x + ', ' + y + ') = ' + pixel);
+    return pixel;
+  };
+}
+
+
+function testShape() {
+  var canvas = new nmlorg.threed.gl.Canvas(100, 100);
+  var shape = canvas.makeShape(new nmlorg.threed.shape.Shape(
+      ['position', 'color'],
+      'triangles',
+      [
+          0, 0, 0, 1, 0, 0, 1,
+          0, 50, 0, 0, 1, 0, 1,
+          50, 0, 0, 0, 0, 1, 1,
+      ]));
+
+  this.log('Rendering at 0, 0, -1.');
+  canvas.reset();
+  shape.draw([1, 0, 0, 0,
+              0, 1, 0, 0,
+              0, 0, 1, 0,
+              0, 0, -1, 1]);
+
+  var getPixel = getGetPixel(canvas);
+
+  this.assertEqual(getPixel(49, 50), [0, 0, 0, 255]);
+  this.assertEqual(getPixel(50, 49), [0, 0, 0, 255]);
+  this.assertEqual(getPixel(50, 50), [250, 3, 3, 255]);
+  this.assertEqual(getPixel(49, 98), [0, 0, 0, 255]);
+  this.assertEqual(getPixel(50, 99), [0, 0, 0, 255]);
+  this.assertEqual(getPixel(51, 98), [0, 0, 0, 255]);
+  this.assertEqual(getPixel(50, 98), [5, 247, 3, 255]);
+  this.assertEqual(getPixel(98, 51), [0, 0, 0, 255]);
+  this.assertEqual(getPixel(99, 50), [0, 0, 0, 255]);
+  this.assertEqual(getPixel(98, 49), [0, 0, 0, 255]);
+  this.assertEqual(getPixel(98, 50), [5, 3, 247, 255]);
+
+  this.log('Rendering at -50, -50, -1.');
+  canvas.reset();
+  shape.draw([1, 0, 0, 0,
+              0, 1, 0, 0,
+              0, 0, 1, 0,
+              -50, -50, -1, 1]);
+
+  var getPixel = getGetPixel(canvas);
+
+  this.assertEqual(getPixel(0, 0), [250, 3, 3, 255]);
+  this.assertEqual(getPixel(0, 49), [0, 0, 0, 255]);
+  this.assertEqual(getPixel(0, 48), [5, 247, 3, 255]);
+  this.assertEqual(getPixel(48, 1), [0, 0, 0, 255]);
+  this.assertEqual(getPixel(49, 0), [0, 0, 0, 255]);
+  this.assertEqual(getPixel(48, 0), [5, 3, 247, 255]);
+}
+
+
+nmlorg.test.run();
+</script>
