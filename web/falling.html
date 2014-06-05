@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+
+<body>
+
+<script src="nmlorg.js"></script>
+<script>
+nmlorg.require('nmlorg.threed.gl');
+nmlorg.require('nmlorg.physics');
+nmlorg.require('nmlorg.threed.shape');
+nmlorg.require('nmlorg.threed.world');
+</script>
+<script>
+var canvas = new nmlorg.threed.gl.Canvas(1000, 500);
+var world = new nmlorg.threed.world.World([canvas]);
+
+canvas.setPerspective(135);
+
+var img = new nmlorg.threed.shape.Image('/third_party/poptart.gif');
+var cubeShape = new nmlorg.threed.shape.Shape(
+    ['position', img],
+    'triangle strip',
+    [
+        -1, -1, 1, 0, 1,
+        -1, 1, 1, 0, 0,
+        1, -1, 1, 1, 1,
+        1, 1, 1, 1, 0,
+        1, -1, -1, 0, 1,
+        1, 1, -1, 0, 0,
+        -1, -1, -1, 1, 1,
+        -1, 1, -1, 1, 0,
+        -1, -1, 1, 0, 1,
+        -1, 1, 1, 0, 0,
+    ]);
+
+var cameraY = 0;
+var cameradiv = document.createElement('span');
+
+world.addControls();
+document.body.appendChild(cameradiv);
+document.body.appendChild(document.createElement('br'));
+
+world.eachFrame = function(timeStep) {
+  cameradiv.textContent = ' - Camera position: 0, ' + cameraY + ', 0';
+};
+
+function animateShape(obj, timeStep) {
+  while (obj.position[1] < cameraY - 150) {
+    cameraY -= 300;
+    canvas.setCamera(0, cameraY, 0);
+  }
+  obj.compound(timeStep);
+  this.setPosition(obj.position[0], obj.position[1], obj.position[2]);
+}
+
+for (var i = 0; i < 10; i++) {
+  for (var j = -15; j <= 15; j++) {
+    var obj = new nmlorg.physics.Object(j * 10, 0, (i + 1) * -10);
+    var cube = world.addObject(cubeShape, animateShape, obj);
+
+    //obj.addEarthGravity();
+    obj.addForce(0, -10, 0);
+  }
+}
+
+world.start();
+
+</script>
