@@ -1,0 +1,4 @@
+RewriteEngine On
+
+RewriteCond %{HTTP_HOST} !^n\.ml\.org$ [NC]
+RewriteRule ^(.*)$ http://n.ml.org/$1 [L,R=302]
