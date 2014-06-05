@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<body>
+
+<script src="nmlorg.js"></script>
+<script>
+nmlorg.require('nmlorg.threed.gl');
+nmlorg.require('nmlorg.threed.projection');
+nmlorg.require('nmlorg.threed.shape');
+nmlorg.require('nmlorg.threed.world');
+</script>
+<script>
+var canvas = new nmlorg.threed.gl.Canvas(1000, 300);
+var world = new nmlorg.threed.world.World([canvas]);
+
+function rotateslowly(timeStep) {
+  this.rotate(timeStep, 0, 1, 0);
+}
+
+for (var i = 0; i < 5; i++) {
+  var cubeShape = new nmlorg.threed.shape.Shape(
+      ['position', 'color'],
+      'triangle strip',
+      [
+          -25, -25, 25, 0, (i + 2) / 6, 0, 1,
+          -25, 25, 25, (i + 2) / 6, 0, 0, 1,
+          25, -25, 25, 0, 0, (i + 2) / 6, 1,
+          25, 25, 25, (i + 2) / 6, 0, (i + 2) / 6, 1,
+          25, -25, -25, 0, (i + 2) / 6, 0, 1,
+          25, 25, -25, (i + 2) / 6, 0, 0, 1,
+          -25, -25, -25, 0, 0, (i + 2) / 6, 1,
+          -25, 25, -25, (i + 2) / 6, 0, (i + 2) / 6, 1,
+          -25, -25, 25, 0, (i + 2) / 6, 0, 1,
+          -25, 25, 25, (i + 2) / 6, 0, 0, 1,
+      ]);
+
+  for (var j = 0; j < 5; j++) {
+    var cube = world.addObject(cubeShape, rotateslowly);
+
+    cube.translate((j - 2) * 200, (i - 2) * 50, (i + 3) * -20);
+  }
+}
+
+world.addControls();
+
+var matrixbutton = document.createElement('button');
+var matrixtable = document.createElement('table');
+
+document.body.appendChild(matrixbutton);
+document.body.appendChild(matrixtable);
+matrixbutton.textContent = 'Show matrix';
+matrixbutton.onclick = function() {
+  if (matrixtable.style.display == 'none')
+    matrixtable.style.display = '';
+  else
+    matrixtable.style.display = 'none';
+};
+matrixtable.style.display = 'none';
+
+world.eachFrame = function(timeStep) {
+  matrixtable.innerHTML = '<tr>' +
+      '<td width="200"><code>' + canvas.cameraMatrix[0] + '</code></td>' +
+      '<td width="200"><code>' + canvas.cameraMatrix[4] + '</code></td>' +
+      '<td width="200"><code>' + canvas.cameraMatrix[8] + '</code></td>' +
+      '<td width="200"><code>' + canvas.cameraMatrix[12] + '</code></td>' +
+      '</tr><tr>' +
+      '<td><code>' + canvas.cameraMatrix[1] + '</code></td>' +
+      '<td><code>' + canvas.cameraMatrix[5] + '</code></td>' +
+      '<td><code>' + canvas.cameraMatrix[9] + '</code></td>' +
+      '<td><code>' + canvas.cameraMatrix[13] + '</code></td>' +
+      '</tr><tr>' +
+      '<td><code>' + canvas.cameraMatrix[2] + '</code></td>' +
+      '<td><code>' + canvas.cameraMatrix[6] + '</code></td>' +
+      '<td><code>' + canvas.cameraMatrix[10] + '</code></td>' +
+      '<td><code>' + canvas.cameraMatrix[14] + '</code></td>' +
+      '</tr><tr>' +
+      '<td><code>' + canvas.cameraMatrix[3] + '</code></td>' +
+      '<td><code>' + canvas.cameraMatrix[7] + '</code></td>' +
+      '<td><code>' + canvas.cameraMatrix[11] + '</code></td>' +
+      '<td><code>' + canvas.cameraMatrix[15] + '</code></td>' +
+      '</tr>';
+}
+world.start();
+</script>
+
+<style>
+div.stacked {
+  float: left;
+  padding: 10px;
+}
+
+div.selected {
+  border: 2px solid red;
+  margin: 2px;
+}
+
+div.unselected {
+  margin: 4px;
+}
+</style>
+
+<hr>
+
+<div data-group="projection" data-matrix="projectionMatrix" data-function="setProjection" title="Manual projection matrix"></div>
+<div data-group="projection" data-function="setOrtho left right bottom top nearPlane farPlane" title="Orthographic projection">
+<table border="0">
+<tr><td align="right" colspan="3">Near clipping plane:</td><td colspan="3"><input name="nearPlane" value=".1" size="5"></td></tr>
+<tr><td align="right" colspan="3">Far clipping plane:</td><td colspan="3"><input name="farPlane" value="10000" size="5"></td></tr>
+<tr><td></td><td></td><td align="right">Top:</td><td><input name="top" value="150" size="5"></td></tr>
+<tr><td align="right">Left:</td><td><input name="left" value="-500" size="5"></td><td></td><td></td><td align="right">Right:</td><td><input name="right" value="500" size="5"></td></tr>
+<tr><td></td><td></td><td align="right">Bottom:</td><td><input name="bottom" value="-150" size="5"></td></tr>
+</table>
+</div>
+<div data-group="projection" data-function="setOrthoFrustum left right bottom top nearPlane farPlane" title="Orthographic-equivalent frustum projection">
+<table border="0">
+<tr><td align="right" colspan="3">Near clipping plane:</td><td colspan="3"><input name="nearPlane" value=".1" size="5"></td></tr>
+<tr><td align="right" colspan="3">Far clipping plane:</td><td colspan="3"><input name="farPlane" value="10000" size="5"></td></tr>
+<tr><td></td><td></td><td align="right">Top:</td><td><input name="top" value="150" size="5"></td></tr>
+<tr><td align="right">Left:</td><td><input name="left" value="-500" size="5"></td><td></td><td></td><td align="right">Right:</td><td><input name="right" value="500" size="5"></td></tr>
+<tr><td></td><td></td><td align="right">Bottom:</td><td><input name="bottom" value="-150" size="5"></td></tr>
+<tr><td align="right" colspan="3">Field of view angle:</td><td colspan="3"><input data-formula="nmlorg.threed.projection.Frustum.fromOrtho(left, right, bottom, top, nearPlane, farPlane).toPerspective()[0]"></td></tr>
+<tr><td align="right" colspan="3">Aspect ratio:</td><td colspan="3"><input data-formula="nmlorg.threed.projection.Frustum.fromOrtho(left, right, bottom, top, nearPlane, farPlane).toPerspective()[1]"></td></tr>
+<tr><td align="right" colspan="3">Near clipping plane:</td><td colspan="3"><input data-formula="nearPlane + 10 * farPlane"></td></tr>
+<tr><td align="right" colspan="3">Far clipping plane:</td><td colspan="3"><input data-formula="11 * farPlane"></td></tr>
+<tr><td align="right" colspan="3">Camera position:</td><td colspan="3">
+<input data-formula="0" size="1">
+<input data-formula="0" size="1">
+<input data-formula="10 * farPlane" size="1">
+</td></tr>
+</table>
+</div>
+<br clear="all">
+<div style="float: left">
+<center><a target="_blank" href="http://en.wikipedia.org/wiki/Viewing_frustum"><img src="//upload.wikimedia.org/wikipedia/commons/thumb/0/02/ViewFrustum.svg/100px-ViewFrustum.svg.png" border="0"></a></center>
+<div data-group="projection" data-function="setPerspective angle nearPlane farPlane" title="Perspective projection">
+<table border="0">
+<tr><td align="right" colspan="3">Field of view angle:</td><td colspan="3"><input name="angle" value="130" size="5"></td></tr>
+<tr><td align="right" colspan="3">Aspect ratio:</td><td colspan="3"><input data-formula="canvas.width / canvas.height"></td></tr>
+<tr><td align="right" colspan="3">Near clipping plane:</td><td colspan="3"><input name="nearPlane" value=".1" size="5"></td></tr>
+<tr><td align="right" colspan="3">Far clipping plane:</td><td colspan="3"><input name="farPlane" value="10000" size="5"></td></tr>
+<tr><td></td><td></td><td align="right">Top:</td><td><input data-out="top" data-formula="nearPlane * Math.tan(Math.PI * angle / 360)"></td></tr>
+<tr><td align="right">Left:</td><td><input data-out="left" data-formula="-top * canvas.width / canvas.height"></td><td></td><td></td><td align="right">Right:</td><td><input data-formula="-left"></td></tr>
+<tr><td></td><td></td><td align="right">Bottom:</td><td><input data-formula="-top"></td></tr>
+</table>
+</div>
+<div data-group="projection" data-function="setFrustum left right bottom top nearPlane farPlane" title="Manual frustum projection">
+<table border="0">
+<tr><td align="right" colspan="3">Field of view angle:</td><td colspan="3"><input data-formula="new nmlorg.threed.projection.Frustum(left, right, bottom, top, nearPlane, farPlane).toPerspective()[0]"></td></tr>
+<tr><td align="right" colspan="3">Aspect ratio:</td><td colspan="3"><input data-formula="new nmlorg.threed.projection.Frustum(left, right, bottom, top, nearPlane, farPlane).toPerspective()[1]"></td></tr>
+<tr><td align="right" colspan="3">Near clipping plane:</td><td colspan="3"><input name="nearPlane" value=".1" size="5"></td></tr>
+<tr><td align="right" colspan="3">Far clipping plane:</td><td colspan="3"><input name="farPlane" value="10000" size="5"></td></tr>
+<tr><td></td><td></td><td align="right">Top:</td><td><input name="top" value=".21445069205095588" size="5"></td></tr>
+<tr><td align="right">Left:</td><td><input name="left" value="-.7148356401698529" size="5"></td><td></td><td></td><td align="right">Right:</td><td><input name="right" value=".7148356401698529" size="5"></td></tr>
+<tr><td></td><td></td><td align="right">Bottom:</td><td><input name="bottom" value="-.21445069205095588" size="5"></td></tr>
+</table>
+</div>
+</div>
+<br clear="all">
+
+<hr>
+
+<div data-group="camera" data-matrix="cameraPosition" data-function="setProjection" title="Manual camera position matrix"></div>
+<div data-group="camera" data-function="setCamera cX cY cZ" title="Camera translation">
+<table border="0">
+<tr><td align="right">Camera position:</td><td>
+<input name="cX" value="0" size="1">
+<input name="cY" value="0" size="1">
+<input name="cZ" value="0" size="1">
+</td></tr>
+</table>
+(Looking down the negative Z axis, Y axis is up.)
+</div>
+<div data-group="camera" data-function="setCamera cX cY cZ tX tY tZ upX upY upZ" title="Camera lookAt">
+<table border="0">
+<tr><td align="right">Camera position:</td><td>
+<input name="cX" value="0" size="1">
+<input name="cY" value="0" size="1">
+<input name="cZ" value="0" size="1">
+</td></tr>
+<tr><td align="right">Target position:</td><td>
+<input name="tX" value="0" size="1">
+<input name="tY" value="0" size="1">
+<input name="tZ" value="-1" size="1">
+</td></tr>
+<tr><td align="right">Up vector (ceiling = camera + up):</td><td>
+<input name="upX" value="0" size="1">
+<input name="upY" value="1" size="1">
+<input name="upZ" value="0" size="1">
+</td></tr>
+</table>
+</div>
+<br clear="all">
+
+<script>
+var divs = document.getElementsByTagName('div');
+var groups = {};
+var matrixtables = {};
+
+for (var i = 0; i < divs.length; i++) (function() {
+  var div = divs[i];
+  var group = div.getAttribute('data-group');
+  var funcstr = div.getAttribute('data-function');
+  var matrixname = div.getAttribute('data-matrix');
+
+  if (!div.title || !group || !funcstr)
+    return;
+
+  if (group in groups) {
+    div.className = 'stacked unselected';
+  } else {
+    div.className = 'stacked selected';
+    groups[group] = [];
+  }
+  groups[group].push(div);
+
+  var argnames = funcstr.split(' ');
+  var funcname = argnames.shift();
+  var func = canvas[funcname];
+  var inputsbyname = {};
+
+  if (matrixname) {
+    var matrix = canvas[matrixname];
+    var table = document.createElement('table');
+
+    table.border = 0;
+    div.appendChild(table);
+
+    for (j = 0; j < 4; j++) {
+      var tr = document.createElement('tr');
+
+      table.appendChild(tr);
+      for (var k = 0; k < 4; k++) {
+        var td = document.createElement('td');
+        var input = document.createElement('input');
+
+        tr.appendChild(td);
+        td.appendChild(input);
+        input.name = k * 4 + j;
+        input.title = input.value = matrix[k * 4 + j];
+        input.size = 5;
+      }
+    }
+
+    var origfunc = func;
+
+    func = function() {
+      var values = [];
+
+      for (var j = 0; j < 16; j++)
+        values.push(inputsbyname[j]);
+      canvas[matrixname] = mat4.create(values);
+      origfunc.apply(this);
+    }
+
+    matrixtables[group] = [matrixname, inputsbyname, table];
+  }
+
+  var recalcFormulas = function() {};
+  var inputs = div.getElementsByTagName('input');
+
+  for (var j = 0; j < inputs.length; j++) (function() {
+    var input = inputs[j];
+
+    if (!input.name)
+      return;
+
+    input.onchange = function() {
+      inputsbyname[input.name] = Number(input.value);
+      input.title = input.value = inputsbyname[input.name];
+      recalcFormulas();
+    };
+    input.onchange();
+  })();
+
+  recalcFormulas = function() {
+    var inputs = div.getElementsByTagName('input');
+    var intermediates = {};
+
+    for (j = 0; j < inputs.length; j++) {
+      var input = inputs[j];
+      var formula = input.getAttribute('data-formula');
+      var outname = input.getAttribute('data-out');
+
+      if (!formula)
+        continue;
+
+      var result;
+
+      with (inputsbyname) {
+        with (intermediates) {
+          try {
+            result = eval(formula);
+          } catch(e) {
+            result = String(e);
+          }
+        }
+      }
+      if (outname)
+        intermediates[outname] = result;
+      input.title = input.value = result;
+      input.disabled = true;
+      if (!input.getAttribute('size'))
+        input.size = 5;
+    }
+  };
+  recalcFormulas();
+
+  var buttondiv = document.createElement('div');
+  var button = document.createElement('button');
+
+  div.insertBefore(buttondiv, div.firstChild);
+  buttondiv.appendChild(button);
+  button.textContent = div.title;
+  button.onclick = function() {
+    for (var j = 0; j < groups[group].length; j++)
+      groups[group][j].className = 'stacked unselected';
+
+    var args = [];
+
+    for (var j = 0; j < argnames.length; j++)
+      args.push(inputsbyname[argnames[j]]);
+
+    func.apply(canvas, args);
+
+    if (group in matrixtables) {
+      var matrixname = matrixtables[group][0];
+      var matrix = canvas[matrixname];
+      var valuetable = matrixtables[group][1];
+      var inputs = matrixtables[group][2].getElementsByTagName('input');
+
+      for (var i = 0; i < inputs.length; i++) {
+        var input = inputs[i];
+
+        input.title = input.value = valuetable[input.name] = matrix[input.name];
+      }
+    }
+
+    div.className = 'stacked selected';
+  };
+})();
+</script>
