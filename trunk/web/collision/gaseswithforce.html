@@ -2,7 +2,7 @@
 
 <body>
 
-<script src="nmlorg.js"></script>
+<script src="http://n.ml.org/nmlorg.js"></script>
 <script>
 nmlorg.require('nmlorg.collision.detect');
 nmlorg.require('nmlorg.collision.response');
@@ -77,6 +77,7 @@ for (var i = 0; i < 300; i++) {
   var cube = world.addObject(cubeShape, animateObject, obj);
   var angle = Math.random() * 360;
 
+  obj.addForce(0, -.1, 0);
   obj.velocity[0] = Math.sin(nmlorg.degToRad(angle)) * 20;
   obj.velocity[2] = Math.cos(nmlorg.degToRad(angle)) * 20;
   obj.position[0] -= 20 * obj.velocity[0];
