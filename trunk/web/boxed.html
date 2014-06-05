@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+
+<body>
+
+<script src="nmlorg.js"></script>
+<script>
+nmlorg.require('nmlorg.threed.gl');
+nmlorg.require('nmlorg.physics');
+nmlorg.require('nmlorg.threed.shape');
+nmlorg.require('nmlorg.springbounce');
+nmlorg.require('nmlorg.threed.world');
+</script>
+<script>
+var canvas = new nmlorg.threed.gl.Canvas(1000, 500);
+var world = new nmlorg.threed.world.World([canvas]);
+var perButton = document.createElement('button');
+var perOffsetButton = document.createElement('button');
+var orthoButton = document.createElement('button');
+var orthoOffsetButton = document.createElement('button');
+
+world.addControls();
+document.body.appendChild(perButton);
+document.body.appendChild(perOffsetButton);
+document.body.appendChild(orthoButton);
+document.body.appendChild(orthoOffsetButton);
+
+perButton.textContent = '45 degrees';
+perButton.onclick = function() {
+  canvas.setPerspective(45);
+  canvas.setCamera(0, 100, 300, 0, 100, 0);
+};
+perOffsetButton.textContent = '45 degrees, raised';
+perOffsetButton.onclick = function() {
+  canvas.setPerspective(45);
+  canvas.setCamera(0, 400, 200, 0, 100, -50);
+};
+orthoButton.textContent = 'Ortho';
+orthoButton.onclick = function() {
+  canvas.setOrtho(-200, 200, 0, 200);
+  canvas.setCamera(0, 0, 500);
+};
+orthoOffsetButton.textContent = 'Ortho, raised';
+orthoOffsetButton.onclick = function() {
+  canvas.setOrtho(-200, 200, 0, 200);
+  canvas.setCamera(0, 300, 500, 0, 0, 0);
+};
+
+perButton.onclick();
+
+world.addObject(new nmlorg.threed.shape.Shape(
+    ['position', 'color'],
+    'triangles',
+    [
+        -200, 0, -150, .2, 0, 0, 1,
+        -200, 0, 50, .2, .1, 0, 1,
+        200, 0, -150, 0, 0, .2, 1,
+
+        -200, 0, 50, .2, .1, 0, 1,
+        200, 0, -150, 0, 0, .2, 1,
+        200, 0, 50, 0, .1, .2, 1,
+
+        -200, 0, -150, .3, 0, 0, 1,
+        -200, 200, -150, .3, 0, 0, 1,
+        200, 200, -150, 0, 0, .3, 1,
+
+        -200, 0, -150, .3, 0, 0, 1,
+        200, 200, -150, 0, 0, .3, 1,
+        200, 0, -150, 0, 0, .3, 1,
+
+        -200, 200, 50, .4, .2, 0, 1,
+        -200, 200, -150, .4, 0, 0, 1,
+        -200, 0, 50, .4, .2, 0, 1,
+
+        -200, 200, -150, .4, 0, 0, 1,
+        -200, 0, 50, .4, .2, 0, 1,
+        -200, 0, -150, .4, 0, 0, 1,
+
+        200, 200, 50, 0, .2, .4, 1,
+        200, 200, -150, 0, 0, .4, 1,
+        200, 0, 50, 0, .2, .4, 1,
+
+        200, 200, -150, 0, 0, .4, 1,
+        200, 0, 50, 0, .2, .4, 1,
+        200, 0, -150, 0, 0, .4, 1,
+    ]));
+
+var cubeShape = new nmlorg.threed.shape.Shape(
+    ['position', 'color'],
+    'triangle strip',
+    [
+        -1, -1, 1, 0, 1, 0, 1,
+        -1, 1, 1, 1, 0, 0, 1,
+        1, -1, 1, 0, 0, 1, 1,
+        1, 1, 1, 1, 0, 1, 1,
+        1, -1, -1, 0, 1, 0, 1,
+        1, 1, -1, 1, 0, 0, 1,
+        -1, -1, -1, 0, 0, 1, 1,
+        -1, 1, -1, 1, 0, 1, 1,
+        -1, -1, 1, 0, 1, 0, 1,
+        -1, 1, 1, 1, 0, 0, 1,
+    ]);
+
+function animateShape(obj, timeStep) {
+  nmlorg.springbounce.animateShape(obj, timeStep);
+  this.setPosition(obj.position[0], obj.position[1], obj.position[2]);
+}
+
+for (var i = 0; i < 300; i++) {
+  var obj = new nmlorg.physics.Object(0, 100 + Math.random() * 50, -50);
+  var cube = world.addObject(cubeShape, animateShape, obj);
+  var angle = Math.random() * 360;
+
+  obj.addEarthGravity();
+  obj.velocity[0] = Math.sin(nmlorg.degToRad(angle)) * 20;
+  obj.velocity[2] = Math.cos(nmlorg.degToRad(angle)) * 20;
+}
+
+var img = new nmlorg.threed.shape.Image('/third_party/poptart.gif');
+var bigCubeShape = new nmlorg.threed.shape.Shape(
+    ['position', img],
+    'triangle strip',
+    [
+        -5, -5, 5, 0, 1,
+        -5, 5, 5, 0, 0,
+        5, -5, 5, 1, 1,
+        5, 5, 5, 1, 0,
+        5, -5, -5, 0, 1,
+        5, 5, -5, 0, 0,
+        -5, -5, -5, 1, 1,
+        -5, 5, -5, 1, 0,
+        -5, -5, 5, 0, 1,
+        -5, 5, 5, 0, 0,
+    ]);
+var obj = new nmlorg.physics.Object(0, 125, -50);
+var cube = world.addObject(bigCubeShape, animateShape, obj);
+var angle = 3 * 90 / 4;
+
+obj.addEarthGravity();
+obj.velocity[0] = Math.sin(nmlorg.degToRad(angle)) * 20;
+obj.velocity[2] = Math.cos(nmlorg.degToRad(angle)) * 20;
+
+world.start();
+
+</script>
