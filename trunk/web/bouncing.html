@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+
+<body>
+
+<script src="nmlorg.js"></script>
+<script>
+nmlorg.require('nmlorg.threed.gl');
+nmlorg.require('nmlorg.physics');
+nmlorg.require('nmlorg.threed.shape');
+nmlorg.require('nmlorg.threed.world');
+</script>
+<script>
+var canvas = new nmlorg.threed.gl.Canvas(1000, 500);
+var world = new nmlorg.threed.world.World([canvas]);
+
+canvas.setPerspective(45);
+canvas.setCamera(0, 100, 150, 0, 50, 0);
+
+world.addControls();
+world.addObject(new nmlorg.threed.shape.Shape(
+    ['position', 'color'],
+    'triangle strip',
+    [
+        -200, 0, -150, .3, .2, .2, 1,
+        -200, 0, 50, .3, .3, .2, 1,
+        200, 0, -150, .2, .2, .3, 1,
+        200, 0, 50, .2, .3, .3, 1,
+    ]));
+
+var cubeShape = new nmlorg.threed.shape.Shape(
+    ['position', 'color'],
+    'triangle strip',
+    [
+        -1, -1, 1, 0, 1, 0, 1,
+        -1, 1, 1, 1, 0, 0, 1,
+        1, -1, 1, 0, 0, 1, 1,
+        1, 1, 1, 1, 0, 1, 1,
+        1, -1, -1, 0, 1, 0, 1,
+        1, 1, -1, 1, 0, 0, 1,
+        -1, -1, -1, 0, 0, 1, 1,
+        -1, 1, -1, 1, 0, 1, 1,
+        -1, -1, 1, 0, 1, 0, 1,
+        -1, 1, 1, 1, 0, 0, 1,
+    ]);
+
+function animateShape(obj, timeStep) {
+  var posY = obj.position[1];
+  var velY = obj.velocity[1];
+
+  obj.compound(timeStep);
+  if (obj.position[1] < 0) {
+    // The following assumes linear acceleration throughout the timeslice.
+    // posY        velY
+    // 5    start  -100
+    // 4           -115
+    // 3           -130
+    // 2           -145
+    // 1           -160
+    // 0    impact -175
+    // -1          -190
+    // -2   stop   -205
+    var totalDrop = posY - obj.position[1];  // 5 - -2 = 7
+    var totalAccel = obj.velocity[1] - velY;  // -205 - -100 = -105
+    var velocityAtImpact = velY + posY * totalAccel / totalDrop;  // -100 + 5 * -105 / 7 = -175
+    var reflectedVelocityAtImpact = -velocityAtImpact;  // 175
+    var accelAfterImpact = obj.velocity[1] - velocityAtImpact;  // -205 - -175 = -30
+    var velocityAfterImpact = reflectedVelocityAtImpact + accelAfterImpact;  // 175 + -30 = 145
+    var timeOfImpact = posY * timeStep / totalDrop;  // 5 * .14 / 7 = .1
+    var timeAfterImpact = timeStep - timeOfImpact;  // .14 - .1 = .04
+    var positionAtImpact = 0;  // the impact plane
+    var positionAfterImpact = positionAtImpact + velocityAfterImpact * timeAfterImpact;  // 0 + 145 * .04 = 5.8
+
+    obj.velocity[1] = velocityAfterImpact;
+    obj.position[1] = positionAfterImpact;
+  }
+  this.setPosition(obj.position[0], obj.position[1], obj.position[2]);
+}
+
+for (var i = 0; i < 10; i++) {
+  for (var j = -15; j <= 15; j++) {
+    var obj = new nmlorg.physics.Object(j * 10, 100 + Math.random() * 10, (i + 1) * -10);
+    var cube = world.addObject(cubeShape, animateShape, obj);
+
+    obj.addEarthGravity();
+  }
+}
+
+world.start();
+
+</script>
