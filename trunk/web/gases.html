@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+
+<body>
+
+<script src="nmlorg.js"></script>
+<script>
+nmlorg.require('nmlorg.collision.detect');
+nmlorg.require('nmlorg.collision.response');
+nmlorg.require('nmlorg.collision.world');
+nmlorg.require('nmlorg.threed.gl');
+nmlorg.require('nmlorg.physics');
+nmlorg.require('nmlorg.threed.shape');
+nmlorg.require('nmlorg.threed.world');
+</script>
+<script>
+var canvas = new nmlorg.threed.gl.Canvas(1000, 500);
+var world = new nmlorg.threed.world.World([canvas]);
+var perButton = document.createElement('button');
+var perOffsetButton = document.createElement('button');
+var orthoButton = document.createElement('button');
+var orthoOffsetButton = document.createElement('button');
+
+world.addControls();
+document.body.appendChild(perButton);
+document.body.appendChild(perOffsetButton);
+document.body.appendChild(orthoButton);
+document.body.appendChild(orthoOffsetButton);
+
+perButton.textContent = '45 degrees';
+perButton.onclick = function() {
+  canvas.setPerspective(45);
+  canvas.setCamera(0, 100, 300, 0, 100, 0);
+};
+perOffsetButton.textContent = '45 degrees, raised';
+perOffsetButton.onclick = function() {
+  canvas.setPerspective(45);
+  canvas.setCamera(0, 400, 200, 0, 100, -50);
+};
+orthoButton.textContent = 'Ortho';
+orthoButton.onclick = function() {
+  canvas.setOrtho(-200, 200, 0, 200);
+  canvas.setCamera(0, 0, 500);
+};
+orthoOffsetButton.textContent = 'Ortho, raised';
+orthoOffsetButton.onclick = function() {
+  canvas.setOrtho(-200, 200, 0, 200);
+  canvas.setCamera(0, 300, 500, 0, 0, 0);
+};
+
+perButton.onclick();
+
+var cubeShape = new nmlorg.threed.shape.Shape(
+    ['position', 'color'],
+    'triangle strip',
+    [
+        -1, -1, 1, 0, 1, 0, 1,
+        -1, 1, 1, 1, 0, 0, 1,
+        1, -1, 1, 0, 0, 1, 1,
+        1, 1, 1, 1, 0, 1, 1,
+        1, -1, -1, 0, 1, 0, 1,
+        1, 1, -1, 1, 0, 0, 1,
+        -1, -1, -1, 0, 0, 1, 1,
+        -1, 1, -1, 1, 0, 1, 1,
+        -1, -1, 1, 0, 1, 0, 1,
+        -1, 1, 1, 1, 0, 0, 1,
+    ]);
+var collisionWorld = new nmlorg.collision.world.World();
+var collisionShape = new nmlorg.collision.detect.Sphere(1);
+var collisionMaterial = new nmlorg.collision.response.Material(1, 0, 0);
+
+function animateObject(obj, timeStep) {
+  this.setPosition(obj.position[0], obj.position[1], obj.position[2]);
+}
+
+for (var i = 0; i < 300; i++) {
+  var obj = new nmlorg.physics.Object(0, 100 + Math.random() * 50, -50);
+  var cube = world.addObject(cubeShape, animateObject, obj);
+  var angle = Math.random() * 360;
+
+  obj.velocity[0] = Math.sin(nmlorg.degToRad(angle)) * 20;
+  obj.velocity[2] = Math.cos(nmlorg.degToRad(angle)) * 20;
+  obj.position[0] -= 20 * obj.velocity[0];
+  obj.position[1] -= 20 * obj.velocity[1];
+  obj.position[2] -= 20 * obj.velocity[2];
+  collisionWorld.addObject(obj, collisionShape, collisionMaterial);
+}
+
+world.eachFrame = function(timeStep) {
+  collisionWorld.compound(timeStep);
+};
+
+world.start();
+
+</script>
