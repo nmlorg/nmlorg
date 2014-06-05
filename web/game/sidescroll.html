@@ -64,7 +64,11 @@ var pset = new nmlorg.game.platforms.PlatformSet();
 var first;
 var width = 0;
 var platforms = [
-    [0, 2, .4],
+    [0, 2, .4, 20],
+    [0, 20, 0, 5, -10],
+    [17, 2, .2, 2, -10],
+    [0, 20, 0, 5, 10],
+    [17, 2, .2, 2, 10],
     [10, 5, 4],
     [17, 5, 8],
     [24, 5, 12],
@@ -219,11 +223,11 @@ var personShape = new nmlorg.threed.shape.Shape(
     ]);
 var mobPhys = world.addObject(personShape);
 var player = new nmlorg.game.player.Player(first.getCenter(0, 0, 0), true);
-var camera = new nmlorg.game.camera.Camera(canvas, 0, -100, 25);
+var camera = new nmlorg.game.camera.Camera(canvas, 0, -20, 2.5);
 var hud = document.getElementById('hud');
 
 player.mob.jumpVelocity = 10;
-canvas.setPerspective(10, 10, 10000);
+canvas.setPerspective(45, 3);
 
 world.eachFrame = function(timeStep) {
   player.eachFrame(timeStep);
@@ -242,7 +246,7 @@ world.eachFrame = function(timeStep) {
   }
 
   camera.contain(absPos.x, absPos.y, absPos.z,
-                 .2 * canvas.width, .8 * canvas.width,
+                 .3 * canvas.width, .7 * canvas.width,
                  .3 * canvas.height, .7 * canvas.height);
 
   hud.innerHTML = '<div style="position: absolute; width: 10vw; height: 2vh; background: linear-gradient(to right, red, red ' + (100 * player.mob.stamina - 10) + '%, blue ' + (100 * player.mob.stamina) + '%)"></div>';
