@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+
+<body>
+
+<script src="http://n.ml.org/nmlorg.js"></script>
+<script>
+nmlorg.require('nmlorg.math.cubic');
+nmlorg.require('nmlorg.math.numbers');
+nmlorg.require('nmlorg.test');
+</script>
+<script>
+nmlorg.test.trace(nmlorg.math.cubic, 'cubic');
+//nmlorg.test.trace(nmlorg.math.numbers, 'numbers');
+nmlorg.test.trace(nmlorg.quadratic, 'quadratic');
+
+
+function testSolveDepressed() {
+  this.assertEqual(2 * 2 * 2 + 6 * 2 - 20, 0);
+  this.assertEqual(nmlorg.math.cubic.solveDepressed(6, -20),
+                   [2]);
+}
+
+
+function testSolve() {
+  this.assertEqual(nmlorg.math.cubic.solve(2, 0, 0, 2000),
+                   [-10]);
+  this.assertEqual(1 * Math.pow(-10, 3) + 23 * Math.pow(-10, 2) + 160 * Math.pow(-10, 1) + 300, 0);
+  this.assertEqual(nmlorg.math.cubic.solve(1, 23, 160, 300),
+                   [-10, -3]);
+}
+
+
+function buildEq(r1, r2, r3) {
+  // Starting with:
+  //   1. (x - r1)(x - r2)(x - r3)
+  //   2. (x^2 - r2x - r1x + r1r2)(x - r3)
+  //   3. x^3 - r2x^2 - r1x^2 + r1r2x - r3x^2 + r2r3x + r1r3x - r1r2r3
+  //   4.   x^3
+  //      + x^2(-r2 - r1 - r3)
+  //      + x(r1r2 + r2r3 + r1r3)
+  //      - r1r2r3
+  return [
+      1,
+      -r1 - r2 - r3,
+      r1 * r2 + r1 * r3 + r2 * r3,
+      -r1 * r2 * r3,
+  ];
+}
+
+
+function doTest(r1, r2, r3) {
+  console.log(' ');
+  console.log('Solving ax^3 + bx^2 + cx + d = (x - ' + r1 + ')(x - ' + r2 + ')(x - ' + r3 + ')');
+  var coefficients = buildEq(r1, r2, r3);
+  var a = coefficients[0];
+  var b = coefficients[1];
+  var c = coefficients[2];
+  var d = coefficients[3];
+  console.log('    a = ' + a + ', b = ' + b + ', c = ' + c + ', d = ' + d);
+  console.log('Solving ' + a + 'x^3 + ' + b + 'x^2 + ' + c + 'x + ' + d + ' = 0:');
+  var roots = nmlorg.math.cubic.solve(a, b, c, d);
+  console.log('    ' + a + 'x^3 + ' + b + 'x^2 + ' + c + 'x + ' + d + ' = 0 for x = [' + roots.join(', ') + ']');
+  console.log('Confirming roots:');
+  for (var i = 0; i < roots.length; i++) {
+    console.log('    ' + a + '(' + roots[i] + ')^3 + ' + b + '(' + roots[i] + ')^2 + ' + c + '(' + roots[i] + ') + ' + d + ' = ' + (a * roots[i] * roots[i] * roots[i] + b * roots[i] * roots[i] + c * roots[i] + d));
+    this.assertEqual(a * roots[i] * roots[i] * roots[i] + b * roots[i] * roots[i] + c * roots[i], -d);
+  }
+  this.assertEqual(roots, nmlorg.math.numbers.sorted([r1, r2, r3]));
+}
+
+
+function testArbitrary() {
+  var vals = [-101, -10, -2, -1, 0, 1, Math.sqrt(2), 1 / 3, 2, Math.PI];
+
+  for (var r1 = 0; r1 < vals.length; r1++)
+    for (var r2 = r1; r2 < vals.length; r2++)
+      for (var r3 = r2; r3 < vals.length; r3++)
+        doTest.call(this, vals[r1], vals[r2], vals[r3]);
+}
+
+
+nmlorg.test.run();
+</script>

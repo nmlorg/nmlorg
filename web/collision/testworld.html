@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+
+<body>
+
+<script src="http://n.ml.org/nmlorg.js"></script>
+<script>
+nmlorg.require('nmlorg.collision.detect');
+nmlorg.require('nmlorg.collision.world');
+nmlorg.require('nmlorg.test');
+</script>
+<script>
+function MockObject(pos, vel) {
+  this.position = pos || [0, 0, 0];
+  this.velocity = vel || [0, 0, 0];
+  this.forces = [];
+}
+
+
+function testGetNextCollision() {
+  var world = new nmlorg.collision.world.World();
+  var objs = [];
+  var collisionShape = new nmlorg.collision.detect.Sphere(10);
+
+  for (var i = 0; i < 5; i++) {
+    var obj = new MockObject([(i + 1) * 100, 0, 0]);
+
+    world.addObject(obj, collisionShape);
+    objs.push(obj);
+  }
+
+  this.assertEqual(world.getNextCollision(1000),
+                   [1000, []]);
+
+  objs[1].velocity[0] = 1;
+
+  this.assertEqual(world.getNextCollision(1000),
+                   [80, [[1, 2]]]);
+
+  objs[2].velocity[0] = 4;
+
+  this.assertEqual(world.getNextCollision(1000),
+                   [20, [[2, 3]]]);
+
+  objs[3].velocity[0] = 2;
+
+  this.assertEqual(world.getNextCollision(1000),
+                   [40, [[2, 3, 4]]]);
+
+  objs[1].velocity[0] = -2;
+
+  this.assertEqual(world.getNextCollision(1000),
+                   [40, [[0, 1],
+                         [2, 3, 4]]]);
+}
+
+
+nmlorg.test.run();
+</script>

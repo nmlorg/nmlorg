@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+
+<body>
+
+<script src="http://n.ml.org/nmlorg.js"></script>
+<script>
+nmlorg.require('nmlorg.collision.response');
+nmlorg.require('nmlorg.test');
+</script>
+<script>
+function testInelastic() {
+  this.assertEqual(nmlorg.collision.response.handleCollision(1, 0,
+                                                    1, 10,
+                                                    0, 1, 0),
+                   [5, 5]);
+  this.assertEqual(nmlorg.collision.response.handleCollision(Infinity, 0,
+                                                    1, 10,
+                                                    0, 1, 0),
+                   [0, 0]);
+}
+
+
+function testElastic() {
+  this.assertEqual(nmlorg.collision.response.handleCollision(1, 0,
+                                                    1, 10,
+                                                    1, 0, 0),
+                   [10, 0]);
+  this.assertEqual(nmlorg.collision.response.handleCollision(Infinity, 0,
+                                                    1, 10,
+                                                    1, 0, 0),
+                   [0, -10]);
+}
+
+
+function testHeat() {
+  this.assertEqual(nmlorg.collision.response.handleCollision(1, 0,
+                                                    1, 10,
+                                                    0, 0, 1),
+                   [0, 0]);
+  this.assertEqual(nmlorg.collision.response.handleCollision(1, 0,
+                                                    1, 10,
+                                                    .5, 0, .5),
+                   [5, 0]);
+  this.assertEqual(nmlorg.collision.response.handleCollision(1, 0,
+                                                    1, 10,
+                                                    0, .5, .5),
+                   [2.5, 2.5]);
+}
+
+
+function testCollisionDimension() {
+  // When d = [>0, 0, 0], v' = v.
+  this.assertEqual(nmlorg.collision.response.transformVelocity(1, 0, 0, 1, 2, 3),
+                   [1, 2, 3]);
+  this.assertEqual(nmlorg.collision.response.restoreVelocity(1, 0, 0, 1, 2, 3),
+                   [1, 2, 3]);
+  this.assertEqual(nmlorg.collision.response.transformVelocity(100, 0, 0, 1, 2, 3),
+                   [1, 2, 3]);
+  this.assertEqual(nmlorg.collision.response.restoreVelocity(100, 0, 0, 1, 2, 3),
+                   [1, 2, 3]);
+
+  // When d = [0, >0, 0], v' = [v.y, -v.x, v.z] (90 deg clockwise rotation around z)
+  this.assertEqual(nmlorg.collision.response.transformVelocity(0, 1, 0, 1, 2, 3),
+                   [2, -1, 3]);
+  this.assertEqual(nmlorg.collision.response.restoreVelocity(0, 1, 0, 2, -1, 3),
+                   [1, 2, 3]);
+
+  // When d = [0, 0, >0], v' = [v.z, v.y, -v.x] (90 deg counter-clockwise rotation around y)
+  this.assertEqual(nmlorg.collision.response.transformVelocity(0, 0, 1, 1, 2, 3),
+                   [3, 2, -1]);
+  this.assertEqual(nmlorg.collision.response.restoreVelocity(0, 0, 1, 3, 2, -1),
+                   [1, 2, 3]);
+
+  // When d = [c, c, 0], R [d, d, e] = [sqrt(2 * d * d), 0, e] (45 deg clockwise rotation around z)
+  this.assertEqual(nmlorg.collision.response.transformVelocity(1, 1, 0, 10, 10, 3),
+                   [Math.sqrt(200), 0, 3]);
+  this.assertEqual(nmlorg.collision.response.restoreVelocity(1, 1, 0, Math.sqrt(200), 0, 3),
+                   [10, 10, 3]);
+
+  // From index.html:
+  this.assertEqual(nmlorg.collision.response.transformVelocity(60, 0, 0, 20, 0, 0),
+                   [20, 0, 0]);
+
+  this.assertEqual(nmlorg.collision.response.transformVelocity(60, 0, 0, 20, 10, 0),
+                   [20, 10, 0]);
+
+  this.assertEqual(nmlorg.collision.response.transformVelocity(56, -18, 0, 20, 10, 0),
+                   [15.9805, 15.6405, 0]);
+}
+
+
+function MockObject(pos, vel) {
+  this.position = pos || [0, 0, 0];
+  this.velocity = vel || [0, 0, 0];
+}
+
+
+function testMaterial() {
+  var obj1 = new MockObject([-1, 0, 0], [10, 0, 0]);
+  var material1 = new nmlorg.collision.response.Material(1, 0, 0);
+  var obj2 = new MockObject([1, 0, 0], [-10, 0, 0]);
+  var material2 = new nmlorg.collision.response.Material(1, 0, 0);
+
+  material1.handleCollision(obj1, obj2, material2);
+
+  this.assertEqual(obj1.velocity, [-10, 0, 0]);
+  this.assertEqual(obj2.velocity, [10, 0, 0]);
+
+  obj1.velocity = [10, 1, 2];
+  obj2.velocity = [-10, 3, 4];
+
+  material1.handleCollision(obj1, obj2, material2);
+
+  this.assertEqual(obj1.velocity, [-10, 1, 2]);
+  this.assertEqual(obj2.velocity, [10, 3, 4]);
+
+  obj1.position = [0, -1, 0];
+  obj1.velocity = [1, 10, 2];
+  obj2.position = [0, 1, 0];
+  obj2.velocity = [3, -10, 4];
+
+  material1.handleCollision(obj1, obj2, material2);
+
+  this.assertEqual(obj1.velocity, [1, -10, 2]);
+  this.assertEqual(obj2.velocity, [3, 10, 4]);
+}
+
+
+nmlorg.test.run();
+</script>

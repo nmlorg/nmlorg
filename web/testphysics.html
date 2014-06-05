@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<body>
+
+<script src="nmlorg.js"></script>
+<script>
+nmlorg.require('nmlorg.physics');
+nmlorg.require('nmlorg.test');
+</script>
+<script>
+function testSimple() {
+  var obj = new nmlorg.physics.Object(100, 200, 300);
+
+  this.assertEqual(obj.position, [100, 200, 300]);
+  this.assertEqual(obj.velocity, [0, 0, 0]);
+  this.assertEqual(obj.forces, []);
+
+  obj.compound(1);
+
+  this.assertEqual(obj.position, [100, 200, 300]);
+  this.assertEqual(obj.velocity, [0, 0, 0]);
+  this.assertEqual(obj.forces, []);
+}
+
+
+function testForce() {
+  var obj = new nmlorg.physics.Object(100, 200, 300);
+
+  this.assertEqual(obj.position, [100, 200, 300]);
+  this.assertEqual(obj.velocity, [0, 0, 0]);
+  this.assertEqual(obj.forces.length, 0);
+
+  obj.addForce(0, 0, 10);
+
+  this.assertEqual(obj.position, [100, 200, 300]);
+  this.assertEqual(obj.velocity, [0, 0, 0]);
+  this.assertEqual(obj.forces.length, 1);
+
+  obj.compound(1);
+
+  this.assertEqual(obj.position, [100, 200, 300 + 5]);
+  this.assertEqual(obj.velocity, [0, 0, 10]);
+  this.assertEqual(obj.forces.length, 1);
+
+  obj.compound(1);
+
+  this.assertEqual(obj.position, [100, 200, 300 + 5 + 15]);
+  this.assertEqual(obj.velocity, [0, 0, 20]);
+  this.assertEqual(obj.forces.length, 1);
+}
+
+
+function testCompound() {
+  var obj1 = new nmlorg.physics.Object(100, 200, 300);
+  var obj2 = new nmlorg.physics.Object(100, 200, 300);
+
+  this.assertEqual(obj1, obj2);
+
+  obj1.addForce(0, 0, 10);
+  obj2.addForce(0, 0, 10);
+
+  this.assertEqual(obj1, obj2);
+
+  obj1.compound(1);
+  obj2.compound(.1);
+  obj2.compound(.2);
+  obj2.compound(.3);
+  obj2.compound(.4);
+
+  this.assertEqual(obj1, obj2);
+}
+
+
+function testForceDuration() {
+  var obj = new nmlorg.physics.Object(100, 200, 300);
+
+  this.assertEqual(obj.position, [100, 200, 300]);
+  this.assertEqual(obj.velocity, [0, 0, 0]);
+  this.assertEqual(obj.forces.length, 0);
+
+  obj.addForce(0, 0, 10, 3);
+
+  this.assertEqual(obj.position, [100, 200, 300]);
+  this.assertEqual(obj.velocity, [0, 0, 0]);
+  this.assertEqual(obj.forces.length, 1);
+
+  obj.compound(2);
+
+  this.assertEqual(obj.position, [100, 200, 300 + 5 + 15]);
+  this.assertEqual(obj.velocity, [0, 0, 20]);
+  this.assertEqual(obj.forces.length, 1);
+
+  obj.compound(2);
+
+  this.assertEqual(obj.position, [100, 200, 300 + 5 + 15 + 25 + 30]);
+  this.assertEqual(obj.velocity, [0, 0, 30]);
+  this.assertEqual(obj.forces.length, 0);
+}
+
+
+nmlorg.test.run();
+</script>

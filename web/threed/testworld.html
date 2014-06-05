@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<body>
+
+<script src="http://n.ml.org/nmlorg.js"></script>
+<script>
+nmlorg.require('nmlorg.test');
+nmlorg.require('nmlorg.threed.world');
+</script>
+<script>
+function testCreate() {
+  function DummyType(a, b, c) {
+    this.a = a;
+    this.b = b;
+    this.c = c;
+  }
+
+  var dummy1 = new DummyType(1, 2, 3);
+  var dummy2 = nmlorg.create(DummyType, 1, 2, 3);
+  var dummy3 = nmlorg.createArgs(DummyType, [1, 2, 3]);
+
+  this.assertEqual(dummy1, dummy2);
+  this.assertEqual(dummy1, dummy3);
+}
+
+
+function testSimple() {
+  var world = new nmlorg.threed.world.World();
+
+  this.assertEqual(world.canvases, []);
+  this.assertEqual(world.shapes, []);
+  this.assertEqual(world.timings, []);
+
+  world.draw();
+}
+
+
+var mRAF_callbacks = [];
+var mRAF_running = false;
+var mRAF_time = 500;
+
+function mockRequestAnimationFrame(callback) {
+  mRAF_callbacks.push(callback);
+
+  if (mRAF_running)
+    return;
+  mRAF_running = true;
+
+  while (mRAF_callbacks.length) {
+    var callbacks = mRAF_callbacks.slice();
+
+    mRAF_callbacks.length = 0;
+
+    for (var i = 0; i < callbacks.length; i++)
+      callbacks[i](mRAF_time);
+
+    mRAF_time += 100;
+  }
+  mRAF_running = false;
+}
+
+
+function testLoop() {
+  var world = new nmlorg.threed.world.World();
+  var frames = 0;
+
+  world.eachFrame = function eachFrame(timeStep) {
+    if (frames == 0)
+      this.assertEqual(world.fps, 0);
+    else
+      this.assertEqual(world.fps, 10);
+
+    if (++frames == 30) {
+      this.log('Stopping world.');
+      world.stop();
+    }
+  }.bind(this);
+
+  this.mock(window, 'requestAnimationFrame', mockRequestAnimationFrame);
+  this.log('Starting world.');
+  world.start();
+  this.assertIs(world.running, false);
+  this.assertEqual(frames, 30);
+}
+
+
+nmlorg.test.run();
+</script>
