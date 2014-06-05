@@ -17,8 +17,8 @@ code, pre {
 <li><a href="angles.html">One collection of objects rendered into 4 viewports</a></li>
 <li><a href="frustum.html">Visualization of a camera frustum</a></li>
 <li><a href="camera.html">One viewport with configurable camera settings</a></li>
-<li><a href="http://envbuilder.nmlorgdev.appspot.com/platforms.html">FPS-style 
-motion</a></li>
+<li><a href="game/fps.html">FPS-style motion</a></li>
+<li><a href="game/sidescroll.html">Sidescroll motion</a></li>
 <li><a href="http://envbuilder.nmlorgdev.appspot.com/">Natural-language 
 environment builder</a></li>
 <li>Tests: <a href="testgl.html">gl.js</a> &bull; <a href="testworld.html">world.js</a></li>
@@ -51,12 +51,12 @@ environment builder</a></li>
 <h2 id="rendering">Simple rendering</h2>
 
 <p>Every object starts off as a shape (<a 
-href="jsdoc/symbols/nmlorg.shape.Shape.html"><code>nmlorg.shape.Shape</code></a>). A shape contains geometry, 
+href="jsdoc/symbols/nmlorg.shape.Shape.html"><code>nmlorg.threed.shape.Shape</code></a>). A shape contains geometry, 
 color information, etc.&nbsp; Each shape exists on its own, independent of a canvas, world, etc., and 
 does not have a position or physics model.</p>
 
 <pre>
-  var shape = new nmlorg.shape.Shape(
+  var shape = new nmlorg.threed.shape.Shape(
       ['position', 'color'],
       'triangles',
       [// [position ] [color       ]
@@ -67,7 +67,7 @@ does not have a position or physics model.</p>
 </pre>
 
 <p>Shapes are coupled with a 3D position inside a world to form a position object (<a 
-href="jsdoc/symbols/nmlorg.world.PositionObject.html"><code>nmlorg.world.PositionObject</code></a>). A single 
+href="jsdoc/symbols/nmlorg.world.PositionObject.html"><code>nmlorg.threed.world.PositionObject</code></a>). A single 
 shape can be added to a world multiple times, creating a new position object each time. When a world is 
 rendered, every shape is sent to the graphics card once, then it is repeatedly painted for every 
 position object.</p>
@@ -81,14 +81,14 @@ position object.</p>
 </pre>
 
 <p>Each world is a collection of objects and canvases (<a 
-href="jsdoc/symbols/nmlorg.gl.Canvas.html"><code>nmlorg.gl.Canvas</code></a>). When a shape is added to a world, 
+href="jsdoc/symbols/nmlorg.gl.Canvas.html"><code>nmlorg.threed.gl.Canvas</code></a>). When a shape is added to a world, 
 its geometry, color, etc. information (as vertex buffers) is added to each canvas. When the world is 
 rendered, each object is rendered to each canvas.</p>
 
 <pre>
-  var canvas1 = new nmlorg.gl.Canvas(width1, height1);
-  var canvas2 = new nmlorg.gl.Canvas(width2, height2);
-  var world = new nmlorg.world.World([canvas1, canvas2]);
+  var canvas1 = new nmlorg.threed.gl.Canvas(width1, height1);
+  var canvas2 = new nmlorg.threed.gl.Canvas(width2, height2);
+  var world = new nmlorg.threed.world.World([canvas1, canvas2]);
 </pre>
 
 <p>The world can be rendered once by calling <a 
@@ -126,7 +126,7 @@ previous frame began rendering.</p>
 completely independent from the renderer. Typically, a physical object (<a 
 href="jsdoc/symbols/nmlorg.physics.Object.html"><code>nmlorg.physics.Object</code></a>) will be created 
 at the same time as a naive position object (<a 
-href="jsdoc/symbols/nmlorg.world.PositionObject.html"><code>nmlorg.world.PositionObject</code></a>, via 
+href="jsdoc/symbols/nmlorg.world.PositionObject.html"><code>nmlorg.threed.world.PositionObject</code></a>, via 
 <a href="jsdoc/symbols/nmlorg.world.World.html#addObject"><code>world.addObject</code></a>), then the 
 position object's <code>animate</code> callback will tell the physical object to calculate its motion 
 and then copy the physical object's current position to the position object.</p>
@@ -335,7 +335,7 @@ perform accurate collision detection, all objects must be checked at once.</p>
     this.setPosition(obj.position[0], obj.position[1], obj.position[2]);
   }
 
-  <b>var collisionWorld = new nmlorg.collision.World();</b>
+  <b>var collisionWorld = new nmlorg.collision.world.World();</b>
 
   for (var i = 0; i < 2; i++) {
     var physicalObject = new nmlorg.physics.Object(x, y, z);
@@ -357,12 +357,12 @@ both objects' centers (<a
 href="jsdoc/symbols/nmlorg.physics.Object.html"><code>nmlorg.physics.Object</code></a>) and their shapes. To 
 simplify the math of collision detection, all objects are modeled as either spheres <strike>or 2D 
 surfaces</strike> via <a 
-href="jsdoc/symbols/nmlorg.collision.Shape.html"><code>nmlorg.collision.Shape</code></a> subclasses (<a 
-href="jsdoc/symbols/nmlorg.collision.Sphere.html"><code>nmlorg.collision.Sphere</code></a>).</p>
+href="jsdoc/symbols/nmlorg.collision.Shape.html"><code>nmlorg.collision.detect.Shape</code></a> subclasses (<a 
+href="jsdoc/symbols/nmlorg.collision.Sphere.html"><code>nmlorg.collision.detect.Sphere</code></a>).</p>
 
 <pre>
-  var collisionWorld = new nmlorg.collision.World();
-  <b>var collisionShape = new nmlorg.collision.Sphere(radius);</b>
+  var collisionWorld = new nmlorg.collision.world.World();
+  <b>var collisionShape = new nmlorg.collision.detect.Sphere(radius);</b>
 
   for (var i = 0; i < 2; i++) {
     var physicalObject = new nmlorg.physics.Object(x, y, z);
@@ -451,7 +451,7 @@ obj2.vel</code>.</p>
 </pre>
 
 <p>A quadratic equation solver is available as <a 
-href="jsdoc/symbols/nmlorg.quadratic.html#.solve"><code>nmlorg.quadratic.solve</code></a>.</p>
+href="jsdoc/symbols/nmlorg.quadratic.html#.solve"><code>nmlorg.math.quadratic.solve</code></a>.</p>
 
 <h4>Constant acceleration</h4>
 
@@ -537,9 +537,9 @@ Assuming constant acceleration, the equation for the position of an object at a 
 </pre>
 
 <p>A quartic equation solver is available as <a 
-href="jsdoc/symbols/nmlorg.quartic.html#.solve"><code>nmlorg.quartic.solve</code></a>. The full 
+href="jsdoc/symbols/nmlorg.quartic.html#.solve"><code>nmlorg.math.quartic.solve</code></a>. The full 
 detection algorithm is implemented as <a 
-href="jsdoc/symbols/nmlorg.collision.html#.timeToOrigin"><code>nmlorg.collision.timeToOrigin</code></a>.</p>
+href="jsdoc/symbols/nmlorg.collision.html#.timeToOrigin"><code>nmlorg.collision.detect.timeToOrigin</code></a>.</p>
 
 <!--
 [[However, for now 
@@ -578,12 +578,12 @@ stop moving up at all but continue moving away from you, simply rolling along th
 <p>Now visualize dropping an object the same size, shape, and mass of the rubber ball, but made out of 
 concrete. After the first collision with the floor, it will simply start rolling, rather than bouncing. 
 The difference between the two collisions can be modeled as a difference in the objects' material, via 
-<a href="jsdoc/symbols/nmlorg.collision.Material.html"><code>nmlorg.collision.Material</code></a>.</p>
+<a href="jsdoc/symbols/nmlorg.collision.Material.html"><code>nmlorg.collision.response.Material</code></a>.</p>
 
 <pre>
-  var collisionWorld = new nmlorg.collision.World();
-  var collisionShape = new nmlorg.collision.Sphere(radius);
-  <b>var bouncyBall = new nmlorg.collision.Material(elastic, inelastic, heat);</b>
+  var collisionWorld = new nmlorg.collision.world.World();
+  var collisionShape = new nmlorg.collision.detect.Sphere(radius);
+  <b>var bouncyBall = new nmlorg.collision.response.Material(elastic, inelastic, heat);</b>
 
   for (var i = 0; i < 2; i++) {
     var physicalObject = new nmlorg.physics.Object(x, y, z);
@@ -1008,9 +1008,9 @@ support arbitrary 3D position and velocity differences, <a
 href="jsdoc/symbols/src/collision-response.js.html">collision-response.js</a> separates out the 
 colliding component using a rotation matrix (shifting [dx, dy, dz] first to the plane defined by the x 
 and z axes, then to the x axis), available as <a 
-href="jsdoc/symbols/nmlorg.collision.html#.transformVelocity"><code>nmlorg.collision.transformVelocity</code></a> 
+href="jsdoc/symbols/nmlorg.collision.html#.transformVelocity"><code>nmlorg.collision.response.transformVelocity</code></a> 
 and <a 
-href="jsdoc/symbols/nmlorg.collision.html#.restoreVelocity"><code>nmlorg.collision.restoreVelocity</code></a>. 
+href="jsdoc/symbols/nmlorg.collision.html#.restoreVelocity"><code>nmlorg.collision.response.restoreVelocity</code></a>. 
 The full response algorithm is implemented as <a 
 href="jsdoc/symbols/nmlorg.collision.Material.html#handleCollision"><code>material.handleCollision</code></a>.</p>
 
