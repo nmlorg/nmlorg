@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>nmlorg</title>
+
+<style>
+code, pre {
+  color: darkgreen;
+}
+</style>
+
+<ul>
+<li><a href="#rendering">Simple rendering</a>
+<ul>
+<li><a href="angles.html">One collection of objects rendered into 4 viewports</a></li>
+<li><a href="frustum.html">Visualization of a camera frustum</a></li>
+<li><a href="camera.html">One viewport with configurable camera settings</a></li>
+<li><a href="http://envbuilder.nmlorgdev.appspot.com/platforms.html">FPS-style 
+motion</a></li>
+<li><a href="http://envbuilder.nmlorgdev.appspot.com/">Natural-language 
+environment builder</a></li>
+<li>Tests: <a href="testgl.html">gl.js</a> &bull; <a href="testworld.html">world.js</a></li>
+</ul>
+<li><a href="#physics">Simple physics</a>
+<ul>
+<li><a href="falling.html">Simple acceleration demo</a></li>
+<li><a href="bouncing.html">Vertical bouncing demo</a></li>
+<li><a href="boxed.html">Lateral bouncing in a box</a></li>
+<li>Tests: <a href="testphysics.html">physics.js</a> &bull; <a href="testspringbounce.html">springbounce.js</a></li>
+</ul>
+<li><a href="#collisions">Collision detection and handling</a>
+<ul>
+<li><a href="elasticdemo.html">Per-object collision detection</a></li>
+<li>200 objects bouncing off each other
+<ul>
+<li><a href="gases.html">No acceleration (quadratic)</a></li>
+<li><a href="gaseswithforce.html">Negligible but nonzero acceleration (quartic)</a></li>
+</ul>
+<li>Tests: 
+<a href="testcollision-detect.html">collision-detect.js</a> &bull; 
+<a href="testcollision-response.html">collision-response.js</a> &bull; 
+<a href="testcollision-world.html">collision-world.js</a> &bull; 
+<a href="testcubic.html">cubic.js</a> &bull; 
+<a href="testquadratic.html">quadratic.js</a> &bull; 
+<a href="testquartic.html">quartic.js</a></li>
+</ul>
+</ul>
+
+<h2 id="rendering">Simple rendering</h2>
+
+<p>Every object starts off as a shape (<a 
+href="jsdoc/symbols/nmlorg.shape.Shape.html"><code>nmlorg.shape.Shape</code></a>). A shape contains geometry, 
+color information, etc.&nbsp; Each shape exists on its own, independent of a canvas, world, etc., and 
+does not have a position or physics model.</p>
+
+<pre>
+  var shape = new nmlorg.shape.Shape(
+      ['position', 'color'],
+      'triangles',
+      [// [position ] [color       ]
+          x1, y1, z1, r1, g1, b1, 1,
+          x2, y2, z2, r2, g2, b2, 1,
+          x3, y3, z3, r3, g3, b3, 1,
+      ]);
+</pre>
+
+<p>Shapes are coupled with a 3D position inside a world to form a position object (<a 
+href="jsdoc/symbols/nmlorg.world.PositionObject.html"><code>nmlorg.world.PositionObject</code></a>). A single 
+shape can be added to a world multiple times, creating a new position object each time. When a world is 
+rendered, every shape is sent to the graphics card once, then it is repeatedly painted for every 
+position object.</p>
+
+<pre>
+  var positionObject1 = world.addObject(shape);
+  var positionObject2 = world.addObject(shape);
+
+  positionObject1.translate(x1, y1, z1);
+  positionObject2.translate(x2, y2, z2);
+</pre>
+
+<p>Each world is a collection of objects and canvases (<a 
+href="jsdoc/symbols/nmlorg.gl.Canvas.html"><code>nmlorg.gl.Canvas</code></a>). When a shape is added to a world, 
+its geometry, color, etc. information (as vertex buffers) is added to each canvas. When the world is 
+rendered, each object is rendered to each canvas.</p>
+
+<pre>
+  var canvas1 = new nmlorg.gl.Canvas(width1, height1);
+  var canvas2 = new nmlorg.gl.Canvas(width2, height2);
+  var world = new nmlorg.world.World([canvas1, canvas2]);
+</pre>
+
+<p>The world can be rendered once by calling <a 
+href="jsdoc/symbols/nmlorg.world.World.html#draw"><code>world.draw()</code></a>. The world can be set to render 
+itself repeatedly (using the browser's <code>requestAnimationFrame</code>) using <a 
+href="jsdoc/symbols/nmlorg.world.World.html#start"><code>world.start()</code></a>. Custom code can be run once 
+for each animation frame by setting the world's <code>eachFrame</code>.</p>
+
+<pre>
+  world.eachFrame = function(timeStep) {
+    positionObject1.translate(0, 0, -1);
+    positionObject2.translate(2, 0, 0);
+  };
+</pre>
+
+<p>A custom animation function can be called for each position object by passing it to the constructor 
+(directly or as the optional second argument to <a 
+href="jsdoc/symbols/nmlorg.world.World.html#addObject"><code>world.addObject</code></a>). The position object 
+will be available as <code>this</code> and any arguments passed after the animation function will be 
+passed back into the function, followed by a value containing the amount of time (in seconds) since the 
+previous frame began rendering.</p>
+
+<pre>
+  function animateObject(x, timeStep) {
+    this.translate(x[0], x[1], x[2]);
+  }
+
+  var positionObject1 = world.addObject(shape, animateObject, [0, 0, -1]);
+  var positionObject2 = world.addObject(shape, animateObject, [2, 0, 0]);
+</pre>
+
+<h2 id="physics">Simple physics</h2>
+
+<p><a href="jsdoc/symbols/src/physics.js.html">physics.js</a> provides an object-management system 
+completely independent from the renderer. Typically, a physical object (<a 
+href="jsdoc/symbols/nmlorg.physics.Object.html"><code>nmlorg.physics.Object</code></a>) will be created 
+at the same time as a naive position object (<a 
+href="jsdoc/symbols/nmlorg.world.PositionObject.html"><code>nmlorg.world.PositionObject</code></a>, via 
+<a href="jsdoc/symbols/nmlorg.world.World.html#addObject"><code>world.addObject</code></a>), then the 
+position object's <code>animate</code> callback will tell the physical object to calculate its motion 
+and then copy the physical object's current position to the position object.</p>
+
+<pre>
+  function animateObject(obj, timeStep) {
+    obj.compound(timeStep);
+    this.setPosition(obj.position[0], obj.position[1], obj.position[2]);
+  }
+
+  for (var i = 0; i < 2; i++) {
+    var physicalObject = new nmlorg.physics.Object(x, y, z);
+    var positionObject = world.addObject(shape, animateObject, physicalObject);
+  }
+</pre>
+
+<p>Each physical object maintains its current position in 3D space along with its current velocity 
+(measured in pixels per second) and a list of zero or more forces that apply to the object. The <a 
+href="jsdoc/symbols/nmlorg.physics.Object.html#compound"><code>compound</code></a> call is responsible for first 
+adjusting the object's velocity based on the active forces, and then updating the object's position 
+based on its velocity. Forces may either be indefinite (such as the simplified force of gravity) or 
+pre-set for a fixed duration (such as the force from a rocket thruster with a fixed amount of fuel). 
+[[At present, there is no way to add a force and have it disabled programmatically. To effect that you 
+would need to re-schedule the force before every call to <a 
+href="jsdoc/symbols/nmlorg.physics.Object.html#compound"><code>compound</code></a> with a fixed duration set to 
+the timeStep.]] If a fixed-duration force expires during the current frame (if its remaining duration is 
+less than timeStep), the frame is divided into a subframe lasting until the force expires, then the 
+remaining time left in the frame, with the correct average velocity applied to the position for each 
+subframe. If two forces expire during the current frame (at different times), the frame is divided into 
+<code>[(0, firstExpiration), (firstExpiration, secondExpiration), (secondExpiration, timeStep)]</code>; 
+and so on.</p>
+
+<script>
+function findCurrentElement() {
+  var elt = document.body.lastElementChild;
+
+  while (elt.lastElementChild)
+    elt = elt.lastElementChild;
+
+  return elt;
+}
+
+
+function appendToEnd(elt) {
+  findCurrentElement().parentNode.appendChild(elt);
+}
+
+
+var canvas = document.createElement('canvas');
+var ctx = canvas.getContext('2d');
+
+canvas.width = 750;
+canvas.height = 119;
+appendToEnd(canvas);
+var second = 300;
+
+ctx.fillStyle = 'rgb(196, 196, 196)';
+ctx.fillRect(0, 0, second - 1, 29);
+ctx.fillRect(second, 0, second - 1, 29);
+ctx.fillStyle = 'rgb(0, 0, 0)';
+ctx.fillText('t = 0', 1, 10);
+ctx.fillText('t = 1', second + 1, 10);
+ctx.fillText('t = 2', 2 * second - 23, 10);
+
+ctx.fillStyle = 'rgb(255, 196, 196)';
+ctx.fillRect(0, 30, 1.5 * second - 1, 29);
+ctx.fillStyle = 'rgb(0, 0, 0)';
+ctx.fillText('addForce(x1, x2, x3, 1.5)', .75 * second - 60, 50);
+
+for (var i = 0; i < 5 * 2; i++) {
+  ctx.fillStyle = 'rgb(196, 255, 196)';
+  ctx.fillRect(i * second / 5, 60, second / 5 - 1, 29);
+  ctx.fillStyle = 'rgb(0, 0, 0)';
+  ctx.fillText('frame', i * second / 5 + 15, 80);
+}
+
+for (var i = 0; i < 5 * 2; i++) {
+  ctx.fillStyle = 'rgb(196, 196, 255)';
+  if (i != 7) {
+    ctx.fillRect(i * second / 5, 90, second / 5 - 1, 29);
+    ctx.fillStyle = 'rgb(0, 0, 0)';
+    ctx.fillText('frame', i * second / 5 + 15, 110);
+  } else {
+    ctx.fillRect(i * second / 5, 90, second / 5 / 2 - 1, 29);
+    ctx.fillRect(i * second / 5 + second / 5 / 2, 90, second / 5 /2 - 1, 29);
+    ctx.fillStyle = 'rgb(0, 0, 0)';
+    ctx.fillText('frame', i * second / 5 + 1, 110);
+    ctx.fillText('frame', i * second / 5 + second / 5 / 2 + 1, 110);
+  }
+}
+
+ctx.fillText('time', 2 * second + 5, 20);
+ctx.fillText('force duration', 2 * second + 5, 50);
+ctx.fillText('world render frames (5 FPS)', 2 * second + 5, 80);
+ctx.fillText('physics compounding frames', 2 * second + 5, 110);
+</script>
+
+<p>Forces are registered using <a 
+href="jsdoc/symbols/nmlorg.physics.Object.html#addForce"><code>addForce(xAccel, yAccel, zAccel, optional 
+duration)</code></a>. To roughly simulate Earth gravity (at the scale of 1 meter = 10 pixels), you can 
+call <a href="jsdoc/symbols/nmlorg.physics.Object.html#addEarthGravity"><code>addEarthGravity</code></a>.</p>
+
+<pre>
+  function animateObject(obj, timeStep) {
+    obj.compound(timeStep);
+    this.setPosition(obj.position[0], obj.position[1], obj.position[2]);
+  }
+
+  for (var i = 0; i < 2; i++) {
+    var physicalObject = new nmlorg.physics.Object(x, y, z);
+    var positionObject = world.addObject(shape, animateObject, physicalObject);
+
+    <b>physicalObject.addEarthGravity();</b>
+  }
+</pre>
+
+<h2 id="collisions">Collision detection and handling</h2>
+
+<p>The physics object-management system can be thought of as keeping track of the positions and 
+velocities of the <b>centers</b> of objects in the physical model. An independent collision 
+object-management system (provided by <a 
+href="jsdoc/symbols/src/collision-detect.js.html">collision-detect.js</a>, <a 
+href="jsdoc/symbols/src/collision-response.js.html">collision-response.js</a>, and <a 
+href="jsdoc/symbols/src/collision-world.js.html">collision-world.js</a>) extends this model to include a 
+simplified shape and material behavior for each object. (The collision shape is intentionally kept 
+separate from the geometry defined by the world renderer's own object manager to simplify the math. In 
+many cases, individual objects will be modeled as spheres to calculate collisions, even if they are 
+cuboid or some other complex shape when drawn to the screen.)</p>
+
+<p>The two functions of the collision system are 1. to detect (predict) when two objects' surfaces are 
+touching such that, without adjusting their velocities, they will pass through each other, and 2. to 
+adjust the velocities of one or both objects at the time of collision to prevent them from passing 
+through each other.</p>
+
+<h3>Collision subframing (compound)</h3>
+
+<p>If the world contains two objects, they will either collide in the current frame or they won't. If 
+they do, the frame needs to be subdivided into <code>[(0, timeToCollision), (timeToCollision, 
+timeStep)]</code> with an adjustment to one or both object's velocities at the collision point.</p>
+
+<script>
+var canvas = document.createElement('canvas');
+var ctx = canvas.getContext('2d');
+
+canvas.width = 750;
+canvas.height = 89;
+appendToEnd(canvas);
+var second = 300;
+
+ctx.fillStyle = 'rgb(196, 196, 196)';
+ctx.fillRect(0, 0, second - 1, 29);
+ctx.fillRect(second, 0, second - 1, 29);
+ctx.fillStyle = 'rgb(0, 0, 0)';
+ctx.fillText('t = 0', 1, 10);
+ctx.fillText('t = 1', second + 1, 10);
+ctx.fillText('t = 2', 2 * second - 23, 10);
+
+for (var i = 0; i < 5 * 2; i++) {
+  ctx.fillStyle = 'rgb(196, 255, 196)';
+  ctx.fillRect(i * second / 5, 30, second / 5 - 1, 29);
+  ctx.fillStyle = 'rgb(0, 0, 0)';
+  ctx.fillText('frame', i * second / 5 + 15, 50);
+}
+
+for (var i = 0; i < 5 * 2; i++) {
+  ctx.fillStyle = 'rgb(196, 196, 255)';
+  if (i != 7) {
+    ctx.fillRect(i * second / 5, 60, second / 5 - 1, 29);
+    ctx.fillStyle = 'rgb(0, 0, 0)';
+    ctx.fillText('frame', i * second / 5 + 15, 80);
+  } else {
+    ctx.fillRect(i * second / 5, 60, second / 5 / 2 - 1, 29);
+    ctx.fillRect(i * second / 5 + second / 5 / 2, 60, second / 5 /2 - 1, 29);
+    ctx.fillStyle = 'rgb(0, 0, 0)';
+    ctx.fillText('frame', i * second / 5 + 1, 80);
+    ctx.fillText('frame', i * second / 5 + second / 5 / 2 + 1, 80);
+  }
+}
+
+ctx.fillText('time', 2 * second + 5, 20);
+ctx.fillText('world render frames (5 FPS)', 2 * second + 5, 50);
+ctx.fillText('collision compounding frames', 2 * second + 5, 80);
+</script>
+
+<p>If the world contains three objects, there can be 1. no collisions, 2. a single collision between 
+obj1 and obj2, 3. a single collision between obj1 and obj3, 4. a single collision between obj2 and obj3, 
+5. a single collision between obj1, obj2, and obj3, 6. a single collision between obj1 and obj2 followed 
+by a single collision between obj1 and obj3, 7. a single collision between obj1 and obj3 followed by a 
+single collision between obj1 and obj2, 8. a single collision obetween obj1 and obj2 followed by a 
+single collision between obj1 and obj3 followed by a single collision between obj1 and obj2, and so on. 
+In the case of three colinear objects, with obj1 moving toward both obj2 and obj3 but elastically 
+striking obj2 first, at the start of the frame a collision between obj1 and obj3 will be predicted that 
+never occurs. In the case of three colinear objects, with obj1 moving toward obj2 and away from obj3, 
+after an elastic collision with the immovable obj2, obj1 will begin moving toward and eventually collide 
+with obj3, which could not have been predicted based on the objects' velocities at the start of the 
+frame. Therefore, the world needs to predict the earliest collision first, adjust all colliding objects' 
+velocities, and then completely restart the collision detection process, until there are no more 
+collisions before the time remaining in the current frame. This is similar to the physical object's <a 
+href="jsdoc/symbols/nmlorg.physics.Object.html#compound"><code>compound</code></a>, which subdivides the current 
+frame to calculate the object's changes to velocity and position with variable acceleration; however, to 
+perform accurate collision detection, all objects must be checked at once.</p>
+
+<pre>
+  function animateObject(obj, timeStep) {
+    <strike>obj.compound(timeStep);</strike>
+    this.setPosition(obj.position[0], obj.position[1], obj.position[2]);
+  }
+
+  <b>var collisionWorld = new nmlorg.collision.World();</b>
+
+  for (var i = 0; i < 2; i++) {
+    var physicalObject = new nmlorg.physics.Object(x, y, z);
+    var positionObject = world.addObject(shape, animateObject, physicalObject);
+
+    physicalObject.addEarthGravity();
+    <b>collisionWorld.addObject(physicalObject, ...);</b>
+  }
+
+  <b>world.eachFrame = function(timeStep) {
+    collisionWorld.compound(timeStep);
+  };</b>
+</pre>
+
+<h3>Collision detection (Shape)</h3>
+
+<p>To predict when two objects are colliding, the collision system needs to know both the positions of 
+both objects' centers (<a 
+href="jsdoc/symbols/nmlorg.physics.Object.html"><code>nmlorg.physics.Object</code></a>) and their shapes. To 
+simplify the math of collision detection, all objects are modeled as either spheres <strike>or 2D 
+surfaces</strike> via <a 
+href="jsdoc/symbols/nmlorg.collision.Shape.html"><code>nmlorg.collision.Shape</code></a> subclasses (<a 
+href="jsdoc/symbols/nmlorg.collision.Sphere.html"><code>nmlorg.collision.Sphere</code></a>).</p>
+
+<pre>
+  var collisionWorld = new nmlorg.collision.World();
+  <b>var collisionShape = new nmlorg.collision.Sphere(radius);</b>
+
+  for (var i = 0; i < 2; i++) {
+    var physicalObject = new nmlorg.physics.Object(x, y, z);
+    var positionObject = world.addObject(shape, animateObject, physicalObject);
+
+    physicalObject.addEarthGravity();
+    collisionWorld.addObject(physicalObject, <b>collisionShape,</b> ...);
+  }
+</pre>
+
+<div style="border: 1px solid black; margin: 40px; padding: 0 10px">
+<h3>The math</h3>
+
+<p>Two objects are "colliding" when their surfaces are touching, and two spherical objects are colliding 
+when the distance between their centers is equal to the sum of their radii:</p>
+
+<pre>
+  sqrt((obj1.pos[t].x - obj2.pos[t].x)<sup>2</sup>
+     + (obj1.pos[t].y - obj2.pos[t].y)<sup>2</sup>
+     + (obj1.pos[t].z - obj2.pos[t].z)<sup>2</sup>) = obj1.radius + obj2.radius
+</pre>
+
+<h4>Constant velocity</h4>
+
+<p>Assuming constant velocity, the equation for the position of an object at a given time is:</p>
+
+<pre>
+  obj.pos[t] = obj.pos[0] + obj.vel * t
+</pre>
+
+<p>To simplify the math, assume our frame of reference is the second object. (That is, when the camera 
+is fixed over the origin, if object 1 is moving to the right and object 2 is moving down, we can 
+calculate the same motion if the camera is fixed over the second object, with object 1 moving to the 
+right and up.) The second object will have a relative position and velocity of 0, and the first object 
+will have a relative position of <code>obj1.pos - obj2.pos</code> and velocity of <code>obj1.vel - 
+obj2.vel</code>.</p>
+
+<pre>
+  pos = obj1.pos - obj2.pos
+  vel = obj1.vel - obj2.vel
+</pre>
+
+<p>Performing the substitutions and solving for t:</p>
+
+<ol>
+<li><pre>
+  sqrt((pos.x + vel.x * t)<sup>2</sup> + (pos.y + vel.y * t)<sup>2</sup> + (pos.z + vel.z * t)<sup>2</sup>) = obj1.radius + obj2.radius
+</pre></li>
+<li><pre>
+        (pos.x + vel.x * t)<sup>2</sup> + (pos.y + vel.y * t)<sup>2</sup> + (pos.z + vel.z * t)<sup>2</sup> = (obj1.radius + obj2.radius)<sup>2</sup>
+</pre></li>
+<li><pre>
+                             pos.x<sup>2</sup> + 2 * pos.x * vel.x * t + (vel.x * t)<sup>2</sup>
+                           + pos.y<sup>2</sup> + 2 * pos.y * vel.y * t + (vel.y * t)<sup>2</sup>
+                           + pos.z<sup>2</sup> + 2 * pos.z * vel.z * t + (vel.z * t)<sup>2</sup> = (obj1.radius + obj2.radius)<sup>2</sup>
+</pre></li>
+<li><pre>
+                              pos.x<sup>2</sup> + 2 * pos.x * vel.x * t + vel.x<sup>2</sup> * t<sup>2</sup>
+                            + pos.y<sup>2</sup> + 2 * pos.y * vel.y * t + vel.y<sup>2</sup> * t<sup>2</sup>
+                            + pos.z<sup>2</sup> + 2 * pos.z * vel.z * t + vel.z<sup>2</sup> * t<sup>2</sup> = (obj1.radius + obj2.radius)<sup>2</sup>
+</pre></li>
+<li>Factor out t<sup>2</sup>:<pre>
+                                           t<sup>2</sup> * (vel.x<sup>2</sup> + vel.y<sup>2</sup> + vel.y<sup>2</sup>)
+                                          + pos.x<sup>2</sup> + 2 * pos.x * vel.x * t
+                                          + pos.y<sup>2</sup> + 2 * pos.y * vel.y * t
+                                          + pos.z<sup>2</sup> + 2 * pos.z * vel.z * t = (obj1.radius + obj2.radius)<sup>2</sup>
+</pre></li>
+<li>Factor out t:<pre>
+                                           t<sup>2</sup> * (vel.x<sup>2</sup> + vel.y<sup>2</sup> + vel.y<sup>2</sup>)
+         + t * (2 * pos.x * vel.x + 2 * pos.y * vel.y + 2 * pos.z * vel.z)
+                                                + pos.x<sup>2</sup> + pos.y<sup>2</sup> + pos.z<sup>2</sup> = (obj1.radius + obj2.radius)<sup>2</sup>
+</pre></li>
+<li><pre>
+                                           t<sup>2</sup> * (vel.x<sup>2</sup> + vel.y<sup>2</sup> + vel.y<sup>2</sup>)
+         + t * (2 * pos.x * vel.x + 2 * pos.y * vel.y + 2 * pos.z * vel.z)
+                 + pos.x<sup>2</sup> + pos.y<sup>2</sup> + pos.z<sup>2</sup> - (obj1.radius + obj2.radius)<sup>2</sup> = 0
+</pre></li>
+</ol>
+
+<p>This is now a quadratic equation with:</p>
+
+<pre>
+  a = vel.x<sup>2</sup> + vel.y<sup>2</sup> + vel.y<sup>2</sup>
+  b = 2 * pos.x * vel.x + 2 * pos.y * vel.y + 2 * pos.z * vel.z
+  c = pos.x<sup>2</sup> + pos.y<sup>2</sup> + pos.z<sup>2</sup> - (obj1.radius + obj2.radius)<sup>2</sup>
+</pre>
+
+<p>A quadratic equation solver is available as <a 
+href="jsdoc/symbols/nmlorg.quadratic.html#.solve"><code>nmlorg.quadratic.solve</code></a>.</p>
+
+<h4>Constant acceleration</h4>
+
+Assuming constant acceleration, the equation for the position of an object at a given time is:
+
+<pre>
+  obj.pos[t] = obj.pos[0] + obj.vel[0] * t + (1/2) * obj.accel * t<sup>2</sup>
+</pre>
+
+<p>Similar to the constant velocity case:</p>
+
+<pre>
+  pos = obj1.pos - obj2.pos
+  vel = obj1.vel - obj2.vel
+  accel = obj1.accel - obj2.accel
+</pre>
+
+<p>Performing the substitutions and solving for t:</p>
+
+<ol>
+<li><pre>
+  sqrt((pos.x + vel.x * t + accel.x * t<sup>2</sup> / 2)<sup>2</sup> +
+       (pos.y + vel.y * t + accel.y * t<sup>2</sup> / 2)<sup>2</sup> +
+       (pos.z + vel.z * t + accel.z * t<sup>2</sup> / 2)<sup>2</sup>) = obj1.radius + obj2.radius
+</pre></li>
+<li><pre>
+        (pos.x + vel.x * t + accel.x * t<sup>2</sup> / 2)<sup>2</sup> +
+        (pos.y + vel.y * t + accel.y * t<sup>2</sup> / 2)<sup>2</sup> +
+        (pos.z + vel.z * t + accel.z * t<sup>2</sup> / 2)<sup>2</sup> = (obj1.radius + obj2.radius)<sup>2</sup>
+</pre></li>
+<li><pre>
+  pos.x<sup>2</sup> + 2 * pos.x * vel.x * t + pos.x * accel.x * t<sup>2</sup> + (vel.x * t)<sup>2</sup> + vel.x * accel.x * t<sup>3</sup> + (accel.x * t<sup>2</sup>)<sup>2</sup>
++ pos.y<sup>2</sup> + 2 * pos.y * vel.y * t + pos.y * accel.y * t<sup>2</sup> + (vel.y * t)<sup>2</sup> + vel.y * accel.y * t<sup>3</sup> + (accel.y * t<sup>2</sup>)<sup>2</sup>
++ pos.z<sup>2</sup> + 2 * pos.z * vel.z * t + pos.z * accel.z * t<sup>2</sup> + (vel.z * t)<sup>2</sup> + vel.z * accel.z * t<sup>3</sup> + (accel.z * t<sup>2</sup>)<sup>2</sup>
+= (obj1.radius + obj2.radius)<sup>2</sup>
+</pre></li>
+<li><pre>
+  pos.x<sup>2</sup> + 2 * pos.x * vel.x * t + pos.x * accel.x * t<sup>2</sup> + vel.x<sup>2</sup> * t<sup>2</sup> + vel.x * accel.x * t<sup>3</sup> + accel.x<sup>2</sup> * t<sup>4</sup>
++ pos.y<sup>2</sup> + 2 * pos.y * vel.y * t + pos.y * accel.y * t<sup>2</sup> + vel.y<sup>2</sup> * t<sup>2</sup> + vel.y * accel.y * t<sup>3</sup> + accel.y<sup>2</sup> * t<sup>4</sup>
++ pos.z<sup>2</sup> + 2 * pos.z * vel.z * t + pos.z * accel.z * t<sup>2</sup> + vel.z<sup>2</sup> * t<sup>2</sup> + vel.z * accel.z * t<sup>3</sup> + accel.z<sup>2</sup> * t<sup>4</sup>
+= (obj1.radius + obj2.radius)<sup>2</sup>
+</pre></li>
+<li>Factor out t<sup>4</sup>:<pre>
+  t<sup>4</sup> * (accel.x<sup>2</sup> + accel.y<sup>2</sup> + accel.z<sup>2</sup>)
++ pos.x<sup>2</sup> + 2 * pos.x * vel.x * t + pos.x * accel.x * t<sup>2</sup> + vel.x<sup>2</sup> * t<sup>2</sup> + vel.x * accel.x * t<sup>3</sup>
++ pos.y<sup>2</sup> + 2 * pos.y * vel.y * t + pos.y * accel.y * t<sup>2</sup> + vel.y<sup>2</sup> * t<sup>2</sup> + vel.y * accel.y * t<sup>3</sup>
++ pos.z<sup>2</sup> + 2 * pos.z * vel.z * t + pos.z * accel.z * t<sup>2</sup> + vel.z<sup>2</sup> * t<sup>2</sup> + vel.z * accel.z * t<sup>3</sup>
+= (obj1.radius + obj2.radius)<sup>2</sup>
+</pre></li>
+<li>Factor out t<sup>3</sup>:<pre>
+  t<sup>4</sup> * (accel.x<sup>2</sup> + accel.y<sup>2</sup> + accel.z<sup>2</sup>)
++ t<sup>3</sup> * (accel.x * vel.x + accel.y * vel.y + accel.z * vel.z)
++ pos.x<sup>2</sup> + 2 * pos.x * vel.x * t + pos.x * accel.x * t<sup>2</sup> + vel.x<sup>2</sup> * t<sup>2</sup>
++ pos.y<sup>2</sup> + 2 * pos.y * vel.y * t + pos.y * accel.y * t<sup>2</sup> + vel.y<sup>2</sup> * t<sup>2</sup>
++ pos.z<sup>2</sup> + 2 * pos.z * vel.z * t + pos.z * accel.y * t<sup>2</sup> + vel.z<sup>2</sup> * t<sup>2</sup>
+= (obj1.radius + obj2.radius)<sup>2</sup>
+</pre></li>
+<li>Factor out t<sup>2</sup>:<pre>
+  t<sup>4</sup> * (accel.x<sup>2</sup> + accel.y<sup>2</sup> + accel.z<sup>2</sup>)
++ t<sup>3</sup> * (accel.x * vel.x + accel.y * vel.y + accel.z * vel.z)
++ t<sup>2</sup> * (pos.x * accel.x + vel.x<sup>2</sup> + pos.y * accel.y + vel.y<sup>2</sup> + pos.z * accel.z + vel.z<sup>2</sup>)
++ pos.x<sup>2</sup> + 2 * pos.x * vel.x * t + pos.y<sup>2</sup> + 2 * pos.y * vel.y * t + pos.z<sup>2</sup> + 2 * pos.z * vel.z * t
+= (obj1.radius + obj2.radius)<sup>2</sup>
+</pre></li>
+<li>Factor out t:<pre>
+  t<sup>4</sup> * (accel.x<sup>2</sup> + accel.y<sup>2</sup> + accel.z<sup>2</sup>)
++ t<sup>3</sup> * (accel.x * vel.x + accel.y * vel.y + accel.z * vel.z)
++ t<sup>2</sup> * (pos.x * accel.x + vel.x<sup>2</sup> + pos.y * accel.y + vel.y<sup>2</sup> + pos.z * accel.z + vel.z<sup>2</sup>)
++ t * 2 * (pos.x * vel.x + pos.y * vel.y + pos.z * vel.z)
++ pos.x<sup>2</sup> + pos.y<sup>2</sup> + pos.z<sup>2</sup>
+= (obj1.radius + obj2.radius)<sup>2</sup>
+</pre></li>
+</ol>
+
+<p>This is now a quartic equation with:</p>
+
+<pre>
+  a = accel.x<sup>2</sup> + accel.y<sup>2</sup> + accel.z<sup>2</sup>
+  b = accel.x * vel.x + accel.y * vel.y + accel.z * vel.z
+  c = pos.x * accel.x + vel.x<sup>2</sup> + pos.y * accel.y + vel.y<sup>2</sup> + pos.z * accel.z + vel.z<sup>2</sup>
+  d = 2 * (pos.x * vel.x + pos.y * vel.y + pos.z * vel.z)
+  e = pos.x<sup>2</sup> + pos.y<sup>2</sup> + pos.z<sup>2</sup> - (obj1.radius + obj2.radius)<sup>2</sup>
+</pre>
+
+<p>A quartic equation solver is available as <a 
+href="jsdoc/symbols/nmlorg.quartic.html#.solve"><code>nmlorg.quartic.solve</code></a>. The full 
+detection algorithm is implemented as <a 
+href="jsdoc/symbols/nmlorg.collision.html#.timeToOrigin"><code>nmlorg.collision.timeToOrigin</code></a>.</p>
+
+<!--
+[[However, for now 
+the solver handles constant acceleration by compounding the acceleration and velocity, then winding the 
+object's position back so that its final velocity times the length of the time slice ends at its actual 
+end position:
+
+<pre>
+  obj.compound(timeSlice);
+  obj.position[0] -= obj.velocity[0] * timeSlice;
+  obj.position[1] -= obj.velocity[1] * timeSlice;
+  obj.position[2] -= obj.velocity[2] * timeSlice;
+</pre>
+
+<p>This is not accurate: If an example object was created 2 pixels under a deflection plane (the 
+ceiling) with a constant acceleration due to gravity, after one .1-second frame its final velocity will 
+be 100 pixels per second (10 pixels per frame), but it would have actually only fallen 5 pixels during 
+that tenth of a second. When the position is wound back by final velocity * timeSlice, it will be raised 
+by 10 pixels, putting it 3 pixels above the deflection plane that was originally its ceiling.]]</p>
+-->
+
+</div>
+
+<h3>Collision response (Material)</h3>
+
+<p>Strictly speaking, two objects are in collision not just when they are touching, but when they are 
+touching and their velocities are such that they will pass through each other after the point of 
+collision. To prevent objects from passing through each other, their velocities must be adjusted at the 
+point of collision in some way. The simplest thing to visualize is letting a rubber ball roll out of 
+your hand: After it is initially released, it will move both toward the floor and away from you. 
+Eventually it will come in contact with the floor, at which point its velocity changes so it is moving 
+back up at some fraction of the speed it was moving down just prior to the collision, and still away 
+from you at roughly the same speed. Eventually, after bouncing against the floor several times, it will 
+stop moving up at all but continue moving away from you, simply rolling along the floor.</p>
+
+<p>Now visualize dropping an object the same size, shape, and mass of the rubber ball, but made out of 
+concrete. After the first collision with the floor, it will simply start rolling, rather than bouncing. 
+The difference between the two collisions can be modeled as a difference in the objects' material, via 
+<a href="jsdoc/symbols/nmlorg.collision.Material.html"><code>nmlorg.collision.Material</code></a>.</p>
+
+<pre>
+  var collisionWorld = new nmlorg.collision.World();
+  var collisionShape = new nmlorg.collision.Sphere(radius);
+  <b>var bouncyBall = new nmlorg.collision.Material(elastic, inelastic, heat);</b>
+
+  for (var i = 0; i < 2; i++) {
+    var physicalObject = new nmlorg.physics.Object(x, y, z);
+    var positionObject = world.addObject(shape, animateObject, physicalObject);
+
+    physicalObject.addEarthGravity();
+    collisionWorld.addObject(physicalObject, collisionShape, <b>bouncyBall</b>);
+  }
+</pre>
+
+<p>The three material characteristics <code>elastic</code>, <code>inelastic</code>, and 
+<code>heat</code> are used to calculate how the object's momentum is affected by a collision. A high 
+value for <code>elastic</code> means the object will transfer more of its energy to the other object. 
+(Visualize <code>(elastic=1, inelastic=0, heat=0)</code> as a <a 
+href="http://en.wikipedia.org/wiki/Newton's_cradle">Newton's cradle</a> that never stops.) A high value 
+for <code>inelastic</code> means the object will attempt to equalize more of its energy with the other 
+object. (Visualize <code>(elastic=0, inelastic=1, heat=0)</code> as <a 
+href="http://en.wikipedia.org/wiki/Inelastic_collision#Perfectly_inelastic_collision">a piece of wet 
+clay hitting a skateboard at an angle</a>.) In both elastic and inelastic ideal collisions, the total 
+momentum of the two objects as a system is preserved; a high value for <code>heat</code> means the 
+object will dissipate more of its energy into the atmosphere. (Visualize <code>(elastic=0, inelastic=0, 
+heat=1)</code> as a glass figurine shattering against the floor.) The values given are normalized with 
+each other, so <code>(1, 2, 3)</code> == <code>(.01, .02, .03)</code> == <code>(.17, .33, 
+.5)</code>.</p>
+
+<div style="border: 1px solid black; margin: 40px; padding: 0 10px">
+<h3>A note about the collision dimension</h3>
+
+<script>
+function Circle(x, y, rad, vx, vy) {
+  this.x = x;
+  this.y = y;
+  this.rad = rad;
+  this.vx = vx;
+  this.vy = vy;
+}
+
+
+Circle.prototype.getCollision = function(dx, dy, vx, vy) {
+  var mag = Math.sqrt(dx * dx + dy * dy);
+
+  return new Circle(this.x + 2 * this.rad * dx / mag,
+                    this.y + 2 * this.rad * dy / mag, this.rad, vx, vy);
+};
+
+
+Circle.prototype.rollback = function(t) {
+  return new Circle(this.x + this.vx * t, this.y + this.vy * t, this.rad, this.vx, this.vy);
+};
+
+
+function Scene(steps) {
+  this.minx = Infinity;
+  this.maxx = -Infinity;
+  this.miny = Infinity;
+  this.maxy = -Infinity;
+  this.steps = steps;
+
+  for (var i = 0; i < steps.length; i++) {
+    var objs = steps[i];
+
+    for (var j = 0; j < objs.length; j++) {
+      var obj = objs[j];
+
+      this.minx = Math.min(this.minx, obj.x - obj.rad);
+      this.maxx = Math.max(this.maxx, obj.x + obj.rad);
+      this.miny = Math.min(this.miny, obj.y - obj.rad);
+      this.maxy = Math.max(this.maxy, obj.y + obj.rad);
+    }
+  }
+
+  this.minx -= 5;
+  this.maxx += 5;
+  this.miny -= 5;
+  this.maxy += 5;
+
+  this.width = this.maxx - this.minx;
+  this.height = this.maxy - this.miny;
+
+  for (var i = 0; i < this.steps.length; i++) {
+    var objs = this.steps[i];
+
+    for (var j = 0; j < objs.length; j++) {
+      var obj = objs[j];
+
+      obj.x -= this.minx;
+      obj.y -= this.miny;
+    }
+  }
+}
+
+
+Scene.prototype.draw = function(stepNum) {
+  var canvas = document.createElement('canvas');
+  var ctx = canvas.getContext('2d');
+  var objs = this.steps[stepNum];
+
+  canvas.width = this.width;
+  canvas.height = this.height + 10 * objs.length;
+  canvas.style.border = '1px solid black';
+  appendToEnd(canvas);
+
+  for (var i = 0; i < objs.length; i++) {
+    var obj = objs[i];
+
+    ctx.strokeStyle = 'rgb(0, 0, 0)';
+    ctx.beginPath();
+    ctx.arc(obj.x, obj.y, obj.rad, 0, 2 * Math.PI, true);
+    ctx.stroke();
+
+    ctx.strokeStyle = 'rgb(0, 0, 255)';
+    ctx.beginPath();
+    ctx.arc(obj.x, obj.y, 3, 0, Math.PI * 180, true);
+    ctx.stroke();
+  }
+
+  for (var i = 0; i < objs.length - 1; i++) {
+    var obj1 = objs[i];
+    var obj2 = objs[i + 1];
+
+    ctx.strokeStyle = 'rgb(0, 0, 255)';
+    ctx.beginPath();
+    ctx.moveTo(obj1.x, obj1.y);
+    ctx.lineTo(obj2.x, obj2.y);
+    ctx.stroke();
+
+    var dx = obj2.x - obj1.x;
+    var dy = obj2.y - obj1.y;
+
+    if (dx * dx + dy * dy <= (obj1.rad + obj2.rad) * (obj1.rad + obj2.rad) + 1) {
+      var ix = obj1.x + obj1.rad * dx / (obj1.rad + obj2.rad);
+      var iy = obj1.y + obj1.rad * dy / (obj1.rad + obj2.rad);
+
+      ctx.fillStyle = 'rgb(0, 255, 0)';
+      ctx.beginPath();
+      ctx.arc(ix, iy, 3, 0, Math.PI * 180, true);
+      ctx.fill();
+    }
+  }
+
+  for (var i = 0; i < objs.length; i++) {
+    var obj = objs[i];
+
+    ctx.strokeStyle = 'rgb(255, 0, 0)';
+
+    ctx.beginPath();
+    ctx.moveTo(obj.x, obj.y);
+    ctx.lineTo(obj.x + obj.vx, obj.y + obj.vy);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = 'rgb(0, 0, 0)';
+  for (var i = 0; i < objs.length; i++)
+    ctx.fillText('obj' + (i + 1) + ' = [' +
+                 parseInt(objs[i].x + this.minx) + ', ' +
+                 -parseInt(objs[i].y + this.miny) + ']  v = [' +
+                 parseInt(objs[i].vx) + ', ' +
+                 -parseInt(objs[i].vy) + ']',
+                 5, canvas.height - (objs.length - i - 1) * 10 - 5);
+}
+
+
+function makeSteps(dx, dy, rad, vx1, vy1, vx2, vy2, steps) {
+  dy *= -1;
+  vy1 *= -1;
+  vy2 *= -1;
+
+  if (steps === undefined)
+    steps = [-2, -1, 0];
+
+  var obj2 = new Circle(0, 0, rad, vx1, vy1);
+  var obj1 = obj2.getCollision(dx, dy, vx2, vy2);
+  var objs = [obj1, obj2];
+  var steppedObjs = [];
+
+  for (var i = 0; i < steps.length; i++) {
+    var t = steps[i];
+    var step = [];
+
+    steppedObjs.push(step);
+
+    for (var j = 0; j < objs.length; j++)
+      step.push(objs[j].rollback(t));
+  }
+
+  return steppedObjs;
+}
+
+
+function drawScene(scene) {
+  if (arguments.length > 1)
+    scene = makeSteps.apply(this, arguments);
+
+  if (scene instanceof Array)
+    scene = new Scene(scene);
+
+  for (var i = 0; i < scene.steps.length; i++)
+    scene.draw(i);
+}
+</script>
+
+<p>With spherical objects, the <span style="color: rgb(0, 255, 0)">point of collision</span> is always 
+on the same line as the centers of both objects at the time of impact. This line is the "<span 
+style="color: rgb(0, 0, 255)">line of collision</span>".</p>
+
+<script>
+drawScene(-2, 1, 30, 0, 20, 20, 0);
+</script>
+
+<p>When two objects collide "head on", where the centers of both objects are moving directly toward each 
+other (i.e. the <span style="color: rgb(255, 0, 0)">relative velocity of the colliding objects</span> is 
+parallel to the <span style="color: rgb(0, 0, 255)">line of collision</span>), the collision can be 
+resolved as a one-dimensional collision along the line of collision (only the magnitudes of the final 
+velocities need to be calculated, the directionality will be preserved by dividing the original vectors 
+by their magnitudes and then multiplying the final magnitude).</p>
+
+<p>For example, if object 1 at [-100, 0] of radius 30 is moving at [20, 0] and object 2 at [0, 0] of 
+radius 30 is at rest, the line of collision follows the x axis (running through [-60, 0] and [0, 0]) as 
+does the relative velocity ([20, 0]). After an inelastic (clay-on-skateboard) collision, both objects 
+will continue moving along the x axis at velocity [10, 0]:</p>
+
+<script>
+var steps = makeSteps(-1, 0, 30, 0, 0, 20, 0, [-2, -1, 0, 1, 2]);
+
+steps[3][0].x -= 10;
+steps[3][1].x += 10;
+steps[3][0].vx = steps[3][1].vx = 10
+steps[4][0].x -= 20;
+steps[4][1].x += 20;
+steps[4][0].vx = steps[4][1].vx = 10
+drawScene(steps);
+</script>
+
+<p>After an elastic (Newton's cradle) collision, object 1 will be at rest and object 2 will be moving 
+along the x axis at [20, 0]:</p>
+
+<script>
+var steps = makeSteps(-1, 0, 30, 0, 0, 20, 0, [-2, -1, 0, 1, 2]);
+
+steps[3][0].x = steps[4][0].x = -60;
+steps[3][1].x += 20;
+steps[4][1].x += 40;
+steps[3][0].vx = steps[4][0].vx = 0;
+steps[3][1].vx = steps[4][1].vx = 20;
+drawScene(steps);
+</script>
+
+<p>However, when two objects collide obliquely, where the relative velocity of the colliding objects is 
+not parallel to the line of collision, their relative motion must be broken up into colliding and 
+non-colliding components. The component vector along the line of collision is the relative velocity fed 
+into the collision response formula (such as <nobr><code>m<sub>1</sub>v<sub>1</sub> + 
+m<sub>2</sub>v<sub>2</sub> = (m<sub>1</sub> + m<sub>2</sub>)v</code></nobr>). Any component vector 
+tangent to the line of collision is left unchanged. After the objects' final velocities (along the line 
+of collision) are computed, they are recombined with the original non-colliding component vectors to 
+return the velocities to 3D world space.</p>
+
+<p>If object 1 at [-100, 0] of radius 30 is moving at [20, 0] and object 2 at [0, 20] of radius 30 is 
+moving at [0, -10], they will collide when object 1 is at [-60, 0] and object 2 is at [0, 0]. After 
+either type of collision, object 1's y-direction velocity will remain 0, and object 2's y-direction 
+velocity will remain -10; this component was tangent to the line of collision (which was along the x 
+axis) and so no energy transfer takes place.</p>
+
+<p>Inelastic:</p>
+
+<script>
+var steps = makeSteps(-3, 0, 30, 0, -10, 20, 0, [-2, -1, 0, 1, 2]);
+
+steps[3][0].x -= 10;
+steps[3][1].x += 10;
+steps[3][0].vx = steps[3][1].vx = 10
+steps[4][0].x -= 20;
+steps[4][1].x += 20;
+steps[4][0].vx = steps[4][1].vx = 10
+drawScene(steps);
+</script>
+
+<p>Elastic:</p>
+
+<script>
+var steps = makeSteps(-3, 0, 30, 0, -10, 20, 0, [-2, -1, 0, 1, 2]);
+
+steps[3][0].x = steps[4][0].x = -60;
+steps[3][1].x += 20;
+steps[4][1].x += 40;
+steps[3][0].vx = steps[4][0].vx = 0;
+steps[3][1].vx = steps[4][1].vx = 20;
+drawScene(steps);
+</script>
+
+<p>If object 1 at [-96, 18] of radius 30 is moving at [20, 0] and object 2 at [0, 20] of radius 30 is 
+moving at [0, -10], they will collide when object 1 is at [-56, 18] and object 2 is at [0, 0]:</p>
+
+<script>
+drawScene(-3, 1, 30, 0, -10, 20, 0);
+</script>
+
+<p>This time, the line of collision does not follow the same axes as the component vectors, so it is 
+simplest to combine them into a single relative velocity (for example, object 1 moving at [20, 10] and 
+object 2 at rest):</p>
+
+<script>
+drawScene(-3, 1, 30, 0, 0, 20, 10);
+</script>
+
+<p>Then break the relative velocity into components in a new two-dimensional coordinate system with the 
+line of collision as the x axis. First calculate the angle of the line of collision from the original x 
+axis: Form a right triangle with a hypotenuse running between the centers of both objects and a point at 
+the y position of the center of object 1 and the x position of the center of object 2. Calculate the 
+angle using SOHCAHTOA:</p>
+
+<script>
+var canvas = document.createElement('canvas');
+var ctx = canvas.getContext('2d');
+
+canvas.width = 76;
+canvas.height = 38;
+appendToEnd(canvas);
+
+ctx.strokeStyle = 'rgb(0, 0, 255)';
+ctx.beginPath();
+ctx.moveTo(10, 10);
+ctx.lineTo(66, 28);
+ctx.stroke();
+
+ctx.beginPath();
+ctx.arc(10, 10, 3, 0, 2 * Math.PI, true);
+ctx.stroke();
+ctx.beginPath();
+ctx.arc(66, 28, 3, 0, 2 * Math.PI, true);
+ctx.stroke();
+
+ctx.strokeStyle = 'rgb(0, 0, 0)';
+ctx.beginPath();
+ctx.moveTo(10, 10);
+ctx.lineTo(66, 10);
+ctx.stroke();
+ctx.beginPath();
+ctx.moveTo(66, 10);
+ctx.lineTo(66, 28);
+ctx.stroke();
+</script>
+
+<pre>
+  tan(angle<sub>LOC</sub>) = (obj2.pos.y - obj1.pos.y) / (obj2.pos.x - obj1.pos.x)
+       angle<sub>LOC</sub> = atan2(obj2.pos.y - obj1.pos.y, obj2.pos.x - obj1.pos.x)
+       angle<sub>LOC</sub> = atan2(0 - 18, 0 - -56)
+       angle<sub>LOC</sub> = atan2(-18, 56)
+       angle<sub>LOC</sub> = -17.8189&deg;
+</pre>
+
+<p>Next calculate the angle of the relative velocity vector from the original x axis: Form a right 
+triangle with the origin as one point, the relative velocity vector as a second, and a point at the 
+velocity vector's x component along the x axis for the third. Calculate the angle using SOHCAHTOA:</p>
+
+<script>
+var canvas = document.createElement('canvas');
+var ctx = canvas.getContext('2d');
+
+canvas.width = 40;
+canvas.height = 30;
+appendToEnd(canvas);
+
+ctx.strokeStyle = 'rgb(0, 0, 255)';
+ctx.beginPath();
+ctx.arc(10, 20, 3, 0, 2 * Math.PI, true);
+ctx.stroke();
+
+ctx.strokeStyle = 'rgb(255, 0, 0)';
+ctx.beginPath();
+ctx.moveTo(10, 20);
+ctx.lineTo(30, 10);
+ctx.stroke();
+
+ctx.strokeStyle = 'rgb(0, 0, 0)';
+ctx.beginPath();
+ctx.moveTo(10, 20);
+ctx.lineTo(30, 20);
+ctx.stroke();
+ctx.beginPath();
+ctx.moveTo(30, 20);
+ctx.lineTo(30, 10);
+ctx.stroke();
+</script>
+
+<pre>
+  tan(angle<sub>vel</sub>) = vel.y / vel.x
+       angle<sub>vel</sub> = atan2(vel.y, vel.x)  [atan(vel.y / vel.x)]
+       angle<sub>vel</sub> = atan2(10, 20)
+       angle<sub>vel</sub> = 26.5651&deg;
+</pre>
+
+<p>To move into the alternate coordinate system, subtract angle<sub>LOC</sub> from angle<sub>vel</sub>. 
+Use this new angle to form a right triangle with a hypotenuse equal in length to the magnitude of the 
+relative velocity vector (<code>sqrt(vel.x<sup>2</sup> + vel.y<sup>2</sup>)</code>), and solve for the 
+other sides; these are your x (colliding) and y (non-colliding) components.</p>
+
+<pre>
+  mag = sqrt(vel.x<sup>2</sup> + vel.y<sup>2</sup>)
+  mag = sqrt(20<sup>2</sup> + 10<sup>2</sup>)
+  mag = sqrt(400 + 100)
+  mag = 22.3607
+
+  sin(angle<sub>vel</sub> - angle<sub>LOC</sub>) = non-colliding / mag
+  sin(26.5651 - -17.8189) = non-colliding / 22.3607
+  22.3607 * sin(44.3840) = non-colliding
+  non-colliding = 15.6405
+
+  cos(angle<sub>vel</sub> - angle<sub>LOC</sub>) = colliding / mag
+  cos(26.5651 - -17.8189) = colliding / 22.36
+  22.3607 * cos(44.3840) = colliding
+  colliding = 15.9805
+</pre>
+
+<p>Apply the objects' materials' collision response formula to the x (colliding) component, then add the 
+original y (non-colliding) component back into the result, reverse the coordinate system shift, and 
+re-separate the final relative velocity into object 1's and object 2's.</p>
+
+<h4>3D</h4>
+
+<p>When obj1.pos.z != obj2.pos.z, the simple angle subtraction separation won't quite cut it. To fully 
+support arbitrary 3D position and velocity differences, <a 
+href="jsdoc/symbols/src/collision-response.js.html">collision-response.js</a> separates out the 
+colliding component using a rotation matrix (shifting [dx, dy, dz] first to the plane defined by the x 
+and z axes, then to the x axis), available as <a 
+href="jsdoc/symbols/nmlorg.collision.html#.transformVelocity"><code>nmlorg.collision.transformVelocity</code></a> 
+and <a 
+href="jsdoc/symbols/nmlorg.collision.html#.restoreVelocity"><code>nmlorg.collision.restoreVelocity</code></a>. 
+The full response algorithm is implemented as <a 
+href="jsdoc/symbols/nmlorg.collision.Material.html#handleCollision"><code>material.handleCollision</code></a>.</p>
+
+</div>
