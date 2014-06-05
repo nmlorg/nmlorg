@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+
+<body>
+
+<script src="http://n.ml.org/nmlorg.js"></script>
+<script>
+nmlorg.require('nmlorg.math.numbers');
+nmlorg.require('nmlorg.math.quartic');
+nmlorg.require('nmlorg.test');
+</script>
+<script>
+//nmlorg.test.trace(nmlorg.math.numbers, 'numbers');
+//nmlorg.test.trace(nmlorg.math.quartic, 'quartic');
+
+
+function quartic(a, b, c, d, x) {
+  return -(a * x * x * x * x + b * x * x * x + c * x * x + d * x);
+}
+
+
+function doTest(a, b, c, d, x) {
+  console.log(' ');
+  console.log('Calculating ' + a + '(' + x + ')^4 + ' + b + '(' + x + ')^3 + ' + c + '(' + x + ')^2 + ' + d + '(' + x + '):');
+  var e = quartic(a, b, c, d, x);
+  console.log('    ' + a + '(' + x + ')^4 + ' + b + '(' + x + ')^3 + ' + c + '(' + x + ')^2 + ' + d + '(' + x + ') = ' + -e);
+  console.log('Solving ' + a + 'x^4 + ' + b + 'x^3 + ' + c + 'x^2 + ' + d + 'x + ' + e + ' = 0:');
+  var roots = nmlorg.math.quartic.solve(a, b, c, d, e);
+  console.log('    ' + a + 'x^4 + ' + b + 'x^3 + ' + c + 'x^2 + ' + d + 'x + ' + e + ' = 0 for x = [' + roots.join(', ') + ']');
+  this.assertContains(x, roots);
+  console.log('Confirming roots:');
+  for (var i = 0; i < roots.length; i++) {
+    console.log('    ' + a + '(' + roots[i] + ')^4 + ' + b + '(' + roots[i] + ')^3 + ' + c + '(' + roots[i] + ')^2 + ' + d + '(' + roots[i] + ') + (' + e + ') = ' + (quartic(a, b, c, d, roots[i]) - e));
+    this.assertEqual(quartic(a, b, c, d, roots[i]), e);
+  }
+
+  return roots;
+}
+
+
+function testSolveQuadratic() {
+  doTest.call(this, 0, 0, 1, 2, 3);
+}
+
+
+function testSolveCubic() {
+  doTest.call(this, 0, 1, 2, 3, 4);
+}
+
+
+function testSimplifiableToCubic() {
+}
+
+
+function testBiquadratic() {
+  doTest.call(this, 1, 0, 2, 0, 3, 4);
+}
+
+
+function testDepressed() {
+  doTest.call(this, 1, 0, 2, 3, 4, 5);
+}
+
+
+function testSolve() {
+  doTest.call(this, 1, 2, 3, 4, 5);
+  doTest.call(this, 2, 3, 4, 5, 6);
+  doTest.call(this, -2, 3, 4, 5, 6);
+  doTest.call(this, 2, -3, 4, 5, 6);
+  doTest.call(this, 2, 3, -4, 5, 6);
+  doTest.call(this, 2, 3, 4, -5, 6);
+  doTest.call(this, 2, 3, 4, 5, -6);
+  // Example from http://www.1728.org/quartic2.htm
+  this.assertEqual(nmlorg.math.quartic.solve(3, 6, -123, -126, 1080),
+                   [-6, -4, 3, 5]);
+  //this.assertEqual(nmlorg.math.quartic.solve(-20, 5, 17, -29, 86),
+  //                 [-1.68200392658, 1.48758311033]);
+}
+
+
+function buildEq(r1, r2, r3, r4) {
+  // Starting with:
+  //   1. (x - r1)(x - r2)(x - r3)(x - r4)
+  //   2. (x^2 - r2x - r1x - r1r2)(x - r3)(x - r4)
+  //   3. (x^2 - r2x - r1x + r1r2)(x^2 - r4x - r3x + r3r4)
+  //   4.   x^4 - r4x^3 - r3x^3 + r3r4x^2
+  //      - r2x^3 + r2r4x^2 + r2r3x^2 - r2r3r4x
+  //      - r1x^3 + r1r4x^2 + r1r3x^2 - r1r3r4x
+  //      + r1r2x^2 - r1r2r4x - r1r2r3x + r1r2r3r4
+  //   5. Pull out x^4:
+  //        x^4
+  //      - r4x^3 - r3x^3 + r3r4x^2
+  //      - r2x^3 + r2r4x^2 + r2r3x^2 - r2r3r4x
+  //      - r1x^3 + r1r4x^2 + r1r3x^2 - r1r3r4x
+  //      + r1r2x^2 - r1r2r4x - r1r2r3x + r1r2r3r4
+  //   6. Pull out x^3:
+  //        x^4
+  //      - r4x^3 - r3x^3 - r2x^3 - r1x^3
+  //      + r3r4x^2
+  //      + r2r4x^2 + r2r3x^2 - r2r3r4x
+  //      + r1r4x^2 + r1r3x^2 - r1r3r4x
+  //      + r1r2x^2 - r1r2r4x - r1r2r3x + r1r2r3r4
+  //   6. Pull out x^2:
+  //        x^4
+  //      - r4x^3 - r3x^3 - r2x^3 - r1x^3
+  //      + r3r4x^2 + r2r4x^2 + r2r3x^2 + r1r4x^2 + r1r3x^2 + r1r2x^2
+  //      - r2r3r4x - r1r3r4x - r1r2r4x - r1r2r3x + r1r2r3r4
+  //   7. Pull out x:
+  //        x^4
+  //      - r4x^3 - r3x^3 - r2x^3 - r1x^3
+  //      + r3r4x^2 + r2r4x^2 + r2r3x^2 + r1r4x^2 + r1r3x^2 + r1r2x^2
+  //      - r2r3r4x - r1r3r4x - r1r2r4x - r1r2r3x
+  //      + r1r2r3r4
+  //   8.   x^4
+  //      + (-r4 - r3 - r2 - r1)x^3
+  //      + (r1r2 + r1r3 + r1r4 + r2r3 + r2r4 + r3r4)x^2
+  //      + (-r1r2r3 - r1r2r4 - r1r3r4 - r2r3r4)x
+  //      + r1r2r3r4
+  return [
+      1,
+      -r4 - r3 - r2 - r1,
+      r1 * r2 + r1 * r3 + r1 * r4 + r2 * r3 + r2 * r4 + r3 * r4,
+      -r1 * r2 * r3 - r1 * r2 * r4 - r1 * r3 * r4 - r2 * r3 * r4,
+      r1 * r2 * r3 * r4,
+  ];
+}
+
+
+function doTest2(r1, r2, r3, r4) {
+  console.log(' ');
+  console.log('Solving ax^4 + bx^3 + cx^2 + dx + e = (x - ' + r1 + ')(x - ' + r2 + ')(x - ' + r3 + ')(x - ' + r4 + '):');
+  var coefficients = buildEq(r1, r2, r3, r4);
+  var a = coefficients[0];
+  var b = coefficients[1];
+  var c = coefficients[2];
+  var d = coefficients[3];
+  var e = coefficients[4];
+  console.log('    a = ' + a + ', b = ' + b + ', c = ' + c + ', d = ' + d + ', e = ' + e);
+  console.log('Solving ' + a + 'x^4 + ' + b + 'x^3 + ' + c + 'x^2 + ' + d + 'x + ' + e + ' = 0:');
+  var roots = nmlorg.math.quartic.solve(a, b, c, d, e);
+  console.log('    ' + a + 'x^4 + ' + b + 'x^3 + ' + c + 'x^2 + ' + d + 'x + ' + e + ' = 0 for x = [' + roots.join(', ') + ']');
+  console.log('Confirming roots:');
+  for (var i = 0; i < roots.length; i++) {
+    console.log('    ' + a + '(' + roots[i] + ')^4 + ' + b + '(' + roots[i] + ')^3 + ' + c + '(' + roots[i] + ')^2 + ' + d + '(' + roots[i] + ') + (' + e + ') = ' + (quartic(a, b, c, d, roots[i]) - e));
+    this.assertEqual(quartic(a, b, c, d, roots[i]), e);
+  }
+  this.assertEqual(roots, nmlorg.math.numbers.sorted([r1, r2, r3, r4]));
+}
+
+
+function testArbitrary() {
+  doTest2.call(this, -10, -10, -3, 0);
+  doTest2.call(this, -10, -10, -5, 7);
+  doTest2.call(this, -10, -9, -9, -4);
+  doTest2.call(this, -10, -9, -8, -6);
+  doTest2.call(this, -10, 0, 0, 10);
+  doTest2.call(this, -101, -101, -101, -2);
+  doTest2.call(this, -101, -101, 1 / 3, 1 / 3);
+  doTest2.call(this, Math.sqrt(2), Math.sqrt(2), Math.sqrt(2), Math.sqrt(2));
+
+  var vals = [-101, -10, -2, -1, 0, 1, Math.sqrt(2), 1 / 3, 2, Math.PI];
+
+  for (var r1 = 0; r1 < vals.length; r1++)
+    for (var r2 = r1; r2 < vals.length; r2++)
+      for (var r3 = r2; r3 < vals.length; r3++)
+        for (var r4 = r3; r4 < vals.length; r4++)
+          doTest2.call(this, vals[r1], vals[r2], vals[r3], vals[r4]);
+}
+
+
+nmlorg.test.run();
+</script>

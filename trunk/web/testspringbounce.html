@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<body>
+
+<script src="nmlorg.js"></script>
+<script>
+nmlorg.require('nmlorg.physics');
+nmlorg.require('nmlorg.springbounce');
+nmlorg.require('nmlorg.test');
+</script>
+<script>
+function testSimple() {
+  var obj = new nmlorg.physics.Object(0, 50, 0);
+
+  this.assertEqual(obj.position, [0, 50, 0]);
+
+  nmlorg.springbounce.animateShape(obj, .1);
+
+  this.assertEqual(obj.position, [0, 50, 0]);
+}
+
+
+function testBounce() {
+  var obj = new nmlorg.physics.Object(0, 50, 0);
+
+  nmlorg.springbounce.animateShape(obj, 1);
+
+  this.assertEqual(obj.velocity, [0, 0, 0]);
+  this.assertEqual(obj.position, [0, 50, 0]);
+
+  obj.velocity[1] = -15;
+
+  this.assertEqual(obj.velocity, [0, -15, 0]);
+  this.assertEqual(obj.position, [0, 50, 0]);
+
+  nmlorg.springbounce.animateShape(obj, 1);
+
+  this.assertEqual(obj.velocity, [0, -15, 0]);
+  this.assertEqual(obj.position, [0, 35, 0]);
+
+  nmlorg.springbounce.animateShape(obj, 2);
+
+  this.assertEqual(obj.velocity, [0, -15, 0]);
+  this.assertEqual(obj.position, [0, 5, 0]);
+
+  nmlorg.springbounce.animateShape(obj, 1);
+
+  this.assertEqual(obj.velocity, [0, 15, 0]);
+  this.assertEqual(obj.position, [0, 10, 0]);
+}
+
+
+nmlorg.test.run();
+</script>
