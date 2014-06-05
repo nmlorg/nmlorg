@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+
+<body>
+
+<script src="nmlorg.js"></script>
+<script>
+nmlorg.require('nmlorg.threed.gl');
+nmlorg.require('nmlorg.threed.shape');
+nmlorg.require('nmlorg.threed.world');
+</script>
+<script>
+document.body.appendChild(document.createTextNode('Orthographic.'));
+document.body.appendChild(document.createElement('br'));
+var flatCanvas = new nmlorg.threed.gl.Canvas(1000, 300);
+document.body.appendChild(document.createElement('br'));
+document.body.appendChild(document.createElement('br'));
+document.body.appendChild(document.createTextNode('Orthographic, slightly above.'));
+document.body.appendChild(document.createElement('br'));
+var flatOffsetCanvas = new nmlorg.threed.gl.Canvas(1000, 300);
+document.body.appendChild(document.createElement('br'));
+document.body.appendChild(document.createElement('br'));
+document.body.appendChild(document.createTextNode('45 degree perspective.'));
+document.body.appendChild(document.createElement('br'));
+var perspectiveCanvas = new nmlorg.threed.gl.Canvas(1000, 300);
+document.body.appendChild(document.createElement('br'));
+document.body.appendChild(document.createElement('br'));
+document.body.appendChild(document.createTextNode('45 degree perspective, slightly above.'));
+document.body.appendChild(document.createElement('br'));
+var perspectiveOffsetCanvas = new nmlorg.threed.gl.Canvas(1000, 300);
+document.body.appendChild(document.createElement('br'));
+var world = new nmlorg.threed.world.World([flatCanvas, flatOffsetCanvas, perspectiveCanvas, perspectiveOffsetCanvas]);
+
+function rotateSlowly(timeStep) {
+  this.rotate(timeStep, 0, 1, 0);
+}
+
+for (var i = 0; i < 5; i++) {
+  for (var j = 0; j < 5; j++) {
+    var cubeShape = new nmlorg.threed.shape.Shape(
+        ['position', 'color'],
+        'triangle strip',
+        [
+            -25, -25, 25, 0, (6 - i) / 12, 0, 1,
+            -25, 25, 25, (6 - j) * (6 - i) / 36, 0, 0, 1,
+            25, -25, 25, 0, 0, (6 - i) * (j + 2) / 36, 1,
+            25, 25, 25, (6 - j) * (6 - i) / 36, 0, (6 - i) * (j + 2) / 36, 1,
+            25, -25, -25, 0, (6 - i) / 12, 0, 1,
+            25, 25, -25, (6 - j) * (6 - i) / 36, 0, 0, 1,
+            -25, -25, -25, 0, 0, (6 - i) * (j + 2) / 36, 1,
+            -25, 25, -25, (6 - j) * (6 - i) / 36, 0, (6 - i) * (j + 2) / 36, 1,
+            -25, -25, 25, 0, (6 - i) / 12, 0, 1,
+            -25, 25, 25, (6 - j) * (6 - i) / 36, 0, 0, 1,
+        ]);
+    var cube = world.addObject(cubeShape, rotateSlowly);
+
+    cube.translate((j - 2) * 200, (i - 2) * 50, i * -50);
+  }
+}
+
+flatCanvas.setCamera(0, 0, 500);
+
+flatOffsetCanvas.setCamera(0, 300, 400, 0, 0, 0);
+
+perspectiveCanvas.setPerspective(45);
+perspectiveCanvas.setCamera(0, 0, 500);
+
+perspectiveOffsetCanvas.setPerspective(45);
+perspectiveOffsetCanvas.setCamera(0, 300, 400, 0, 0, 0);
+
+world.addControls();
+world.start();
+
+</script>
