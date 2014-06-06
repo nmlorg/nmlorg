@@ -121,11 +121,12 @@ nmlorg.game.platforms.Position.prototype.moveBy = function(dx, dy) {
     var position = this.getPositionsUnder()[0];
 
     if (this.platform != position.platform) {
-      //console.log('Transitioned from', this.platform, 'to', position.platform, '.');
+      this.platform.eventTarget_.dispatchEvent(new CustomEvent('exit', {'position': this}));
       this.platform = position.platform;
       this.x = position.x;
       this.y = position.y;
       this.z = position.z;
+      this.platform.eventTarget_.dispatchEvent(new CustomEvent('enter', {'position': this}));
     }
     return this;
   }
@@ -143,11 +144,12 @@ nmlorg.game.platforms.Position.prototype.moveBy = function(dx, dy) {
     if (!intercept)
       continue;
 
-    //console.log('Transitioned from', this.platform, 'to', position.platform, '.');
+    this.platform.eventTarget_.dispatchEvent(new CustomEvent('exit', {'position': this}));
     this.platform = position.platform;
     this.x = position.x + intercept * dx;
     this.y = position.y + intercept * dy;
     this.z = position.z;
+    this.platform.eventTarget_.dispatchEvent(new CustomEvent('enter', {'position': this}));
     if (intercept == 1) {
       // We have now completed the forward motion.
       return this;
@@ -164,8 +166,9 @@ nmlorg.game.platforms.Position.prototype.moveBy = function(dx, dy) {
 
     if (xintercept) {
       if (this.platform != position.platform) {
-        //console.log('Transitioned from', this.platform, 'to', position.platform, '.');
+        this.platform.eventTarget_.dispatchEvent(new CustomEvent('exit', {'position': this}));
         this.platform = position.platform;
+        this.platform.eventTarget_.dispatchEvent(new CustomEvent('enter', {'position': this}));
       }
       this.x = position.x + dx * xintercept;
       this.y = position.y;
@@ -177,8 +180,9 @@ nmlorg.game.platforms.Position.prototype.moveBy = function(dx, dy) {
 
     if (yintercept) {
       if (this.platform != position.platform) {
-        //console.log('Transitioned from', this.platform, 'to', position.platform, '.');
+        this.platform.eventTarget_.dispatchEvent(new CustomEvent('exit', {'position': this}));
         this.platform = position.platform;
+        this.platform.eventTarget_.dispatchEvent(new CustomEvent('enter', {'position': this}));
       }
       this.x = position.x;
       this.y = position.y + dy * yintercept;
@@ -225,6 +229,22 @@ nmlorg.game.platforms.Platform = function(width, height) {
   this.front = -height / 2;
   this.rear = height / 2;
   this.connections = [];
+  this.eventTarget_ = document.createElement('span');
+};
+
+
+nmlorg.game.platforms.Platform.prototype.addEventListener = function() {
+  return this.eventTarget_.addEventListener.apply(this.eventTarget_, arguments);
+};
+
+
+nmlorg.game.platforms.Platform.prototype.dispatchEvent = function() {
+  return this.eventTarget_.dispatchEvent.apply(this.eventTarget_, arguments);
+};
+
+
+nmlorg.game.platforms.Platform.prototype.removeEventListener = function() {
+  return this.eventTarget_.removeEventListener.apply(this.eventTarget_, arguments);
 };
 
 

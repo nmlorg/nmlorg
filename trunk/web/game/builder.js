@@ -44,6 +44,8 @@ nmlorg.game.builder.Builder.prototype.add = function(
     this.first = platform;
 
   this.platforms.push(platform.getLeft(-left, -yOff, -height));
+
+  return platform;
 };
 
 

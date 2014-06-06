@@ -64,9 +64,7 @@ var canvas = world.canvases[0];
 var builder = new nmlorg.game.builder.Builder([
     [0, 2, .4, 20],
     [0, 20, 0, 5, -10],
-    [17, 2, .2, 2, -10],
     [0, 20, 0, 5, 10],
-    [17, 2, .2, 2, 10],
     [10, 5, 4],
     [17, 5, 8],
     [24, 5, 12],
@@ -110,7 +108,17 @@ var builder = new nmlorg.game.builder.Builder([
     [108.0, .5, 16.4, 2.5, -1.25],
     [105.5, 2.5, 16],
 ]);
+var nearPowerUp = builder.add(17, 2, .2, 2, -10);
+var farPowerUp = builder.add(17, 2, .2, 2, 10);
 var first = builder.build();
+
+nearPowerUp.addEventListener('enter', function(ev) {
+  player.mob.jumpVelocity = player.mob.jumpVelocity == 4 ? 10 : 4;
+});
+
+farPowerUp.addEventListener('enter', function(ev) {
+  player.mob.maxJumps = player.mob.maxJumps == 1 ? 2 : 1;
+});
 
 var personShape = new nmlorg.threed.shape.Shape(
     ['position', 'color'], 'triangles', [
@@ -193,7 +201,6 @@ var player = new nmlorg.game.player.Player(first.getCenter(0, 0, 0), true);
 var camera = new nmlorg.game.camera.Camera(canvas, 0, -20, 2.5);
 var hud = document.getElementById('hud');
 
-player.mob.jumpVelocity = 10;
 canvas.setPerspective(45, 3);
 
 world.eachFrame = function(timeStep) {
@@ -216,7 +223,9 @@ world.eachFrame = function(timeStep) {
                  .3 * canvas.width, .7 * canvas.width,
                  .3 * canvas.height, .7 * canvas.height);
 
-  hud.innerHTML = '<div style="position: absolute; width: 10vw; height: 2vh; background: linear-gradient(to right, red, red ' + (100 * player.mob.stamina - 10) + '%, blue ' + (100 * player.mob.stamina) + '%)"></div>';
+  hud.innerHTML = '<div style="width: 10vw; height: 2vh; background: linear-gradient(to right, red, red ' + (100 * player.mob.stamina - 10) + '%, blue ' + (100 * player.mob.stamina) + '%)"></div>' +
+      '<div style="position: relative; top: 1vh; width: 10vw; height: 2vh; background: linear-gradient(to right, green, green ' + (10 * player.mob.jumpVelocity - 10) + '%, yellow ' + (10 * player.mob.jumpVelocity) + '%)"></div>' +
+      '<div style="position: relative; top: 2vh; width: 10vw; height: 2vh; background: linear-gradient(to right, purple, purple ' + (50 * player.mob.maxJumps - 10) + '%, yellow ' + (50 * player.mob.maxJumps) + '%)"></div>';
 };
 
 world.start();
