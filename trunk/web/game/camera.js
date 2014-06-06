@@ -4,8 +4,6 @@
 
 (function() {
 
-nmlorg = window.nmlorg || {};
-
 
 /** @namespace */
 nmlorg.game.camera = nmlorg.game.camera || {};

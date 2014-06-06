@@ -4,8 +4,6 @@
 
 (function() {
 
-nmlorg = window.nmlorg || {};
-
 
 /** @namespace */
 nmlorg.game.mob = nmlorg.game.mob || {};
