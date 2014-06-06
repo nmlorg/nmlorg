@@ -54,7 +54,7 @@ nmlorg.require('nmlorg.game.camera');
 nmlorg.require('nmlorg.game.platforms');
 nmlorg.require('nmlorg.game.player');
 nmlorg.require('nmlorg.game.rectangles');
-nmlorg.require('nmlorg.threed.shape');
+nmlorg.require('nmlorg.game.shapes');
 </script>
 
 <script>
@@ -116,83 +116,7 @@ farPowerUp.addEventListener('enter', function(ev) {
   player.mob.maxJumps = player.mob.maxJumps == 1 ? 2 : 1;
 });
 
-var personShape = new nmlorg.threed.shape.Shape(
-    ['position', 'color'], 'triangles', [
-        // Left leg
-        0, .4, -.3, 0, 0, 0, 1,
-        0, .6, .5, 1, 1, 1, 1,
-        0, .2, .5, 1, 1, 1, 1,
-
-        0, .6, .5, 1, 1, 1, 1,
-        0, .2, .5, 1, 1, 1, 1,
-        0, .4, .9, 1, 1, 1, 1,
-
-        // Right leg
-        0, -.4, -.3, 0, 0, 0, 1,
-        0, -.6, .5, 1, 1, 1, 1,
-        0, -.2, .5, 1, 1, 1, 1,
-
-        0, -.6, .5, 1, 1, 1, 1,
-        0, -.2, .5, 1, 1, 1, 1,
-        0, -.4, .9, 1, 1, 1, 1,
-
-        // Torso
-        .2, .6, .9, 1, 1, 1, 1,
-        .2, -.6, .9, 1, 1, 1, 1,
-        0, 0, 1.2, .5, .5, .5, 1,
-
-        -.2, .6, .9, 1, 1, 1, 1,
-        -.2, -.6, .9, 1, 1, 1, 1,
-        0, 0, 1.2, .5, .5, .5, 1,
-
-        .2, .6, .9, 1, 1, 1, 1,
-        -.2, .6, .9, 1, 1, 1, 1,
-        0, 0, 1.2, .5, .5, .5, 1,
-
-        .2, -.6, .9, 1, 1, 1, 1,
-        -.2, -.6, .9, 1, 1, 1, 1,
-        0, 0, 1.2, .5, .5, .5, 1,
-
-        0, 0, 1.2, .5, .5, .5, 1,
-        .2, .7, 1.5, 1, 1, 1, 1,
-        .2, -.7, 1.5, 1, 1, 1, 1,
-
-        0, 0, 1.2, .5, .5, .5, 1,
-        -.2, .7, 1.5, 1, 1, 1, 1,
-        -.2, -.7, 1.5, 1, 1, 1, 1,
-
-        0, 0, 1.2, .5, .5, .5, 1,
-        .2, .7, 1.5, 1, 1, 1, 1,
-        -.2, .7, 1.5, 1, 1, 1, 1,
-
-        0, 0, 1.2, .5, .5, .5, 1,
-        .2, -.7, 1.5, 1, 1, 1, 1,
-        -.2, -.7, 1.5, 1, 1, 1, 1,
-
-        // Left arm
-        0, .7, 1.5, 1, 1, 1, 1,
-        0, .6, 1.2, 1, 1, 1, 1,
-        0, .8, 1.2, 1, 1, 1, 1,
-
-        0, .6, 1.2, 1, 1, 1, 1,
-        0, .8, 1.2, 1, 1, 1, 1,
-        0, .7, .8, 0, 0, 0, 1,
-
-        // Right arm
-        0, -.7, 1.5, 1, 1, 1, 1,
-        0, -.6, 1.2, 1, 1, 1, 1,
-        0, -.8, 1.2, 1, 1, 1, 1,
-
-        0, -.6, 1.2, 1, 1, 1, 1,
-        0, -.8, 1.2, 1, 1, 1, 1,
-        .3, -.7, 1.2, 0, 0, 0, 1,
-
-        // Head
-        0, 0, 1.5, 1, 1, 1, 1,
-        0, -.2, 1.8018, 1, 1, 1, 1,
-        0, .2, 1.8018, 1, 1, 1, 1,
-    ]);
-var mobPhys = world.addObject(personShape);
+var mobPhys = world.addObject(nmlorg.game.shapes.person);
 var player = new nmlorg.game.player.Player(first.getCenter(0, 0, 0), true);
 var camera = new nmlorg.game.camera.Camera(canvas, 0, -20, 2.5);
 var hud = document.getElementById('hud');
