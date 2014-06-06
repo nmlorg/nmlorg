@@ -75,12 +75,6 @@ var builder = new nmlorg.game.builder.Builder([
     [51, 5, 24],
     [58, 5, 20],
     [65, 5, 16],
-    [75, 22, 16],
-    [77, 18, 16.4, 4.1],
-    [79, 14, 16.8, 3.2],
-    [81, 10, 17.2, 2.3],
-    [83, 6, 17.6, 1.4],
-    [85, 2, 18, .5],
     [84, 4, 22, 1.4],
     [88, 4, 22.4, 2.3],
     [92, 4, 22.8, 3.2],
@@ -110,6 +104,9 @@ var builder = new nmlorg.game.builder.Builder([
 ]);
 var nearPowerUp = builder.add(17, 2, .2, 2, -10);
 var farPowerUp = builder.add(17, 2, .2, 2, 10);
+
+builder.pyramid(6, 75, 22, 16, 5, 2, 18, .5);
+
 var first = builder.build();
 
 nearPowerUp.addEventListener('enter', function(ev) {
