@@ -50,6 +50,7 @@
 <script>
 nmlorg.require('mat4');
 nmlorg.require('nmlorg.game.autocanvas');
+nmlorg.require('nmlorg.game.builder');
 nmlorg.require('nmlorg.game.camera');
 nmlorg.require('nmlorg.game.platforms');
 nmlorg.require('nmlorg.game.player');
@@ -60,10 +61,7 @@ nmlorg.require('nmlorg.threed.shape');
 <script>
 var world = nmlorg.game.autocanvas.createWorld();
 var canvas = world.canvases[0];
-var pset = new nmlorg.game.platforms.PlatformSet();
-var first;
-var width = 0;
-var platforms = [
+var builder = new nmlorg.game.builder.Builder([
     [0, 2, .4, 20],
     [0, 20, 0, 5, -10],
     [17, 2, .2, 2, -10],
@@ -111,39 +109,8 @@ var platforms = [
     [108.5, .5, 16.8, 2.5, -1.25],
     [108.0, .5, 16.4, 2.5, -1.25],
     [105.5, 2.5, 16],
-];
-var platformThickness = 5;
-
-for (var i = 0; i < platforms.length; i++)
-  width = Math.max(width, platforms[i][0] + platforms[i][1]);
-
-var ground = pset.add(width, platformThickness);
-
-for (var i = 0; i < platforms.length; i++) {
-  var left = platforms[i][0];
-  var width = platforms[i][1];
-  var height = platforms[i][2];
-  var thickness = platforms[i][3] || platformThickness;
-  var yOff = platforms[i][4] || 0;
-  var platform = pset.add(width, thickness);
-
-  if (i == 0)
-    first = platform;
-  nmlorg.game.platforms.connect(ground.getLeft(left, yOff, height),
-                                platform.getLeft(0, 0, 0));
-}
-
-for (var i = 0; i < pset.length; i++) {
-  var platform = pset[i];
-  var loc = first.localize(platform.getCenter(0, 0, 0));
-
-  if (loc)
-    world.addObject(nmlorg.game.rectangles.getRectangle(
-        platform.right - platform.left, platform.rear - platform.front)).setPosition(
-        loc.x, loc.y, loc.z);
-}
-
-pset.autoConnect();
+]);
+var first = builder.build();
 
 var personShape = new nmlorg.threed.shape.Shape(
     ['position', 'color'], 'triangles', [
