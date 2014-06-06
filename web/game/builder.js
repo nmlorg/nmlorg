@@ -49,6 +49,26 @@ nmlorg.game.builder.Builder.prototype.add = function(
 };
 
 
+nmlorg.game.builder.Builder.prototype.pyramid = function(
+    steps, bLeft, bWidth, bHeight, bThickness, tWidth, tHeight, 
+    tThickness, yOff) {
+  var tLeft = bLeft + bWidth / 2 - tWidth / 2;
+  var stepLeft = (tLeft - bLeft) / (steps - 1);
+  var stepWidth = (tWidth - bWidth) / (steps - 1);
+  var stepHeight = (tHeight - bHeight) / (steps - 1);
+  var stepThickness = (tThickness - bThickness) / (steps - 1);
+
+  for (var i = 0; i < steps; i++) {
+    var left = bLeft + stepLeft * i;
+    var width = bWidth + stepWidth * i;
+    var height = bHeight + stepHeight * i;
+    var thickness = bThickness + stepThickness * i;
+
+    this.add(left, width, height, thickness, yOff);
+  }
+};
+
+
 nmlorg.game.builder.Builder.prototype.build = function() {
   //var ground = this.pset.add(this.right, this.far - this.near).getLeft(0, 0, 0);
   var ground = this.pset.add(this.right, this.defaultThickness).getLeft(0, 0, 0);
