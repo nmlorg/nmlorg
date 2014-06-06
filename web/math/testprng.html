@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<body>
+
+<script src="http://n.ml.org/nmlorg.js"></script>
+<script>
+nmlorg.require('nmlorg.math.prng');
+nmlorg.require('nmlorg.test');
+</script>
+<script>
+function testDeterministic() {
+  var prng = new nmlorg.math.prng.PRNG(1);
+
+  this.assertEqual(prng.between(0, 1000), 59);
+  this.assertEqual(prng.between(0, 1000), 169);
+  this.assertEqual(prng.between(0, 1000), 4);
+  this.assertEqual(prng.between(0, 1000), 216);
+  this.assertEqual(prng.between(0, 1000), 191);
+  this.assertEqual(prng.between(0, 1000), 598);
+  this.assertEqual(prng.between(0, 1000), 370);
+  this.assertEqual(prng.between(0, 1000), 281);
+  this.assertEqual(prng.between(0, 1000), 691);
+  this.assertEqual(prng.between(0, 1000), 410);
+}
+
+
+function testBetween() {
+  var prng = new nmlorg.math.prng.PRNG();
+
+  this.assertEqual(prng.between(100, 100), 100);
+  this.assertEqual(prng.between(100, 100), 100);
+  this.assertEqual(prng.between(100, 100), 100);
+  this.assertEqual(prng.between(100, 100), 100);
+  this.assertEqual(prng.between(100, 100), 100);
+}
+
+
+nmlorg.test.run();
+</script>
