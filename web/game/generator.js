@@ -38,14 +38,15 @@ nmlorg.game.generator.Generator.prototype.add = function() {
   var width, length;
 
   if (parent.right > parent.rear) {
-    width = 2;
-    length = this.prng.between(5, 15);
+    width = this.prng.between(1, 3);
+    length = this.prng.between(5, 25);
   } else {
-    width = this.prng.between(5, 15);
-    length = 2;
+    width = this.prng.between(5, 25);
+    length = this.prng.between(1, 3);
   }
 
   var platform = this.pset.add(width, length);
+  var height = this.prng.choose([0, .4]);
   var side;
 
   while (true) {
@@ -56,7 +57,7 @@ nmlorg.game.generator.Generator.prototype.add = function() {
 
   parent['got' + side] = true;
   platform['got' + ((side + 2) % 4)] = true;
-  nmlorg.game.platforms.connect(parent[sides_[side]](0, 0, 0),
+  nmlorg.game.platforms.connect(parent[sides_[side]](0, 0, height),
                                 platform[sides_[(side + 2) % 4]](0, 0, 0));
 };
 
