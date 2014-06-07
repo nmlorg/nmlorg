@@ -5,6 +5,7 @@
 (function() {
 
 nmlorg.require('nmlorg.game.mob');
+nmlorg.require('nmlorg.io.gamepad');
 nmlorg.require('nmlorg.io.keyboard');
 nmlorg.require('nmlorg.io.orient');
 
@@ -14,6 +15,7 @@ nmlorg.game.player = nmlorg.game.player || {};
 
 
 nmlorg.game.player.Player = function(initial, sideScroll) {
+  this.gamepads = new nmlorg.io.gamepad.Manager();
   this.keyboard = new nmlorg.io.keyboard.Listener(true);
   this.orient = new nmlorg.io.orient.Listener();
   this.mob = new nmlorg.game.mob.Mobile(initial);
@@ -25,6 +27,8 @@ nmlorg.game.player.Player.prototype.fovAngle = 45;
 
 
 nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
+  var gamepad = this.gamepads.getFirst();
+
   if (this.keyboard['1'])
     this.viewMode = 0;
   else if (this.keyboard['2'])
@@ -57,10 +61,10 @@ nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
   }
 
   var walk = 0, slide = 0, turn = 0;
-  var left = this.keyboard.Left || this.keyboard.A || (this.orient.y < -10);
-  var right = this.keyboard.Right || this.keyboard.D || (this.orient.y > 10);
-  var up = this.keyboard.Up || this.keyboard.W || (this.orient.x < -10);
-  var down = this.keyboard.Down || this.keyboard.S || (this.orient.x > 10);
+  var left = this.keyboard.Left || this.keyboard.A || (this.orient.y < -10) || gamepad.Left;
+  var right = this.keyboard.Right || this.keyboard.D || (this.orient.y > 10) || gamepad.Right;
+  var up = this.keyboard.Up || this.keyboard.W || (this.orient.x < -10) || gamepad.Up;
+  var down = this.keyboard.Down || this.keyboard.S || (this.orient.x > 10) || gamepad.Down;
 
   if (this.sideScroll) {
     if (this.mob.pos.z) {
@@ -117,9 +121,13 @@ nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
       slide++;
   }
 
-  var jump = this.keyboard.Space || ((this.orient.dx * this.orient.dx + this.orient.dy * this.orient.dy + this.orient.dz * this.orient.dz) > 16);
+  var jump = this.keyboard.Space ||
+      ((this.orient.dx * this.orient.dx + this.orient.dy * this.orient.dy + this.orient.dz * this.orient.dz) > 16) ||
+      gamepad.L;
 
-  this.mob.eachFrame(timeStep, walk, slide, turn, jump, this.keyboard.Shift);
+  var run = this.keyboard.Shift || gamepad.D;
+
+  this.mob.eachFrame(timeStep, walk, slide, turn, jump, run);
 };
 
 
