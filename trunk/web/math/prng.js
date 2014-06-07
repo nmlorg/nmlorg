@@ -42,4 +42,9 @@ nmlorg.math.prng.PRNG.prototype.between = function(min, max) {
 };
 
 
+nmlorg.math.prng.PRNG.prototype.choose = function(list) {
+  return list[this.between(0, list.length - 1)];
+};
+
+
 })();
