@@ -56,15 +56,7 @@ var generator = new nmlorg.game.generator.Generator(pset);
 for (var i = 0; i < 50; i++)
   generator.add();
 
-for (var i = 0; i < pset.length; i++) {
-  var platform = pset[i];
-  var loc = first.localize(platform.getCenter(0, 0, 0));
-
-  if (loc)
-    world.addObject(nmlorg.game.rectangles.getRectangle(
-        platform.right - platform.left, platform.rear - platform.front)).setPosition(
-        loc.x, loc.y, loc.z);
-}
+nmlorg.game.rectangles.renderInto(world, pset, first);
 
 pset.autoConnect();
 
