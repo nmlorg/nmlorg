@@ -53,7 +53,6 @@ nmlorg.require('nmlorg.game.builder');
 nmlorg.require('nmlorg.game.camera');
 nmlorg.require('nmlorg.game.platforms');
 nmlorg.require('nmlorg.game.player');
-nmlorg.require('nmlorg.game.rectangles');
 nmlorg.require('nmlorg.game.shapes');
 </script>
 
@@ -106,7 +105,7 @@ var farPowerUp = builder.add(17, 2, .2, 2, 10);
 
 builder.pyramid(6, 75, 22, 16, 5, 2, 18, .5);
 
-var first = builder.build();
+var first = builder.build(world);
 
 nearPowerUp.addEventListener('enter', function(ev) {
   player.mob.jumpVelocity = player.mob.jumpVelocity == 4 ? 10 : 4;

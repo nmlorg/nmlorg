@@ -5,6 +5,7 @@
 (function() {
 
 nmlorg.require('nmlorg.game.platforms');
+nmlorg.require('nmlorg.game.rectangles');
 
 
 /** @namespace */
@@ -69,22 +70,14 @@ nmlorg.game.builder.Builder.prototype.pyramid = function(
 };
 
 
-nmlorg.game.builder.Builder.prototype.build = function() {
+nmlorg.game.builder.Builder.prototype.build = function(world) {
   //var ground = this.pset.add(this.right, this.far - this.near).getLeft(0, 0, 0);
   var ground = this.pset.add(this.right, this.defaultThickness).getLeft(0, 0, 0);
 
   for (var i = 0; i < this.platforms.length; i++)
     nmlorg.game.platforms.connect(ground, this.platforms[i]);
 
-  for (var i = 0; i < this.pset.length; i++) {
-    var platform = this.pset[i];
-    var loc = this.first.localize(platform.getCenter(0, 0, 0));
-
-    if (loc)
-      world.addObject(nmlorg.game.rectangles.getRectangle(
-          platform.right - platform.left,
-          platform.rear - platform.front)).setPosition(loc.x, loc.y, loc.z);
-  }
+  nmlorg.game.rectangles.renderInto(world, this.pset, this.first);
 
   this.pset.autoConnect();
   return this.first;

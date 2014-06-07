@@ -75,4 +75,20 @@ nmlorg.game.rectangles.getRectangle = function(width, length) {
 };
 
 
+nmlorg.game.rectangles.renderInto = function(world, pset, first) {
+  if (!first)
+    first = pset[0];
+
+  for (var i = 0; i < pset.length; i++) {
+    var platform = pset[i];
+    var loc = first.localize(platform.getCenter(0, 0, 0));
+
+    if (loc)
+      world.addObject(nmlorg.game.rectangles.getRectangle(
+          platform.right - platform.left, platform.rear - platform.front)).setPosition(
+          loc.x, loc.y, loc.z);
+  }
+};
+
+
 })();
