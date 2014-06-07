@@ -60,10 +60,14 @@ nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
   }
 
   var walk = 0, slide = 0, turn = 0;
-  var left = this.keyboard.Left || this.keyboard.A || (this.orient.y < -10) || gamepad.Left;
-  var right = this.keyboard.Right || this.keyboard.D || (this.orient.y > 10) || gamepad.Right;
-  var up = this.keyboard.Up || this.keyboard.W || (this.orient.x < -10) || gamepad.Up;
-  var down = this.keyboard.Down || this.keyboard.S || (this.orient.x > 10) || gamepad.Down;
+  var left = this.keyboard.Left || this.keyboard.A || (this.orient.y < -10) ||
+      gamepad.Left || ((gamepad.leftStickMag > .1) && (gamepad.leftStick < -1 / 6) && (gamepad.leftStick > -5 / 6));
+  var right = this.keyboard.Right || this.keyboard.D || (this.orient.y > 10) ||
+      gamepad.Right || ((gamepad.leftStickMag > .1) && (gamepad.leftStick > 1 / 6) && (gamepad.leftStick < 5 / 6));
+  var up = this.keyboard.Up || this.keyboard.W || (this.orient.x < -10) ||
+      gamepad.Up || ((gamepad.leftStickMag > .1) && (Math.abs(gamepad.leftStick) < 2 / 6));
+  var down = this.keyboard.Down || this.keyboard.S || (this.orient.x > 10) ||
+      gamepad.Down || ((gamepad.leftStickMag > .1) && (Math.abs(gamepad.leftStick) > 4 / 6));
 
   if (this.sideScroll) {
     if (this.mob.pos.z) {
@@ -122,9 +126,9 @@ nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
 
   var jump = this.keyboard.Space ||
       ((this.orient.dx * this.orient.dx + this.orient.dy * this.orient.dy + this.orient.dz * this.orient.dz) > 16) ||
-      gamepad.X;
+      gamepad.A;
 
-  var run = this.keyboard.Shift || gamepad.A;
+  var run = this.keyboard.Shift || (gamepad.leftStickMag > .9);
 
   this.mob.eachFrame(timeStep, walk, slide, turn, jump, run);
 };
