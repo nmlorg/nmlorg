@@ -61,13 +61,17 @@ nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
 
   var walk = 0, slide = 0, turn = 0;
   var left = this.keyboard.Left || this.keyboard.A || (this.orient.y < -10) ||
-      gamepad.Left || ((gamepad.leftStickMag > .1) && (gamepad.leftStick < -1 / 6) && (gamepad.leftStick > -5 / 6));
+      gamepad.Left || ((gamepad.rightStickMag > .2) && (gamepad.rightStick < -1 / 6));
   var right = this.keyboard.Right || this.keyboard.D || (this.orient.y > 10) ||
-      gamepad.Right || ((gamepad.leftStickMag > .1) && (gamepad.leftStick > 1 / 6) && (gamepad.leftStick < 5 / 6));
+      gamepad.Right || ((gamepad.rightStickMag > .2) && (gamepad.rightStick > 1 / 6));
   var up = this.keyboard.Up || this.keyboard.W || (this.orient.x < -10) ||
-      gamepad.Up || ((gamepad.leftStickMag > .1) && (Math.abs(gamepad.leftStick) < 2 / 6));
+      gamepad.Up || ((gamepad.leftStickMag > .2) && (Math.abs(gamepad.leftStick) < 2 / 6));
   var down = this.keyboard.Down || this.keyboard.S || (this.orient.x > 10) ||
-      gamepad.Down || ((gamepad.leftStickMag > .1) && (Math.abs(gamepad.leftStick) > 4 / 6));
+      gamepad.Down || ((gamepad.leftStickMag > .2) && (Math.abs(gamepad.leftStick) > 4 / 6));
+  var slideLeft = this.keyboard['<'] ||
+      ((gamepad.leftStickMag > .2) && (gamepad.leftStick < -1 / 6) && (gamepad.leftStick > -5 / 6));
+  var slideRight = this.keyboard['>'] ||
+      ((gamepad.leftStickMag > .2) && (gamepad.leftStick > 1 / 6) && (gamepad.leftStick < 5 / 6));
 
   if (this.sideScroll) {
     if (this.mob.pos.z) {
@@ -117,10 +121,10 @@ nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
         this.fovAngle -= timeStep * (this.fovAngle - 45) / 15;
     }
 
-    if (this.keyboard['<'])
+    if (slideLeft)
       slide--;
 
-    if (this.keyboard['>'])
+    if (slideRight)
       slide++;
   }
 
