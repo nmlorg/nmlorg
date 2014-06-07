@@ -8,57 +8,50 @@
 nmlorg.io.gamepad = nmlorg.io.gamepad || {};
 
 
-nmlorg.io.gamepad.Manager = function() {
-  this.gamepads = {};
+// https://dvcs.w3.org/hg/gamepad/raw-file/default/gamepad.html#remapping
+var buttonNames_ = [
+    ['A', 'ex'],
+    ['B', 'circle'],
+    ['X', 'square'],
+    ['Y', 'triangle'],
+    ['LB', 'L2'],
+    ['RB', 'R2'],
+    ['LT', 'L1'],
+    ['RT', 'R1'],
+    ['Select'],
+    ['Start'],
+    ['L3'],
+    ['R3'],
+    ['Up'],
+    ['Down'],
+    ['Left'],
+    ['Right'],
+    ['Power'],
+];
+
+
+nmlorg.io.gamepad.Gamepad = function(navGamepad) {
+  for (var i = 0; i < buttonNames_.length; i++) {
+    var pressed = (i < navGamepad.buttons.length) && navGamepad.buttons[i].pressed;
+
+    for (var j = 0; j < buttonNames_[i].length; j++)
+      this[buttonNames_[i][j]] = pressed;
+  }
 };
 
 
-nmlorg.io.gamepad.Manager.prototype.poll = function() {
+nmlorg.io.gamepad.getFirst = function() {
   var gamepads = navigator.getGamepads();
-
-  this.gamepads = {};
 
   for (var i = 0; i < gamepads.length; i++) {
     var gamepad = gamepads[i];
 
-    if (!gamepad)
-      continue;
-
-    this.gamepads[i] = {
-        'U': gamepad.buttons[3].pressed,
-        'D': gamepad.buttons[0].pressed,
-        'L': gamepad.buttons[2].pressed,
-        'R': gamepad.buttons[1].pressed,
-        'LB': gamepad.buttons[4].pressed,
-        'RB': gamepad.buttons[5].pressed,
-        'LT': gamepad.buttons[6].pressed,
-        'RT': gamepad.buttons[7].pressed,
-        'Select': gamepad.buttons[8].pressed,
-        'Start': gamepad.buttons[9].pressed,
-        'L3': gamepad.buttons[10].pressed,
-        'R3': gamepad.buttons[11].pressed,
-        'Up': gamepad.buttons[12].pressed,
-        'Down': gamepad.buttons[13].pressed,
-        'Left': gamepad.buttons[14].pressed,
-        'Right': gamepad.buttons[15].pressed,
-        'Power': gamepad.buttons[16] && gamepad.buttons[16].pressed,
-    };
+    if (gamepad)
+      return new nmlorg.io.gamepad.Gamepad(gamepad);
   }
-
-  return this.gamepads;
-};
-
-
-nmlorg.io.gamepad.Manager.prototype.getFirst = function() {
-  var gamepads = this.poll();
-
-  for (var i in gamepads)
-    if (gamepads[i])
-      return gamepads[i];
 
   return {};
 };
-
 
 
 })();

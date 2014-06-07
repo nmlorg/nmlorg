@@ -15,7 +15,6 @@ nmlorg.game.player = nmlorg.game.player || {};
 
 
 nmlorg.game.player.Player = function(initial, sideScroll) {
-  this.gamepads = new nmlorg.io.gamepad.Manager();
   this.keyboard = new nmlorg.io.keyboard.Listener(true);
   this.orient = new nmlorg.io.orient.Listener();
   this.mob = new nmlorg.game.mob.Mobile(initial);
@@ -27,7 +26,7 @@ nmlorg.game.player.Player.prototype.fovAngle = 45;
 
 
 nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
-  var gamepad = this.gamepads.getFirst();
+  var gamepad = nmlorg.io.gamepad.getFirst();
 
   if (this.keyboard['1'])
     this.viewMode = 0;
@@ -123,9 +122,9 @@ nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
 
   var jump = this.keyboard.Space ||
       ((this.orient.dx * this.orient.dx + this.orient.dy * this.orient.dy + this.orient.dz * this.orient.dz) > 16) ||
-      gamepad.L;
+      gamepad.X;
 
-  var run = this.keyboard.Shift || gamepad.D;
+  var run = this.keyboard.Shift || gamepad.A;
 
   this.mob.eachFrame(timeStep, walk, slide, turn, jump, run);
 };
