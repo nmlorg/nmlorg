@@ -25,27 +25,15 @@ nmlorg.game.platforms.PlatformSet.prototype.add = function(width, height) {
 nmlorg.game.platforms.PlatformSet.prototype.autoConnect = function() {
   for (var i = 0; i < this.length; i++) {
     var leftPlatform = this[i];
-    var leftPoints = [
-        leftPlatform.getRearLeft(0, 0, 0),
-        leftPlatform.getRearRight(0, 0, 0),
-        leftPlatform.getFrontRight(0, 0, 0),
-        leftPlatform.getFrontLeft(0, 0, 0),
-    ];
 
     for (var j = 0; j < this.length; j++) {
-      if (i == j)
-        continue;
-
       var rightPlatform = this[j];
 
-      for (var k = 0; k < leftPoints.length; k++) {
-        var leftPoint = leftPoints[k];
-        var rightPoint = rightPlatform.localize(leftPoint);
+      if (!leftPlatform.directlyConnected(rightPlatform)) {
+        var connection = leftPlatform.indirectlyConnected(rightPlatform);
 
-        if (rightPoint.inside()) {
-          nmlorg.game.platforms.connect(leftPoint, rightPoint);
-          break;
-        }
+        if (connection)
+          nmlorg.game.platforms.connect.apply(null, connection);
       }
     }
   }
@@ -245,6 +233,35 @@ nmlorg.game.platforms.Platform.prototype.dispatchEvent = function() {
 
 nmlorg.game.platforms.Platform.prototype.removeEventListener = function() {
   return this.eventTarget_.removeEventListener.apply(this.eventTarget_, arguments);
+};
+
+
+nmlorg.game.platforms.Platform.prototype.directlyConnected = function(platform) {
+  if (this === platform)
+    return true;
+
+  for (var i = 0; i < this.connections.length; i++)
+    // assert this.connections[i][0].platform === this;
+    if (this.connections[i][1].platform === platform)
+      return true;
+};
+
+
+nmlorg.game.platforms.Platform.prototype.indirectlyConnected = function(platform) {
+  var points = [
+      this.getRearLeft(0, 0, 0),
+      this.getRearRight(0, 0, 0),
+      this.getFrontRight(0, 0, 0),
+      this.getFrontLeft(0, 0, 0),
+  ];
+
+  for (var i = 0; i < points.length; i++) {
+    var leftPoint = points[i];
+    var rightPoint = platform.localize(leftPoint);
+
+    if (rightPoint.inside())
+      return [leftPoint, rightPoint];
+  }
 };
 
 
