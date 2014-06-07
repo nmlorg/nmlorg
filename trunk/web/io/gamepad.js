@@ -37,6 +37,14 @@ nmlorg.io.gamepad.Gamepad = function(navGamepad) {
     for (var j = 0; j < buttonNames_[i].length; j++)
       this[buttonNames_[i][j]] = pressed;
   }
+
+  this.leftStickMag = Math.sqrt(navGamepad.axes[0] * navGamepad.axes[0] +
+                                navGamepad.axes[1] * navGamepad.axes[1]);
+  this.leftStick = Math.atan2(navGamepad.axes[0], -navGamepad.axes[1]) / Math.PI;
+
+  this.rightStickMag = Math.sqrt(navGamepad.axes[2] * navGamepad.axes[2] +
+                                 navGamepad.axes[3] * navGamepad.axes[3]);
+  this.rightStick = Math.atan2(navGamepad.axes[2], -navGamepad.axes[3]) / Math.PI;
 };
 
 
@@ -50,7 +58,12 @@ nmlorg.io.gamepad.getFirst = function() {
       return new nmlorg.io.gamepad.Gamepad(gamepad);
   }
 
-  return {};
+  return {
+      'leftStickMag': NaN,
+      'leftStick': NaN,
+      'rightStickMag': NaN,
+      'rightStick': NaN,
+  };
 };
 
 
