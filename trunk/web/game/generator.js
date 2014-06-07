@@ -37,7 +37,7 @@ var sides_ = [
 
 
 nmlorg.game.generator.Generator.prototype.add = function() {
-  var height = this.prng.choose([0, .4]);
+  var height = this.prng.choose([-.4, 0, .4]);
   var parent, side, width, length;
 
   while (true) {
@@ -54,52 +54,37 @@ nmlorg.game.generator.Generator.prototype.add = function() {
     while (parent['got' + (side = this.prng.between(0, 3))])
       ;
 
-    var points;
+    var lx, ly;
 
-    if (side == 0)
-      points = [
-          parent.getLeft(0, length / 2, height),
-          parent.getLeft(0, -length / 2, height),
-          parent.getLeft(-width, length / 2, height),
-          parent.getLeft(-width, -length / 2, height),
-      ];
-    else if (side == 1)
-      points = [
-          parent.getRear(width / 2, 0, height),
-          parent.getRear(-width / 2, 0, height),
-          parent.getRear(width / 2, length, height),
-          parent.getRear(-width / 2, length, height),
-      ];
-    else if (side == 2)
-      points = [
-          parent.getRight(0, length / 2, height),
-          parent.getRight(0, - length / 2, height),
-          parent.getRight(width, length / 2, height),
-          parent.getRight(width, - length / 2, height),
-      ];
-    else if (side == 3)
-      points = [
-          parent.getFront(width / 2, 0, height),
-          parent.getFront(-width / 2, 0, height),
-          parent.getFront(width / 2, -length, height),
-          parent.getFront(-width / 2, -length, height),
-      ];
+    if (side == 0) {
+      lx = -width;
+      ly = -length / 2;
+    } else if (side == 1) {
+      lx = -width / 2;
+      ly = 0;
+    } else if (side == 2) {
+      lx = 0;
+      ly = -length / 2;
+    } else if (side == 3) {
+      lx = -width / 2;
+      ly = -length;
+    }
 
-    for (var i = 0; i < this.pset.length; i++) {
+    var overlap = false;
+
+    for (var i = 0; !overlap && (i < this.pset.length); i++) {
       var platform = this.pset[i];
 
       if (platform === parent)
         continue;
 
-      for (var j = 0; j < points.length; j++)
-        if (platform.localize(points[j]).inside())
-          break;
-
-      if (j < points.length)
-        break;
+      for (var x = 0; !overlap && (x <= width); x += 2)
+        for (var y = 0; !overlap && (y <= length); y += 2)
+          if (platform.localize(parent[sides_[side]](lx + x, ly + y, height)).inside())
+            overlap = true;
     }
 
-    if (i == this.pset.length)
+    if (!overlap)
       break;
   }
 
