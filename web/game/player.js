@@ -74,6 +74,9 @@ nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
       ((gamepad.leftStickMag > .2) && (gamepad.leftStick > 1 / 6) && (gamepad.leftStick < 5 / 6));
 
   if (this.sideScroll) {
+    left = left || slideLeft;
+    right = right || slideRight;
+
     if (this.mob.pos.z) {
     } else if (up && !down) {
       if (left && !right)
