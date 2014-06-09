@@ -5,6 +5,7 @@
 (function() {
 
 nmlorg.require('nmlorg.game.mob');
+nmlorg.require('nmlorg.io.audio');
 nmlorg.require('nmlorg.io.gamepad');
 nmlorg.require('nmlorg.io.keyboard');
 nmlorg.require('nmlorg.io.orient');
@@ -15,14 +16,22 @@ nmlorg.game.player = nmlorg.game.player || {};
 
 
 nmlorg.game.player.Player = function(initial, sideScroll) {
+  if (!nmlorg.game.player.sounds)
+    nmlorg.game.player.sounds = {
+        'step': new nmlorg.io.audio.Sound('/third_party/503990_SOUNDDOGS__fo.mp3'),
+    };
+
   this.keyboard = new nmlorg.io.keyboard.Listener(true);
   this.orient = new nmlorg.io.orient.Listener();
   this.mob = new nmlorg.game.mob.Mobile(initial);
   this.sideScroll = !!sideScroll;
 };
+
+
 nmlorg.game.player.Player.prototype.viewMode = 0;
 nmlorg.game.player.Player.prototype.eyeAngle = 0;
 nmlorg.game.player.Player.prototype.fovAngle = 45;
+nmlorg.game.player.Player.prototype.lastStepSound = 0;
 
 
 nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
@@ -138,6 +147,16 @@ nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
   var run = this.keyboard.Shift || (gamepad.leftStickMag > .9);
 
   this.mob.eachFrame(timeStep, walk, slide, turn, jump, run);
+
+  if (!this.mob.walkTime)
+    this.lastStepSound = 0;
+  else if ((this.mob.walkTime - this.lastStepSound) >= .3) {
+    nmlorg.game.player.sounds.step.play();
+    if ((this.mob.walkTime - this.lastStepSound) < 1)
+      this.lastStepSound += .3;
+    else
+      this.lastStepSound = this.mob.walkTime;
+  }
 };
 
 
