@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>nmlorg.physics</title>
+
+<style>
+code, pre {
+  color: darkgreen;
+}
+</style>
+
+<h2 id="physics">Simple physics</h2>
+
+<ul>
+<li><a href="falling.html">Simple acceleration demo</a></li>
+<li><a href="bouncing.html">Vertical bouncing demo</a></li>
+<li><a href="boxed.html">Lateral bouncing in a box</a></li>
+<li>Tests: <a href="testphysics.html">physics.js</a> &bull; <a href="testspringbounce.html">springbounce.js</a></li>
+</ul>
+
+<p><a href="jsdoc/symbols/src/physics.js.html">physics.js</a> provides an object-management system 
+completely independent from the renderer. Typically, a physical object (<a 
+href="jsdoc/symbols/nmlorg.physics.Object.html"><code>nmlorg.physics.Object</code></a>) will be created 
+at the same time as a naive position object (<a 
+href="jsdoc/symbols/nmlorg.threed.world.PositionObject.html"><code>nmlorg.threed.world.PositionObject</code></a>, via 
+<a href="jsdoc/symbols/nmlorg.threed.world.World.html#addObject"><code>world.addObject</code></a>), then the 
+position object's <code>animate</code> callback will tell the physical object to calculate its motion 
+and then copy the physical object's current position to the position object.</p>
+
+<pre>
+  function animateObject(obj, timeStep) {
+    obj.compound(timeStep);
+    this.setPosition(obj.position[0], obj.position[1], obj.position[2]);
+  }
+
+  for (var i = 0; i < 2; i++) {
+    var physicalObject = new nmlorg.physics.Object(x, y, z);
+    var positionObject = world.addObject(shape, animateObject, physicalObject);
+  }
+</pre>
+
+<p>Each physical object maintains its current position in 3D space along with its current velocity 
+(measured in pixels per second) and a list of zero or more forces that apply to the object. The <a 
+href="jsdoc/symbols/nmlorg.physics.Object.html#compound"><code>compound</code></a> call is responsible for first 
+adjusting the object's velocity based on the active forces, and then updating the object's position 
+based on its velocity. Forces may either be indefinite (such as the simplified force of gravity) or 
+pre-set for a fixed duration (such as the force from a rocket thruster with a fixed amount of fuel). 
+[[At present, there is no way to add a force and have it disabled programmatically. To effect that you 
+would need to re-schedule the force before every call to <a 
+href="jsdoc/symbols/nmlorg.physics.Object.html#compound"><code>compound</code></a> with a fixed duration set to 
+the timeStep.]] If a fixed-duration force expires during the current frame (if its remaining duration is 
+less than timeStep), the frame is divided into a subframe lasting until the force expires, then the 
+remaining time left in the frame, with the correct average velocity applied to the position for each 
+subframe. If two forces expire during the current frame (at different times), the frame is divided into 
+<code>[(0, firstExpiration), (firstExpiration, secondExpiration), (secondExpiration, timeStep)]</code>; 
+and so on.</p>
+
+<script>
+function findCurrentElement() {
+  var elt = document.body.lastElementChild;
+
+  while (elt.lastElementChild)
+    elt = elt.lastElementChild;
+
+  return elt;
+}
+
+
+function appendToEnd(elt) {
+  findCurrentElement().parentNode.appendChild(elt);
+}
+
+
+var canvas = document.createElement('canvas');
+var ctx = canvas.getContext('2d');
+
+canvas.width = 750;
+canvas.height = 119;
+appendToEnd(canvas);
+var second = 300;
+
+ctx.fillStyle = 'rgb(196, 196, 196)';
+ctx.fillRect(0, 0, second - 1, 29);
+ctx.fillRect(second, 0, second - 1, 29);
+ctx.fillStyle = 'rgb(0, 0, 0)';
+ctx.fillText('t = 0', 1, 10);
+ctx.fillText('t = 1', second + 1, 10);
+ctx.fillText('t = 2', 2 * second - 23, 10);
+
+ctx.fillStyle = 'rgb(255, 196, 196)';
+ctx.fillRect(0, 30, 1.5 * second - 1, 29);
+ctx.fillStyle = 'rgb(0, 0, 0)';
+ctx.fillText('addForce(x1, x2, x3, 1.5)', .75 * second - 60, 50);
+
+for (var i = 0; i < 5 * 2; i++) {
+  ctx.fillStyle = 'rgb(196, 255, 196)';
+  ctx.fillRect(i * second / 5, 60, second / 5 - 1, 29);
+  ctx.fillStyle = 'rgb(0, 0, 0)';
+  ctx.fillText('frame', i * second / 5 + 15, 80);
+}
+
+for (var i = 0; i < 5 * 2; i++) {
+  ctx.fillStyle = 'rgb(196, 196, 255)';
+  if (i != 7) {
+    ctx.fillRect(i * second / 5, 90, second / 5 - 1, 29);
+    ctx.fillStyle = 'rgb(0, 0, 0)';
+    ctx.fillText('frame', i * second / 5 + 15, 110);
+  } else {
+    ctx.fillRect(i * second / 5, 90, second / 5 / 2 - 1, 29);
+    ctx.fillRect(i * second / 5 + second / 5 / 2, 90, second / 5 /2 - 1, 29);
+    ctx.fillStyle = 'rgb(0, 0, 0)';
+    ctx.fillText('frame', i * second / 5 + 1, 110);
+    ctx.fillText('frame', i * second / 5 + second / 5 / 2 + 1, 110);
+  }
+}
+
+ctx.fillText('time', 2 * second + 5, 20);
+ctx.fillText('force duration', 2 * second + 5, 50);
+ctx.fillText('world render frames (5 FPS)', 2 * second + 5, 80);
+ctx.fillText('physics compounding frames', 2 * second + 5, 110);
+</script>
+
+<p>Forces are registered using <a 
+href="jsdoc/symbols/nmlorg.physics.Object.html#addForce"><code>addForce(xAccel, yAccel, zAccel, optional 
+duration)</code></a>. To roughly simulate Earth gravity (at the scale of 1 meter = 10 pixels), you can 
+call <a href="jsdoc/symbols/nmlorg.physics.Object.html#addEarthGravity"><code>addEarthGravity</code></a>.</p>
+
+<pre>
+  function animateObject(obj, timeStep) {
+    obj.compound(timeStep);
+    this.setPosition(obj.position[0], obj.position[1], obj.position[2]);
+  }
+
+  for (var i = 0; i < 2; i++) {
+    var physicalObject = new nmlorg.physics.Object(x, y, z);
+    var positionObject = world.addObject(shape, animateObject, physicalObject);
+
+    <b>physicalObject.addEarthGravity();</b>
+  }
+</pre>
+
+<hr>
+
+Next: <a href="/collision/">Collision detection and handling</a>
