@@ -1,0 +1,14 @@
+html {
+  overflow-y: scroll;
+}
+
+body {
+  text-align: justify;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+h1 {
+  font-family: 'Orbitron', sans-serif;
+  text-shadow: 1px 1px 3px #666666;
+}

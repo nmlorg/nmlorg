@@ -5,11 +5,18 @@
 
 <title>nmlorg.collision</title>
 
-<style>
-code, pre {
-  color: darkgreen;
-}
-</style>
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Orbitron:700">
+<link rel="stylesheet" href="/site.css">
+
+<h1 style="white-space: nowrap"><img alt="n" src="/favicon.ico" style="width: .75em">mlorg.collision</h1>
+
+<ul class="nav nav-tabs">
+  <li><a href="/">nmlorg</a></li>
+  <li><a href="/threed/">Rendering</a></li>
+  <li><a href="/physics.html">Physics</a></li>
+  <li class="active"><a href="/collision/">Collisions</a></li>
+</ul>
 
 <h2 id="collisions">Collision detection and handling</h2>
 
@@ -172,8 +179,11 @@ href="/jsdoc/symbols/nmlorg.collision.detect.Sphere.html"><code>nmlorg.collision
   }
 </pre>
 
-<div style="border: 1px solid black; margin: 40px; padding: 0 10px">
-<h3>The math</h3>
+<div class="panel panel-info">
+<div class="panel-heading">
+<h4>The math</h4>
+</div>
+<div class="panel-body">
 
 <p>Two objects are "colliding" when their surfaces are touching, and two spherical objects are colliding 
 when the distance between their centers is equal to the sum of their radii:</p>
@@ -361,6 +371,7 @@ by 10 pixels, putting it 3 pixels above the deflection plane that was originally
 -->
 
 </div>
+</div>
 
 <h3>Collision response (Material)</h3>
 
@@ -408,8 +419,11 @@ heat=1)</code> as a glass figurine shattering against the floor.) The values giv
 each other, so <code>(1, 2, 3)</code> == <code>(.01, .02, .03)</code> == <code>(.17, .33, 
 .5)</code>.</p>
 
-<div style="border: 1px solid black; margin: 40px; padding: 0 10px">
-<h3>A note about the collision dimension</h3>
+<div class="panel panel-info">
+<div class="panel-heading">
+<h4>A note about the collision dimension</h4>
+</div>
+<div class="panel-body">
 
 <script>
 function Circle(x, y, rad, vx, vy) {
@@ -814,7 +828,8 @@ The full response algorithm is implemented as <a
 href="/jsdoc/symbols/nmlorg.collision.response.Material.html#handleCollision"><code>material.handleCollision</code></a>.</p>
 
 </div>
+</div>
 
-<hr>
-
+<div class="well">
 Up: <a href="/">nmlorg</a>
+</div>
