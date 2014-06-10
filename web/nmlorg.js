@@ -9,6 +9,21 @@
 nmlorg = window.nmlorg || {};
 
 
+nmlorg.baseUrl_ = '/';
+
+
+var scripts = document.getElementsByTagName('script');
+
+for (var i = scripts.length - 1; i >= 0; i--) {
+  var match = scripts[i].src.match(/^(.*[/])nmlorg[.]js$/);
+
+  if (match) {
+    nmlorg.baseUrl_ = match[1];
+    break;
+  }
+}
+
+
 /**
  * Take the non-complex cube root of a.
  * @param {number} a
@@ -141,7 +156,7 @@ nmlorg.require = function(namespace) {
     src = parts.join('/') + '.js';
   }
 
-  document.write('<script src="/' + src + '"></script>');
+  document.write('<script src="' + nmlorg.baseUrl_ + src + '"></script>');
 };
 
 
