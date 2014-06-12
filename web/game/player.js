@@ -10,6 +10,7 @@ nmlorg.require('nmlorg.io.audio');
 nmlorg.require('nmlorg.io.gamepad');
 nmlorg.require('nmlorg.io.keyboard');
 nmlorg.require('nmlorg.io.orient');
+nmlorg.require('nmlorg.io.touch');
 
 
 /** @namespace */
@@ -25,6 +26,7 @@ nmlorg.game.player.Player = function(initial, settings) {
 
   this.keyboard = new nmlorg.io.keyboard.Listener(true);
   this.orient = new nmlorg.io.orient.Listener();
+  this.touch = new nmlorg.io.touch.Listener();
   this.mob = new nmlorg.game.mob.Mobile(initial);
   this.settings = new nmlorg.game.settings.Settings();
   for (var k in settings)
@@ -105,6 +107,23 @@ nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
          this.orient.dy * this.orient.dy +
          this.orient.dz * this.orient.dz) > 16)
       jump = true;
+  }
+
+  if (this.settings.touch) {
+    for (var touchId in this.touch) {
+      var touch = this.touch[touchId];
+
+      if ((touch.x - touch.x0) < -30)
+        left = true;
+      if ((touch.x - touch.x0) > 30)
+        right = true;
+      if ((touch.y - touch.y0) < -30)
+        up = true;
+      if ((touch.y - touch.y0) > 30)
+        down = true;
+
+      break;
+    }
   }
 
   if (this.settings.gamepad) {

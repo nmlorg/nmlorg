@@ -9,14 +9,21 @@ nmlorg.io.audio = nmlorg.io.audio || {};
 
 
 nmlorg.io.audio.defaultContext = function() {
-  if (!nmlorg.io.audio.defaultContext_)
-    nmlorg.io.audio.defaultContext_ = new AudioContext();
+  if (nmlorg.io.audio.defaultContext_ === undefined) {
+    if (!window.AudioContext) {
+      nmlorg.io.audio.defaultContext_ = null;
+      console.log('The Web Audio API is apparently not supported in this browser.');
+    } else
+      nmlorg.io.audio.defaultContext_ = new AudioContext();
+  }
   return nmlorg.io.audio.defaultContext_;
 };
 
 
 nmlorg.io.audio.Sound = function(src, context) {
   this.context = context || nmlorg.io.audio.defaultContext();
+  if (!this.context)
+    return;
 
   var req = new XMLHttpRequest();
 

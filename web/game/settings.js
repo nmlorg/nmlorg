@@ -16,6 +16,7 @@ nmlorg.game.settings.Settings = function() {
   this.add('keyboard', true, 'Use the keyboard to move and jump.');
   this.add('sidescroll', false, 'Side-scrolling control mode.');
   this.add('sound', true, 'Play sound effects.');
+  this.add('touch', true, 'Allow the player to move using screen touches.');
 };
 
 
