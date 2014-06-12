@@ -116,7 +116,7 @@ farPowerUp.addEventListener('enter', function(ev) {
 });
 
 var mobPhys = world.addObject(nmlorg.game.shapes.person);
-var player = new nmlorg.game.player.Player(first.getCenter(0, 0, 0), true);
+var player = new nmlorg.game.player.Player(first.getCenter(0, 0, 0), {'sidescroll': true});
 var camera = new nmlorg.game.camera.Camera(canvas, 0, -20, 2.5);
 var hud = document.getElementById('hud');
 
