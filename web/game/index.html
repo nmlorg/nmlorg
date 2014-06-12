@@ -9,6 +9,11 @@
 <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Orbitron:700">
 <link rel="stylesheet" href="/site.css">
 
+<script src="http://n.ml.org/nmlorg.js"></script>
+<script>
+nmlorg.require('nmlorg.game.settings');
+</script>
+
 <h1 style="white-space: nowrap"><img alt="n" src="/favicon.ico" style="width: .75em">mlorg.game</h1>
 
 <ul class="nav nav-tabs">
@@ -38,3 +43,32 @@
 <br>
 <a href="random.html" class="btn btn-primary btn-lg">Randomly generated terrain (FPS)</a>
 </div>
+
+<script>
+var settings = new nmlorg.game.settings.Settings();
+var div = document.createElement('div');
+var title = document.createElement('h3');
+
+document.body.appendChild(div);
+div.className = 'well';
+div.appendChild(title);
+title.textContent = 'Settings';
+
+for (var setting in settings.docs_) {
+  var input = document.createElement('input');
+  var title = document.createElement('code');
+  var desc = document.createElement('div');
+
+  div.appendChild(document.createElement('br'));
+  div.appendChild(input);
+  input.type = 'checkbox';
+  input.checked = settings[setting];
+  input.addEventListener('change', function(setting, input, ev) {
+    settings[setting] = input.checked;
+  }.bind(null, setting, input));
+  div.appendChild(title);
+  title.textContent = setting;
+  div.appendChild(desc);
+  desc.textContent = settings.docs_[setting];
+}
+</script>
