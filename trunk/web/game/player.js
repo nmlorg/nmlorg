@@ -5,6 +5,7 @@
 (function() {
 
 nmlorg.require('nmlorg.game.mob');
+nmlorg.require('nmlorg.game.settings');
 nmlorg.require('nmlorg.io.audio');
 nmlorg.require('nmlorg.io.gamepad');
 nmlorg.require('nmlorg.io.keyboard');
@@ -15,7 +16,8 @@ nmlorg.require('nmlorg.io.orient');
 nmlorg.game.player = nmlorg.game.player || {};
 
 
-nmlorg.game.player.Player = function(initial, sideScroll) {
+/** @constructor */
+nmlorg.game.player.Player = function(initial, settings) {
   if (!nmlorg.game.player.sounds)
     nmlorg.game.player.sounds = {
         'step': new nmlorg.io.audio.Sound('/third_party/503990_SOUNDDOGS__fo.mp3'),
@@ -24,7 +26,9 @@ nmlorg.game.player.Player = function(initial, sideScroll) {
   this.keyboard = new nmlorg.io.keyboard.Listener(true);
   this.orient = new nmlorg.io.orient.Listener();
   this.mob = new nmlorg.game.mob.Mobile(initial);
-  this.sideScroll = !!sideScroll;
+  this.settings = new nmlorg.game.settings.Settings();
+  for (var k in settings)
+    this.settings[k] = settings[k];
 };
 
 
@@ -35,8 +39,6 @@ nmlorg.game.player.Player.prototype.lastStepSound = 0;
 
 
 nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
-  var gamepad = nmlorg.io.gamepad.getFirst();
-
   if (this.keyboard['1'])
     this.viewMode = 0;
   else if (this.keyboard['2'])
@@ -68,21 +70,67 @@ nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
       this.fovAngle = 170;
   }
 
-  var walk = 0, slide = 0, turn = 0;
-  var left = this.keyboard.Left || this.keyboard.A || (this.orient.y < -10) ||
-      gamepad.Left || ((gamepad.rightStickMag > .2) && (gamepad.rightStick < -1 / 6));
-  var right = this.keyboard.Right || this.keyboard.D || (this.orient.y > 10) ||
-      gamepad.Right || ((gamepad.rightStickMag > .2) && (gamepad.rightStick > 1 / 6));
-  var up = this.keyboard.Up || this.keyboard.W || (this.orient.x < -10) ||
-      gamepad.Up || ((gamepad.leftStickMag > .2) && (Math.abs(gamepad.leftStick) < 2 / 6));
-  var down = this.keyboard.Down || this.keyboard.S || (this.orient.x > 10) ||
-      gamepad.Down || ((gamepad.leftStickMag > .2) && (Math.abs(gamepad.leftStick) > 4 / 6));
-  var slideLeft = this.keyboard['<'] ||
-      ((gamepad.leftStickMag > .2) && (gamepad.leftStick < -1 / 6) && (gamepad.leftStick > -5 / 6));
-  var slideRight = this.keyboard['>'] ||
-      ((gamepad.leftStickMag > .2) && (gamepad.leftStick > 1 / 6) && (gamepad.leftStick < 5 / 6));
+  var left = false, right = false, up = false, down = false, slideLeft = false, slideRight = false;
+  var run = false, jump = false;
 
-  if (this.sideScroll) {
+  if (this.settings.keyboard) {
+    if (this.keyboard.Left || this.keyboard.A)
+      left = true;
+    if (this.keyboard.Right || this.keyboard.D)
+      right = true;
+    if (this.keyboard.Up || this.keyboard.W)
+      up = true;
+    if (this.keyboard.Down || this.keyboard.S)
+      down = true;
+    if (this.keyboard['<'])
+      slideLeft = true;
+    if (this.keyboard['>'])
+      slideRight = true;
+    if (this.keyboard.Shift)
+      run = true;
+    if (this.keyboard.Space)
+      jump = true;
+  }
+
+  if (this.settings.deviceorientation) {
+    if (this.orient.y < -10)
+      left = true;
+    if (this.orient.y > 10)
+      right = true;
+    if (this.orient.x < -10)
+      up = true;
+    if (this.orient.x > 10)
+      down = true;
+    if ((this.orient.dx * this.orient.dx +
+         this.orient.dy * this.orient.dy +
+         this.orient.dz * this.orient.dz) > 16)
+      jump = true;
+  }
+
+  if (this.settings.gamepad) {
+    var gamepad = nmlorg.io.gamepad.getFirst();
+
+    if (gamepad.Left || ((gamepad.rightStickMag > .2) && (gamepad.rightStick < -1 / 6)))
+      left = true;
+    if (gamepad.Right || ((gamepad.rightStickMag > .2) && (gamepad.rightStick > 1 / 6)))
+      right = true;
+    if (gamepad.Up || ((gamepad.leftStickMag > .2) && (Math.abs(gamepad.leftStick) < 2 / 6)))
+      up = true;
+    if (gamepad.Down || ((gamepad.leftStickMag > .2) && (Math.abs(gamepad.leftStick) > 4 / 6)))
+      down = true;
+    if ((gamepad.leftStickMag > .2) && (gamepad.leftStick < -1 / 6) && (gamepad.leftStick > -5 / 6))
+      slideLeft = true;
+    if ((gamepad.leftStickMag > .2) && (gamepad.leftStick > 1 / 6) && (gamepad.leftStick < 5 / 6))
+      slideRight = true;
+    if (gamepad.leftStickMag > .9)
+      run = true;
+    if (gamepad.A)
+      jump = true;
+  }
+
+  var walk = 0, slide = 0, turn = 0;
+
+  if (this.settings.sidescroll) {
     left = left || slideLeft;
     right = right || slideRight;
 
@@ -140,22 +188,18 @@ nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
       slide++;
   }
 
-  var jump = this.keyboard.Space ||
-      ((this.orient.dx * this.orient.dx + this.orient.dy * this.orient.dy + this.orient.dz * this.orient.dz) > 16) ||
-      gamepad.A;
-
-  var run = this.keyboard.Shift || (gamepad.leftStickMag > .9);
-
   this.mob.eachFrame(timeStep, walk, slide, turn, jump, run);
 
-  if (!this.mob.walkTime)
-    this.lastStepSound = 0;
-  else if ((this.mob.walkTime - this.lastStepSound) >= .3) {
-    nmlorg.game.player.sounds.step.play();
-    if ((this.mob.walkTime - this.lastStepSound) < 1)
-      this.lastStepSound += .3;
-    else
-      this.lastStepSound = this.mob.walkTime;
+  if (this.settings.sound) {
+    if (!this.mob.walkTime)
+      this.lastStepSound = 0;
+    else if ((this.mob.walkTime - this.lastStepSound) >= .3) {
+      nmlorg.game.player.sounds.step.play();
+      if ((this.mob.walkTime - this.lastStepSound) < 1)
+        this.lastStepSound += .3;
+      else
+        this.lastStepSound = this.mob.walkTime;
+    }
   }
 };
 
