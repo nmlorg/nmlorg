@@ -30,6 +30,7 @@ var buttonNames_ = [
 ];
 
 
+/** @constructor */
 nmlorg.io.gamepad.Gamepad = function(navGamepad) {
   for (var i = 0; i < buttonNames_.length; i++) {
     var pressed = (i < navGamepad.buttons.length) && navGamepad.buttons[i].pressed;
@@ -48,14 +49,20 @@ nmlorg.io.gamepad.Gamepad = function(navGamepad) {
 };
 
 
+/**
+ * Return an arbitrary Gamepad's state.
+ * @return {nmlorg.io.gamepad.Gamepad}
+ */
 nmlorg.io.gamepad.getFirst = function() {
-  var gamepads = navigator.getGamepads();
+  if (nmlorg.io.supported.gamepad) {
+    var gamepads = navigator.getGamepads();
 
-  for (var i = 0; i < gamepads.length; i++) {
-    var gamepad = gamepads[i];
+    for (var i = 0; i < gamepads.length; i++) {
+      var gamepad = gamepads[i];
 
-    if (gamepad)
-      return new nmlorg.io.gamepad.Gamepad(gamepad);
+      if (gamepad)
+        return new nmlorg.io.gamepad.Gamepad(gamepad);
+    }
   }
 
   return {

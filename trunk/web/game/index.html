@@ -12,6 +12,7 @@
 <script src="http://n.ml.org/nmlorg.js"></script>
 <script>
 nmlorg.require('nmlorg.game.settings');
+nmlorg.require('nmlorg.io');
 </script>
 
 <h1 style="white-space: nowrap"><img alt="n" src="/favicon.ico" style="width: .75em">mlorg.game</h1>
@@ -55,19 +56,28 @@ div.appendChild(title);
 title.textContent = 'Settings';
 
 for (var setting in settings.docs_) {
+  var label = document.createElement('label');
   var input = document.createElement('input');
   var title = document.createElement('code');
   var desc = document.createElement('div');
 
   div.appendChild(document.createElement('br'));
-  div.appendChild(input);
+  div.appendChild(label);
+  label.appendChild(input);
   input.type = 'checkbox';
   input.checked = settings[setting];
   input.addEventListener('change', function(setting, input, ev) {
     settings[setting] = input.checked;
   }.bind(null, setting, input));
-  div.appendChild(title);
+  label.appendChild(title);
   title.textContent = setting;
+  if ((setting in nmlorg.io.supported) && !nmlorg.io.supported[setting]) {
+    var warning = document.createElement('span');
+
+    label.appendChild(warning);
+    warning.className = 'bg-warning';
+    warning.innerHTML = '&mdash; not supported in your browser!';
+  }
   div.appendChild(desc);
   desc.textContent = settings.docs_[setting];
 }
