@@ -43,16 +43,22 @@ nmlorg.game.generator.Generator.prototype.add = function() {
   while (true) {
     parent = this.getParent_();
 
+    while (parent['got' + (side = this.prng.between(0, 3))])
+      ;
+
     if (parent.right > parent.rear) {
       width = this.prng.between(1, 3);
       length = this.prng.between(5, 25);
-    } else {
+    } else if (parent.right < parent.rear) {
       width = this.prng.between(5, 25);
       length = this.prng.between(1, 3);
+    } else if ((side == 0) || (side == 2)) {
+      width = this.prng.between(5, 25);
+      length = this.prng.between(1, 3);
+    } else {
+      width = this.prng.between(1, 3);
+      length = this.prng.between(5, 25);
     }
-
-    while (parent['got' + (side = this.prng.between(0, 3))])
-      ;
 
     var lx, ly;
 
