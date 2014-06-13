@@ -10,14 +10,18 @@
 nmlorg.io.keyboard = nmlorg.io.keyboard || {};
 
 
+/**
+ * The current state of the keyboard.
+ * @constructor
+ */
 nmlorg.io.keyboard.Listener = function(consume) {
   this.consume_ = consume;
-  document.addEventListener('keydown', this.handleKeyDown.bind(this));
-  document.addEventListener('keyup', this.handleKeyUp.bind(this));
+  document.addEventListener('keydown', this.handleKeyDown_.bind(this));
+  document.addEventListener('keyup', this.handleKeyUp_.bind(this));
 };
 
 
-nmlorg.io.keyboard.Listener.prototype.decodeSide = function(ev) {
+nmlorg.io.keyboard.Listener.prototype.decodeSide_ = function(ev) {
   switch (ev.location) {
     case 1:
       return 'L';
@@ -35,7 +39,7 @@ nmlorg.io.keyboard.Listener.prototype.decodeSide = function(ev) {
 };
 
 
-nmlorg.io.keyboard.Listener.prototype.decodeKey = function(ev) {
+nmlorg.io.keyboard.Listener.prototype.decodeKey_ = function(ev) {
   var keyCode = ev.keyCode & 0x7f;
 
   switch (keyCode) {
@@ -81,9 +85,9 @@ nmlorg.io.keyboard.Listener.prototype.decodeKey = function(ev) {
 };
 
 
-nmlorg.io.keyboard.Listener.prototype.handleKeyDown = function(ev) {
-  var side = this.decodeSide(ev);
-  var key = this.decodeKey(ev);
+nmlorg.io.keyboard.Listener.prototype.handleKeyDown_ = function(ev) {
+  var side = this.decodeSide_(ev);
+  var key = this.decodeKey_(ev);
 
   this[side + key] = true;
 
@@ -98,9 +102,9 @@ nmlorg.io.keyboard.Listener.prototype.handleKeyDown = function(ev) {
 };
 
 
-nmlorg.io.keyboard.Listener.prototype.handleKeyUp = function(ev) {
-  var side = this.decodeSide(ev);
-  var key = this.decodeKey(ev);
+nmlorg.io.keyboard.Listener.prototype.handleKeyUp_ = function(ev) {
+  var side = this.decodeSide_(ev);
+  var key = this.decodeKey_(ev);
 
   this[side + key] = false;
 

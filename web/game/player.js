@@ -209,7 +209,7 @@ nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
 
   this.mob.eachFrame(timeStep, walk, slide, turn, jump, run);
 
-  if (this.settings.sound) {
+  if (this.settings.audio) {
     if (!this.mob.walkTime)
       this.lastStepSound = 0;
     else if ((this.mob.walkTime - this.lastStepSound) >= .3) {

@@ -8,9 +8,13 @@
 nmlorg.io.audio = nmlorg.io.audio || {};
 
 
+/**
+ * Get a shared AudioContext.
+ * @return {AudioContext}
+ */
 nmlorg.io.audio.defaultContext = function() {
   if (nmlorg.io.audio.defaultContext_ === undefined) {
-    if (!window.AudioContext) {
+    if (!nmlorg.io.supported.audio) {
       nmlorg.io.audio.defaultContext_ = null;
       console.log('The Web Audio API is apparently not supported in this browser.');
     } else
@@ -20,6 +24,12 @@ nmlorg.io.audio.defaultContext = function() {
 };
 
 
+/**
+ * A single playable sound.
+ * @param {string} src The [potentially relative] URL to a sound file.
+ * @param {AudioContext} [context] The AudioContext to create the sound within.
+ * @constructor
+ */
 nmlorg.io.audio.Sound = function(src, context) {
   this.context = context || nmlorg.io.audio.defaultContext();
   if (!this.context)
@@ -38,7 +48,7 @@ nmlorg.io.audio.Sound = function(src, context) {
 };
 
 
-nmlorg.io.audio.Sound.prototype.makeSource = function(output) {
+nmlorg.io.audio.Sound.prototype.makeSource_ = function(output) {
   var source = this.context.createBufferSource();
 
   source.buffer = this.buffer;
@@ -49,11 +59,15 @@ nmlorg.io.audio.Sound.prototype.makeSource = function(output) {
 };
 
 
+/**
+ * Play the sound after an optional delay. (Multiple, overlapping invocations are fine.)
+ * @param {number} [delay] Wait this many ms before playing the sound.
+ */
 nmlorg.io.audio.Sound.prototype.play = function(delay) {
   if (!this.buffer)
     return;
 
-  var source = this.makeSource(this.context.destination);
+  var source = this.makeSource_(this.context.destination);
 
   source.start(delay || 0);
   return source;

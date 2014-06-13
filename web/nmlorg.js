@@ -96,29 +96,17 @@ nmlorg.isInt = function(v) {
 
 
 /**
- * nmlorg.provide('first.second.third') ensures window.first.second.third exists, creating any steps in 
- * the path as necessary. Right now, this does not define a JsDoc namespace, so modules should continue 
- * defining their [annotated] namespaces manually.
- */
-nmlorg.provide = function(namespace) {
-  var parts = namespace.split('.');
-  var container = window;
-
-  for (var i = 0; i < parts.length; i++) {
-    if (!(parts[i] in container))
-      container[parts[i]] = {};
-    container = container[parts[i]];
-  }
-};
-
-
-/**
  * Return <code>deg</code> radians in degrees.
  * @param {number} deg
  * @return {number}
  */
 nmlorg.radToDeg = function(rad) {
   return 180 * rad / Math.PI;
+};
+
+
+nmlorg.thirdParty_ = {
+    'mat4': 'third_party/glMatrix-0.9.5.min.js',
 };
 
 
@@ -130,32 +118,35 @@ nmlorg.radToDeg = function(rad) {
  * @param {string} namespace A namespace path in the form first.second.third.
  */
 nmlorg.require = function(namespace) {
-  var parts = namespace.split('.');
-  var container = window;
-  var path = [];
+  if (namespace in nmlorg.thirdParty_) {
+    if (!(namespace in window)) {
+      window[namespace] = {};
+      nmlorg.loadScript_(nmlorg.thirdParty_[namespace]);
+    }
+    return window[namespace];
+  }
 
-  for (var i = 0; i < parts.length; i++) {
-    if (!(parts[i] in container))
-      break;
+  var parts = namespace.split('.');
+
+  if (parts[0] != 'nmlorg') {
+    alert('Unable to load "' + namespace + '".');
+    return;
+  }
+
+  var container = nmlorg;
+
+  for (var i = 1; i < parts.length; i++) {
+    if (!(parts[i] in container)) {
+      container[parts[i]] = {};
+      nmlorg.loadScript_(parts.slice(1, i + 1).join('/') + '.js');
+    }
     container = container[parts[i]];
   }
-  if (i == parts.length)
-    return container;
+  return container;
+};
 
-  nmlorg.provide(namespace);
 
-  var src;
-
-  if (namespace == 'mat4') {
-    src = 'third_party/glMatrix-0.9.5.min.js';
-  } else {
-    // For now, hack "nmlorg." out:
-    if (parts[0] == 'nmlorg')
-      parts = parts.slice(1);
-
-    src = parts.join('/') + '.js';
-  }
-
+nmlorg.loadScript_ = function(src) {
   document.write('<script src="' + nmlorg.baseUrl_ + src + '"></script>');
 };
 

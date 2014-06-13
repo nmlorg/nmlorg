@@ -8,20 +8,23 @@
 nmlorg.io.touch = nmlorg.io.touch || {};
 
 
-/** @constructor */
+/**
+ * The current state of all active "touches" on the screen.
+ * @constructor
+ */
 nmlorg.io.touch.Listener = function(parent) {
   if (!parent)
     parent = document.body;
 
-  parent.addEventListener('touchstart', this.handleTouchMove.bind(this));
-  parent.addEventListener('touchend', this.handleTouchEnd.bind(this));
-  parent.addEventListener('touchcancel', this.handleTouchEnd.bind(this));
-  parent.addEventListener('touchleave', this.handleTouchEnd.bind(this));
-  parent.addEventListener('touchmove', this.handleTouchMove.bind(this));
+  parent.addEventListener('touchstart', this.handleTouchMove_.bind(this));
+  parent.addEventListener('touchend', this.handleTouchEnd_.bind(this));
+  parent.addEventListener('touchcancel', this.handleTouchEnd_.bind(this));
+  parent.addEventListener('touchleave', this.handleTouchEnd_.bind(this));
+  parent.addEventListener('touchmove', this.handleTouchMove_.bind(this));
 };
 
 
-nmlorg.io.touch.Listener.prototype.handleTouchMove = function(ev) {
+nmlorg.io.touch.Listener.prototype.handleTouchMove_ = function(ev) {
   var touches = ev.changedTouches;
 
   for (var i = 0; i < touches.length; i++) {
@@ -37,7 +40,7 @@ nmlorg.io.touch.Listener.prototype.handleTouchMove = function(ev) {
 };
 
 
-nmlorg.io.touch.Listener.prototype.handleTouchEnd = function(ev) {
+nmlorg.io.touch.Listener.prototype.handleTouchEnd_ = function(ev) {
   var touches = ev.changedTouches;
 
   for (var i = 0; i < touches.length; i++)

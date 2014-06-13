@@ -11,11 +11,11 @@ nmlorg.game.settings = nmlorg.game.settings || {};
 /** @constructor */
 nmlorg.game.settings.Settings = function() {
   this.docs_ = {};
+  this.add('audio', true, 'Play sound effects.');
   this.add('deviceorientation', true, "Use the device's orientation to move and jump.");
   this.add('gamepad', true, 'Use an Xbox- or PS3-style gamepad to move and jump.');
   this.add('keyboard', true, 'Use the keyboard to move and jump.');
   this.add('sidescroll', false, 'Side-scrolling control mode.');
-  this.add('sound', true, 'Play sound effects.');
   this.add('touch', true, 'Allow the player to move using screen touches.');
 };
 
