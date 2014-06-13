@@ -39,6 +39,19 @@ nmlorg.threed.gl.createCanvas = function(width, height) {
 nmlorg.threed.gl.createContext = function(canvas) {
   var gl = canvas.getContext('experimental-webgl') || canvas.getContext('webgl');
 
+  if (!gl) {
+    var iframe = document.createElement('iframe');
+
+    document.body.appendChild(iframe);
+    iframe.style.position = 'absolute';
+    iframe.style.width = (.8 * document.body.clientWidth) + 'px';
+    iframe.style.left = (.1 * document.body.clientWidth) + 'px';
+    iframe.style.height = (.8 * document.body.clientHeight) + 'px';
+    iframe.style.top = (.1 * document.body.clientHeight) + 'px';
+    iframe.style.backgroundColor = 'white';
+    iframe.src = 'http://get.webgl.org/';
+  }
+
   gl.viewportWidth = canvas.width;
   gl.viewportHeight = canvas.height;
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
