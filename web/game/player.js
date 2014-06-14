@@ -34,20 +34,13 @@ nmlorg.game.player.Player = function(initial, settings) {
 };
 
 
-nmlorg.game.player.Player.prototype.viewMode = 0;
+nmlorg.game.player.Player.prototype.controls = 'relative';
 nmlorg.game.player.Player.prototype.eyeAngle = 0;
 nmlorg.game.player.Player.prototype.fovAngle = 45;
 nmlorg.game.player.Player.prototype.lastStepSound = 0;
 
 
 nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
-  if (this.keyboard['1'])
-    this.viewMode = 0;
-  else if (this.keyboard['2'])
-    this.viewMode = 1;
-  else if (this.keyboard['3'])
-    this.viewMode = 2;
-
   if (this.keyboard.Q) {
     this.eyeAngle += timeStep * 45;
     if (this.eyeAngle > 90)
@@ -149,7 +142,8 @@ nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
 
   var walk = 0, slide = 0, turn = 0;
 
-  if (this.settings.sidescroll) {
+  switch (this.controls) {
+   case 'absolute':
     left = left || slideLeft;
     right = right || slideRight;
 
@@ -177,7 +171,8 @@ nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
       this.mob.direction = 0;
       walk = 1;
     }
-  } else {
+    break;
+   case 'relative':
     if (left)
       turn++;
 
@@ -205,6 +200,8 @@ nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
 
     if (slideRight)
       slide++;
+
+    break;
   }
 
   this.mob.eachFrame(timeStep, walk, slide, turn, jump, run);

@@ -193,28 +193,13 @@ world.eachFrame = function(timeStep) {
   }
 
   canvas.setPerspective(player.fovAngle);
-  if (player.viewMode == 0)
-    canvas.setCamera(absPos.x,
-                     absPos.y,
-                     absPos.z + 1.7018,
-                     absPos.x + forwardX,
-                     absPos.y + forwardY,
-                     absPos.z + 1.7018 + 10 * Math.sin(nmlorg.degToRad(player.eyeAngle)),
-                     0, 0, 1);
-  else if (player.viewMode == 1)
-    canvas.setCamera(absPos.x - forwardX,
-                     absPos.y - forwardY,
-                     absPos.z + 1.7018 + 3,
-                     absPos.x,
-                     absPos.y,
-                     absPos.z + 1.7018,
-                     0, 0, 1);
-  else if (player.viewMode == 2)
-    canvas.setCamera(absPos.x - forwardX,
-                     absPos.y - forwardY,
-                     absPos.z + 1.7018 + 50,
-                     absPos.x, absPos.y, absPos.z + 1.7018,
-                     forwardX, forwardY, 0);
+  canvas.setCamera(absPos.x - forwardX,
+                   absPos.y - forwardY,
+                   absPos.z + 1.7018 + 3,
+                   absPos.x,
+                   absPos.y,
+                   absPos.z + 1.7018,
+                   0, 0, 1);
 
   overviewCanvas.setCamera(absPos.x, absPos.y, absPos.z + 20,
                            absPos.x, absPos.y, absPos.z,
