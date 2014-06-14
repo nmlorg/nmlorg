@@ -35,36 +35,10 @@ nmlorg.game.player.Player = function(initial, settings) {
 
 
 nmlorg.game.player.Player.prototype.controls = 'relative';
-nmlorg.game.player.Player.prototype.eyeAngle = 0;
-nmlorg.game.player.Player.prototype.fovAngle = 45;
 nmlorg.game.player.Player.prototype.lastStepSound = 0;
 
 
 nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
-  if (this.keyboard.Q) {
-    this.eyeAngle += timeStep * 45;
-    if (this.eyeAngle > 90)
-      this.eyeAngle = 90;
-  }
-
-  if (this.keyboard.Z) {
-    this.eyeAngle -= timeStep * 45;
-    if (this.eyeAngle < -90)
-      this.eyeAngle = -90;
-  }
-
-  if (this.keyboard[';']) {
-    this.fovAngle -= timeStep * 45;
-    if (this.fovAngle < 1)
-      this.fovAngle = 1;
-  }
-
-  if (this.keyboard['=']) {
-    this.fovAngle += timeStep * 45;
-    if (this.fovAngle > 170)
-      this.fovAngle = 170;
-  }
-
   var left = false, right = false, up = false, down = false, slideLeft = false, slideRight = false;
   var run = false, jump = false;
 
@@ -179,21 +153,11 @@ nmlorg.game.player.Player.prototype.eachFrame = function(timeStep) {
     if (right)
       turn--;
 
-    if (up) {
+    if (up)
       walk++;
-      if (this.eyeAngle != 0)
-        this.eyeAngle -= timeStep * this.eyeAngle / 2;
-      if (this.fovAngle != 45)
-        this.fovAngle -= timeStep * (this.fovAngle - 45) / 10;
-    }
 
-    if (down) {
+    if (down)
       walk--;
-      if (this.eyeAngle != 0)
-        this.eyeAngle -= timeStep * this.eyeAngle / 3;
-      if (this.fovAngle != 45)
-        this.fovAngle -= timeStep * (this.fovAngle - 45) / 15;
-    }
 
     if (slideLeft)
       slide--;

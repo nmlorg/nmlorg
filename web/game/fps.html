@@ -174,6 +174,8 @@ for (var i = 0; i < 20; i++)
 
 var hud = document.getElementById('hud');
 
+canvas.setPerspective(45);
+
 world.eachFrame = function(timeStep) {
   player.eachFrame(timeStep);
 
@@ -192,7 +194,6 @@ world.eachFrame = function(timeStep) {
     mobPhys.rotate(nmlorg.degToRad(walkDir), 1, 0, 0);
   }
 
-  canvas.setPerspective(player.fovAngle);
   canvas.setCamera(absPos.x - forwardX,
                    absPos.y - forwardY,
                    absPos.z + 1.7018 + 3,
