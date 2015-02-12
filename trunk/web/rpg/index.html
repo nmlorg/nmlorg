@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>nmlorg.rpg</title>
+
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Orbitron:700">
+<link rel="stylesheet" href="/site.css">
+
+<script src="http://n.ml.org/nmlorg.js"></script>
+<script>
+nmlorg.require('nmlorg.rpg.abilityscores');
+</script>
+
+<h1 style="white-space: nowrap"><img alt="n" src="/favicon.ico" style="width: .75em">mlorg.rpg</h1>
+
+<script>
+var dice = new nmlorg.rpg.basics.Dice();
+var abilityScores = new nmlorg.rpg.abilityscores.AbilityScores();
+
+for (var i = 0; i < 3; i++) {
+  abilityScores.reroll(dice);
+
+  document.write('New character:<br>');
+  for (var ability in nmlorg.rpg.abilityscores.ABILITIES)
+    document.write(ability + ': ' + abilityScores[ability] + ' (' + (abilityScores[ability + 'Modifier'] > 0 ? '+' : '') + abilityScores[ability + 'Modifier'] + ')<br>');
+  document.write('<br>');
+}
+</script>
