@@ -35,12 +35,12 @@ for (var k in nmlorg.rpg.abilityscores.ABILITIES) (function() {
 
 
 Object.defineProperty(nmlorg.rpg.abilityscores.AbilityScores.prototype, 'attackModifier',
-                      function() {
+                      {'configurable': false, 'enumerable': true, 'get': function() {
   // A creature with no Strength score can't exert force, usually because it has no physical body or
   // because it doesn't move. The creature automatically fails Strength checks. If the creature can
   // attack, it applies its Dexterity modifier to its base attack instead of a Strength modifier.
   return this.strength > 0 ? this.strengthModifier : this.dexterityModifier;
-});
+}});
 
 
 nmlorg.rpg.abilityscores.AbilityScores.prototype.reroll = function(dice) {

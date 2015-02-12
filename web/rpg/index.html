@@ -6,8 +6,16 @@
 <title>nmlorg.rpg</title>
 
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Homemade+Apple">
 <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Orbitron:700">
 <link rel="stylesheet" href="/site.css">
+
+<style>
+.hand {
+  font-family: 'Homemade Apple', sans-serif;
+  text-shadow: 1px 1px 3px #666666;
+}
+</style>
 
 <script src="http://n.ml.org/nmlorg.js"></script>
 <script>
@@ -17,15 +25,31 @@ nmlorg.require('nmlorg.rpg.abilityscores');
 <h1 style="white-space: nowrap"><img alt="n" src="/favicon.ico" style="width: .75em">mlorg.rpg</h1>
 
 <script>
-var dice = new nmlorg.rpg.basics.Dice();
-var abilityScores = new nmlorg.rpg.abilityscores.AbilityScores();
+var well = document.createElement('div');
 
-for (var i = 0; i < 3; i++) {
+document.body.appendChild(well);
+well.className = 'well';
+
+var input = document.createElement('input');
+var div = document.createElement('div');
+
+well.appendChild(input);
+well.appendChild(document.createElement('br'));
+well.appendChild(div);
+input.value = Date.now();
+input.className = 'form-control';
+input.onchange = function() {
+  var dice = new nmlorg.rpg.basics.Dice(Number(input.value));
+  var abilityScores = new nmlorg.rpg.abilityscores.AbilityScores();
+
   abilityScores.reroll(dice);
 
-  document.write('New character:<br>');
+  div.innerHTML = '';
   for (var ability in nmlorg.rpg.abilityscores.ABILITIES)
-    document.write(ability + ': ' + abilityScores[ability] + ' (' + (abilityScores[ability + 'Modifier'] > 0 ? '+' : '') + abilityScores[ability + 'Modifier'] + ')<br>');
-  document.write('<br>');
-}
+    div.innerHTML += ability + ': ' + abilityScores[ability] + ' (' + (abilityScores[ability + 'Modifier'] > 0 ? '+' : '') + abilityScores[ability + 'Modifier'] + ')<br>';
+  ability = 'attack';
+  div.innerHTML += ability + ': ' + abilityScores[ability] + ' (' + (abilityScores[ability + 'Modifier'] > 0 ? '+' : '') + abilityScores[ability + 'Modifier'] + ')<br>';
+};
+input.onchange();
+div.className = 'hand';
 </script>
