@@ -11,8 +11,8 @@ nmlorg.require('nmlorg.math.prng');
 nmlorg.rpg.basics = nmlorg.rpg.basics || {};
 
 
-nmlorg.rpg.basics.Dice = function() {
-  this.prng = new nmlorg.math.prng.PRNG(1);
+nmlorg.rpg.basics.Dice = function(seed) {
+  this.prng = new nmlorg.math.prng.PRNG(seed || 1);
 };
 
 
