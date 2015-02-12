@@ -8,15 +8,15 @@
 nmlorg.require('nmlorg.math.prng');
 
 /** @namespace */
-nmlorg.rpg.basics = nmlorg.rpg.basics || {};
+nmlorg.rpg.srd.basics = nmlorg.rpg.srd.basics || {};
 
 
-nmlorg.rpg.basics.Dice = function(seed) {
+nmlorg.rpg.srd.basics.Dice = function(seed) {
   this.prng = new nmlorg.math.prng.PRNG(seed || 1);
 };
 
 
-nmlorg.rpg.basics.Dice.prototype.roll = function(s) {
+nmlorg.rpg.srd.basics.Dice.prototype.roll = function(s) {
   var pieces = s.split(/([^0-9]+)/);
   var rolls = parseInt(pieces[0] || 1);
   var dieType = parseInt(pieces[2]);
@@ -32,7 +32,7 @@ nmlorg.rpg.basics.Dice.prototype.roll = function(s) {
 };
 
 
-nmlorg.rpg.basics.Dice.prototype.resolve = function(modifier, target) {
+nmlorg.rpg.srd.basics.Dice.prototype.resolve = function(modifier, target) {
   return this.roll('d20') + modifier >= target;
 };
 

@@ -19,7 +19,8 @@
 
 <script src="http://n.ml.org/nmlorg.js"></script>
 <script>
-nmlorg.require('nmlorg.rpg.abilityscores');
+nmlorg.require('nmlorg.rpg.srd.abilityscores');
+nmlorg.require('nmlorg.rpg.srd.basics');
 </script>
 
 <h1 style="white-space: nowrap"><img alt="n" src="/favicon.ico" style="width: .75em">mlorg.rpg</h1>
@@ -36,20 +37,19 @@ var div = document.createElement('div');
 well.appendChild(input);
 well.appendChild(document.createElement('br'));
 well.appendChild(div);
-input.value = Date.now();
+input.placeholder = 'Enter a number between 1 and 1,000,000,000.';
 input.className = 'form-control';
 input.onchange = function() {
-  var dice = new nmlorg.rpg.basics.Dice(Number(input.value));
-  var abilityScores = new nmlorg.rpg.abilityscores.AbilityScores();
+  var dice = new nmlorg.rpg.srd.basics.Dice(Number(input.value.replace(/,/g, '')));
+  var abilityScores = new nmlorg.rpg.srd.abilityscores.AbilityScores();
 
   abilityScores.reroll(dice);
 
   div.innerHTML = '';
-  for (var ability in nmlorg.rpg.abilityscores.ABILITIES)
-    div.innerHTML += ability + ': ' + abilityScores[ability] + ' (' + (abilityScores[ability + 'Modifier'] > 0 ? '+' : '') + abilityScores[ability + 'Modifier'] + ')<br>';
+  for (var ability in nmlorg.rpg.srd.abilityscores.ABILITIES)
+    div.innerHTML += ability + ': <span class="hand">' + abilityScores[ability] + ' (' + (abilityScores[ability + 'Modifier'] > 0 ? '+' : '') + abilityScores[ability + 'Modifier'] + ')</span><br>';
   ability = 'attack';
-  div.innerHTML += ability + ': ' + abilityScores[ability] + ' (' + (abilityScores[ability + 'Modifier'] > 0 ? '+' : '') + abilityScores[ability + 'Modifier'] + ')<br>';
+  div.innerHTML += ability + ': <span class="hand">' + abilityScores[ability] + ' (' + (abilityScores[ability + 'Modifier'] > 0 ? '+' : '') + abilityScores[ability + 'Modifier'] + ')</span><br>';
 };
 input.onchange();
-div.className = 'hand';
 </script>
