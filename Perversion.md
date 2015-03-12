@@ -1,0 +1,56 @@
+# Goals #
+
+  * Create a system that emulates the revision-controlled-file modification workflow used at Google using the googlecode.com Subversion repository instead of Perforce.
+
+# Notes #
+
+```
+mkdir test1
+cd test1
+mkdir .nvn
+nvn client
+```
+
+At this point $EDITOR will be invoked on a file in /tmp that will allow you to provide a client name and possibly other attributes about your new Perversion client. Assuming you provide:
+
+```
+Client: n-test1
+View:
+        //nmlorg/trunk/... //n-test1/trunk/...
+        //nmlorg/wiki/... //n-test1/wiki/...
+```
+
+nvn will perform:
+
+```
+svn mkdir https://nmlorg.googlecode.com/svn/clients/n-test1
+svn copy https://nmlorg.googlecode.com/svn/trunk https://nmlorg.googlecode.com/svn/clients/n-test1
+svn copy https://nmlorg.googlecode.com/svn/wiki https://nmlorg.googlecode.com/svn/clients/n-test1
+svn checkout https://nmlorg.googlecode.com/svn/clients/n-test1/trunk trunk
+svn checkout https://nmlorg.googlecode.com/svn/clients/n-test1/wiki wiki
+```
+
+Back to what you type:
+
+```
+echo "Added from n-test1" >> trunk/myfile
+[at this point https://nmlorg.googlecode.com/svn/trunk/myfile is modified by someone else]
+nvn sync
+```
+
+nvn will then execute:
+
+```
+svn propget LASTREVISION trunk/myfile
+svn merge https://nmlorg.googlecode.com/svn/trunk/myfile@12 https://nmlorg.googlecode.com/svn/trunk/myfile trunk/myfile
+svn propset LASTREVISION 13 trunk/myfile
+```
+
+in order to incorporate the changes made from the committed version of myfile.
+
+Since there is a colliding merge, you will be offered the choice to force your version (replacing myfile with myfile.working), discard your changes (replacing myfile with myfile.merge-right.[r13](https://code.google.com/p/nmlorg/source/detail?r=13)), or manually resolve (invoking $EDITOR on myfile to let you resolve the conflict). After any of these returns and validates, nvn will call svn resolved trunk/myfile to get rid of the trunk/myfile.?? files. The next time you nvn upload (or directly call svn commit, though that command will be deprecated), the post-merge version of trunk/myfile will go into your branch at the same time the LASTREVISION property is updated to reflect the version you most recently synched.
+
+```
+/home/n/test1/trunk/myfile - merging //nmlorg/trunk/myfile@12:13
+Accept(a) Diff(d) Edit(e) Merge(m) Skip(s) Help(?) e:
+```
