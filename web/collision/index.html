@@ -7,16 +7,16 @@
 
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Orbitron:700">
-<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="../site.css">
 
-<h1 style="white-space: nowrap"><img alt="n" src="/favicon.ico" style="width: .75em">mlorg.collision</h1>
+<h1 style="white-space: nowrap"><img alt="n" src="../favicon.ico" style="width: .75em">mlorg.collision</h1>
 
 <ul class="nav nav-tabs">
-  <li><a href="/">nmlorg</a></li>
-  <li><a href="/threed/">Rendering</a></li>
-  <li><a href="/physics.html">Physics</a></li>
-  <li class="active"><a href="/collision/">Collisions</a></li>
-  <li><a href="/game/">Gaming</a></li>
+  <li><a href="../">nmlorg</a></li>
+  <li><a href="../threed/">Rendering</a></li>
+  <li><a href="../physics.html">Physics</a></li>
+  <li class="active"><a href=".">Collisions</a></li>
+  <li><a href="../game/">Gaming</a></li>
 </ul>
 
 <h2 id="collisions">Collision detection and handling</h2>
@@ -32,17 +32,17 @@
 <a href="testdetect.html">detect.js</a> &bull; 
 <a href="testresponse.html">response.js</a> &bull; 
 <a href="testworld.html">world.js</a> &bull; 
-<a href="/math/testcubic.html">cubic.js</a> &bull; 
-<a href="/math/testquadratic.html">quadratic.js</a> &bull; 
-<a href="/math/testquartic.html">quartic.js</a></li>
+<a href="../math/testcubic.html">cubic.js</a> &bull; 
+<a href="../math/testquadratic.html">quadratic.js</a> &bull; 
+<a href="../math/testquartic.html">quartic.js</a></li>
 </ul>
 
 <p>The physics object-management system can be thought of as keeping track of the positions and 
 velocities of the <b>centers</b> of objects in the physical model. An independent collision 
 object-management system (provided by <a 
-href="/jsdoc/symbols/src/collision_detect.js.html">collision/detect.js</a>, <a 
-href="/jsdoc/symbols/src/collision_response.js.html">collision/response.js</a>, and <a 
-href="/jsdoc/symbols/src/collision_world.js.html">collision/world.js</a>) extends this model to include a 
+href="../jsdoc/symbols/src/collision_detect.js.html">collision/detect.js</a>, <a 
+href="../jsdoc/symbols/src/collision_response.js.html">collision/response.js</a>, and <a 
+href="../jsdoc/symbols/src/collision_world.js.html">collision/world.js</a>) extends this model to include a 
 simplified shape and material behavior for each object. (The collision shape is intentionally kept 
 separate from the geometry defined by the world renderer's own object manager to simplify the math. In 
 many cases, individual objects will be modeled as spheres to calculate collisions, even if they are 
@@ -132,7 +132,7 @@ with obj3, which could not have been predicted based on the objects' velocities 
 frame. Therefore, the world needs to predict the earliest collision first, adjust all colliding objects' 
 velocities, and then completely restart the collision detection process, until there are no more 
 collisions before the time remaining in the current frame. This is similar to the physical object's <a 
-href="/jsdoc/symbols/nmlorg.physics.Object.html#compound"><code>compound</code></a>, which subdivides the current 
+href="../jsdoc/symbols/nmlorg.physics.Object.html#compound"><code>compound</code></a>, which subdivides the current 
 frame to calculate the object's changes to velocity and position with variable acceleration; however, to 
 perform accurate collision detection, all objects must be checked at once.</p>
 
@@ -161,11 +161,11 @@ perform accurate collision detection, all objects must be checked at once.</p>
 
 <p>To predict when two objects are colliding, the collision system needs to know both the positions of 
 both objects' centers (<a 
-href="/jsdoc/symbols/nmlorg.physics.Object.html"><code>nmlorg.physics.Object</code></a>) and their shapes. To 
+href="../jsdoc/symbols/nmlorg.physics.Object.html"><code>nmlorg.physics.Object</code></a>) and their shapes. To 
 simplify the math of collision detection, all objects are modeled as either spheres <strike>or 2D 
 surfaces</strike> via <a 
-href="/jsdoc/symbols/nmlorg.collision.detect.Shape.html"><code>nmlorg.collision.detect.Shape</code></a> subclasses (<a 
-href="/jsdoc/symbols/nmlorg.collision.detect.Sphere.html"><code>nmlorg.collision.detect.Sphere</code></a>).</p>
+href="../jsdoc/symbols/nmlorg.collision.detect.Shape.html"><code>nmlorg.collision.detect.Shape</code></a> subclasses (<a 
+href="../jsdoc/symbols/nmlorg.collision.detect.Sphere.html"><code>nmlorg.collision.detect.Sphere</code></a>).</p>
 
 <pre>
   var collisionWorld = new nmlorg.collision.world.World();
@@ -261,7 +261,7 @@ obj2.vel</code>.</p>
 </pre>
 
 <p>A quadratic equation solver is available as <a 
-href="/jsdoc/symbols/nmlorg.math.quadratic.html#.solve"><code>nmlorg.math.quadratic.solve</code></a>.</p>
+href="../jsdoc/symbols/nmlorg.math.quadratic.html#.solve"><code>nmlorg.math.quadratic.solve</code></a>.</p>
 
 <h4>Constant acceleration</h4>
 
@@ -347,9 +347,9 @@ Assuming constant acceleration, the equation for the position of an object at a 
 </pre>
 
 <p>A quartic equation solver is available as <a 
-href="/jsdoc/symbols/nmlorg.math.quartic.html#.solve"><code>nmlorg.math.quartic.solve</code></a>. The full 
+href="../jsdoc/symbols/nmlorg.math.quartic.html#.solve"><code>nmlorg.math.quartic.solve</code></a>. The full 
 detection algorithm is implemented as <a 
-href="/jsdoc/symbols/nmlorg.collision.detect.html#.timeToOrigin"><code>nmlorg.collision.detect.timeToOrigin</code></a>.</p>
+href="../jsdoc/symbols/nmlorg.collision.detect.html#.timeToOrigin"><code>nmlorg.collision.detect.timeToOrigin</code></a>.</p>
 
 <!--
 [[However, for now 
@@ -389,7 +389,7 @@ stop moving up at all but continue moving away from you, simply rolling along th
 <p>Now visualize dropping an object the same size, shape, and mass of the rubber ball, but made out of 
 concrete. After the first collision with the floor, it will simply start rolling, rather than bouncing. 
 The difference between the two collisions can be modeled as a difference in the objects' material, via 
-<a href="/jsdoc/symbols/nmlorg.collision.response.Material.html"><code>nmlorg.collision.response.Material</code></a>.</p>
+<a href="../jsdoc/symbols/nmlorg.collision.response.Material.html"><code>nmlorg.collision.response.Material</code></a>.</p>
 
 <pre>
   var collisionWorld = new nmlorg.collision.world.World();
@@ -819,18 +819,18 @@ re-separate the final relative velocity into object 1's and object 2's.</p>
 
 <p>When obj1.pos.z != obj2.pos.z, the simple angle subtraction separation won't quite cut it. To fully 
 support arbitrary 3D position and velocity differences, <a 
-href="/jsdoc/symbols/src/collision_response.js.html">collision/response.js</a> separates out the 
+href="../jsdoc/symbols/src/collision_response.js.html">collision/response.js</a> separates out the 
 colliding component using a rotation matrix (shifting [dx, dy, dz] first to the plane defined by the x 
 and z axes, then to the x axis), available as <a 
-href="/jsdoc/symbols/nmlorg.collision.response.html#.transformVelocity"><code>nmlorg.collision.response.transformVelocity</code></a> 
+href="../jsdoc/symbols/nmlorg.collision.response.html#.transformVelocity"><code>nmlorg.collision.response.transformVelocity</code></a> 
 and <a 
-href="/jsdoc/symbols/nmlorg.collision.response.html#.restoreVelocity"><code>nmlorg.collision.response.restoreVelocity</code></a>. 
+href="../jsdoc/symbols/nmlorg.collision.response.html#.restoreVelocity"><code>nmlorg.collision.response.restoreVelocity</code></a>. 
 The full response algorithm is implemented as <a 
-href="/jsdoc/symbols/nmlorg.collision.response.Material.html#handleCollision"><code>material.handleCollision</code></a>.</p>
+href="../jsdoc/symbols/nmlorg.collision.response.Material.html#handleCollision"><code>material.handleCollision</code></a>.</p>
 
 </div>
 </div>
 
 <div class="well">
-Next: <a href="/game/">Game mechanics</a>
+Next: <a href="../game/">Game mechanics</a>
 </div>

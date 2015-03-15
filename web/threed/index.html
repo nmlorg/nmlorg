@@ -7,16 +7,16 @@
 
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Orbitron:700">
-<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="../site.css">
 
-<h1 style="white-space: nowrap"><img alt="n" src="/favicon.ico" style="width: .75em">mlorg.threed</h1>
+<h1 style="white-space: nowrap"><img alt="n" src="../favicon.ico" style="width: .75em">mlorg.threed</h1>
 
 <ul class="nav nav-tabs">
-  <li><a href="/">nmlorg</a></li>
-  <li class="active"><a href="/threed/">Rendering</a></li>
-  <li><a href="/physics.html">Physics</a></li>
-  <li><a href="/collision/">Collisions</a></li>
-  <li><a href="/game/">Gaming</a></li>
+  <li><a href="../">nmlorg</a></li>
+  <li class="active"><a href=".">Rendering</a></li>
+  <li><a href="../physics.html">Physics</a></li>
+  <li><a href="../collision/">Collisions</a></li>
+  <li><a href="../game/">Gaming</a></li>
 </ul>
 
 <h2 id="rendering">Simple rendering</h2>
@@ -31,7 +31,7 @@ environment builder</a></li>
 </ul>
 
 <p>Every object starts off as a shape (<a 
-href="/jsdoc/symbols/nmlorg.threed.shape.Shape.html"><code>nmlorg.threed.shape.Shape</code></a>). A shape contains geometry, 
+href="../jsdoc/symbols/nmlorg.threed.shape.Shape.html"><code>nmlorg.threed.shape.Shape</code></a>). A shape contains geometry, 
 color information, etc.&nbsp; Each shape exists on its own, independent of a canvas, world, etc., and 
 does not have a position or physics model.</p>
 
@@ -47,7 +47,7 @@ does not have a position or physics model.</p>
 </pre>
 
 <p>Shapes are coupled with a 3D position inside a world to form a position object (<a 
-href="/jsdoc/symbols/nmlorg.threed.world.PositionObject.html"><code>nmlorg.threed.world.PositionObject</code></a>). A single 
+href="../jsdoc/symbols/nmlorg.threed.world.PositionObject.html"><code>nmlorg.threed.world.PositionObject</code></a>). A single 
 shape can be added to a world multiple times, creating a new position object each time. When a world is 
 rendered, every shape is sent to the graphics card once, then it is repeatedly painted for every 
 position object.</p>
@@ -61,7 +61,7 @@ position object.</p>
 </pre>
 
 <p>Each world is a collection of objects and canvases (<a 
-href="/jsdoc/symbols/nmlorg.threed.gl.Canvas.html"><code>nmlorg.threed.gl.Canvas</code></a>). When a shape is added to a world, 
+href="../jsdoc/symbols/nmlorg.threed.gl.Canvas.html"><code>nmlorg.threed.gl.Canvas</code></a>). When a shape is added to a world, 
 its geometry, color, etc. information (as vertex buffers) is added to each canvas. When the world is 
 rendered, each object is rendered to each canvas.</p>
 
@@ -72,9 +72,9 @@ rendered, each object is rendered to each canvas.</p>
 </pre>
 
 <p>The world can be rendered once by calling <a 
-href="/jsdoc/symbols/nmlorg.threed.world.World.html#draw"><code>world.draw()</code></a>. The world can be set to render 
+href="../jsdoc/symbols/nmlorg.threed.world.World.html#draw"><code>world.draw()</code></a>. The world can be set to render 
 itself repeatedly (using the browser's <code>requestAnimationFrame</code>) using <a 
-href="/jsdoc/symbols/nmlorg.threed.world.World.html#start"><code>world.start()</code></a>. Custom code can be run once 
+href="../jsdoc/symbols/nmlorg.threed.world.World.html#start"><code>world.start()</code></a>. Custom code can be run once 
 for each animation frame by setting the world's <code>eachFrame</code>.</p>
 
 <pre>
@@ -86,7 +86,7 @@ for each animation frame by setting the world's <code>eachFrame</code>.</p>
 
 <p>A custom animation function can be called for each position object by passing it to the constructor 
 (directly or as the optional second argument to <a 
-href="/jsdoc/symbols/nmlorg.threed.world.World.html#addObject"><code>world.addObject</code></a>). The position object 
+href="../jsdoc/symbols/nmlorg.threed.world.World.html#addObject"><code>world.addObject</code></a>). The position object 
 will be available as <code>this</code> and any arguments passed after the animation function will be 
 passed back into the function, followed by a value containing the amount of time (in seconds) since the 
 previous frame began rendering.</p>
@@ -101,5 +101,5 @@ previous frame began rendering.</p>
 </pre>
 
 <div class="well">
-Next: <a href="/physics.html">Simple physics</a>
+Next: <a href="../physics.html">Simple physics</a>
 </div>
