@@ -96,6 +96,28 @@ nmlorg.isInt = function(v) {
 
 
 /**
+ * Fetch a JSON response from <code>url</code>.
+ * @param {string} url The URL to fetch.
+ */
+nmlorg.json = function(url, callback) {
+  var req = new XMLHttpRequest();
+
+  if (callback) {
+    req.open('GET', url, true);
+    req.addEventListener('load', function(ev) {
+      if (req.status == 200)
+        callback(JSON.parse(req.responseText));
+    });
+  } else
+    req.open('GET', url, false);
+
+  req.send();
+  if (req.status == 200)
+    return JSON.parse(req.responseText);
+};
+
+
+/**
  * Return <code>deg</code> radians in degrees.
  * @param {number} deg
  * @return {number}
