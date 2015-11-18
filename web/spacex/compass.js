@@ -73,8 +73,10 @@ spacex.Compass.prototype.drawFromYPR = function(yaw, pitch, roll) {
   ctx.save();
     // Draw the ship.
     var vehicleLength = 3 * this.dim_ / 4;
+    ctx.fillStyle = 'rgba(255, 0, 0, .5)';
+    ctx.fillRect(7 * this.dim_ / 16, this.dim_ / 8, this.dim_ / 8, vehicleLength);
     var vehicleShrink = Math.sin(Math.abs(pitch) * Math.PI / 180);
-    ctx.fillStyle = 'rgba(255, 255, 255, .5)';
+    ctx.fillStyle = 'rgba(128, 255, 255, .5)';
     ctx.fillRect(7 * this.dim_ / 16,
                  this.dim_ / 8 + vehicleShrink * vehicleLength / 2,
                  this.dim_ / 8, 
