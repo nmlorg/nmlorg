@@ -13,11 +13,9 @@
 <script>
 var viewPort = document.getElementById('viewport');
 var orientModel = new spacex.OrientModel().attach(viewPort, 1, 1);
-var vehicle = new spacex.Vehicle();
+var vehicle = new spacex.Vehicle({velocity: 100});
 var upUntil = 0, downUntil = 0, leftUntil = 0, rightUntil = 0;
 var autoLevel = true;
-
-vehicle.velocity = 100;
 
 var buttonBar = new spacex.ButtonBar().attach(viewPort, 22, 8);
 var upButton = buttonBar.add('Pull Up').click(function() {

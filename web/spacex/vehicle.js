@@ -8,7 +8,9 @@ spacex = window.spacex || {};
  * A model of the vehicle's position and orientation.
  * @constructor
  */
-spacex.Vehicle = function() {
+spacex.Vehicle = function(vals) {
+  for (var k in vals)
+    this[k] = vals[k];
 };
 
 
