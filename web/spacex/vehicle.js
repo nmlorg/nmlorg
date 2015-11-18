@@ -1,3 +1,8 @@
+/**
+ * @fileoverview A model of a vehicle's position and orientation.
+ * @author Daniel Reed &lt;<a href="mailto:n@ml.org">n@ml.org</a>&gt;
+ */
+
 (function() {
 
 /** @namespace */
