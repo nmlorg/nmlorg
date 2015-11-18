@@ -49,6 +49,15 @@ spacex.Button.prototype.click = function(handler) {
 
 
 /**
+ * Change the button's title to the given text.
+ * @param {string} text The button text.
+ */
+spacex.Button.prototype.title = function(text) {
+  this.button_.textContent = text;
+};
+
+
+/**
  * A set of buttons.
  * @constructor
  */

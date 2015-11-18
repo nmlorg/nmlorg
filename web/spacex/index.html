@@ -6,15 +6,18 @@
 <script src="button.js"></script>
 <link rel="stylesheet" href="orientmodel.css">
 <script src="orientmodel.js"></script>
+<script src="vehicle.js"></script>
 
 <div id="viewport"></div>
 
 <script>
 var viewPort = document.getElementById('viewport');
 var orientModel = new spacex.OrientModel().attach(viewPort, 1, 1);
-var yaw = 0, pitch = 0, roll = 0;
+var vehicle = new spacex.Vehicle();
 var upUntil = 0, downUntil = 0, leftUntil = 0, rightUntil = 0;
 var autoLevel = true;
+
+vehicle.velocity = 100;
 
 var buttonBar = new spacex.ButtonBar().attach(viewPort, 22, 8);
 var upButton = buttonBar.add('Pull Up').click(function() {
@@ -45,6 +48,16 @@ var levelButton = new spacex.Button('Auto Level').attach(viewPort, 22, 4).click(
   autoLevel = !autoLevel;
 });
 
+var orientBar = new spacex.ButtonBar().attach(viewPort, 33, 1.5);
+var yawButton = orientBar.add('0');
+var pitchButton = orientBar.add('0');
+var rollButton = orientBar.add('0');
+
+var posBar = new spacex.ButtonBar().attach(viewPort, 33, 10.5);
+var xButton = posBar.add('0');
+var yButton = posBar.add('0');
+var zButton = posBar.add('0');
+
 var last = 0;
 function anim(now) {
   if (!last)
@@ -52,46 +65,54 @@ function anim(now) {
   var dt = (now - last) / 1000;
   last = now;
 
-  pitch += 20 * (Math.random() - .5) * dt;
-  roll += 20 * (Math.random() - .5) * dt;
+  vehicle.yaw += 20 * (Math.random() - .5) * dt;
+  vehicle.pitch += 20 * (Math.random() - .5) * dt;
+  vehicle.roll += 20 * (Math.random() - .5) * dt;
 
   levelButton.active(autoLevel);
   if (autoLevel) {
-    if (pitch > 5)
+    if (vehicle.pitch > 5)
       downUntil = Math.max(downUntil, Date.now() + 1000);
-    else if (pitch < -5)
+    else if (vehicle.pitch < -5)
       upUntil = Math.max(upUntil, Date.now() + 1000);
 
-    if (roll > 5)
+    if (vehicle.roll > 5)
       leftUntil = Math.max(leftUntil, Date.now() + 1000);
-    else if (roll < -5)
+    else if (vehicle.roll < -5)
       rightUntil = Math.max(rightUntil, Date.now() + 1000);
   }
 
   if (downUntil >= Date.now()) {
     downButton.active(true);
-    pitch -= 5 * dt;
+    vehicle.pitch -= 5 * dt;
   } else
     downButton.active(false);
   if (upUntil >= Date.now()) {
     upButton.active(true);
-    pitch += 5 * dt;
+    vehicle.pitch += 5 * dt;
   } else
     upButton.active(false);
 
   if (leftUntil >= Date.now()) {
     leftButton.active(true);
-    roll -= 5 * dt;
+    vehicle.roll -= 5 * dt;
   } else
     leftButton.active(false);
 
   if (rightUntil >= Date.now()) {
     rightButton.active(true);
-    roll += 5 * dt;
+    vehicle.roll += 5 * dt;
   } else
     rightButton.active(false);
 
-  orientModel.drawFromYPR(yaw, pitch, roll);
+  vehicle.compound(dt);
+  yawButton.title(Math.floor(vehicle.yaw) + ' \u00b0');
+  pitchButton.title(Math.floor(vehicle.pitch) + ' \u00b0');
+  rollButton.title(Math.floor(vehicle.roll) + ' \u00b0');
+  xButton.title(Math.floor(vehicle.x) + ' m');
+  yButton.title(Math.floor(vehicle.y) + ' m');
+  zButton.title(Math.floor(vehicle.z) + ' m');
+  orientModel.drawFromYPR(vehicle.yaw, vehicle.pitch, vehicle.roll);
   requestAnimationFrame(anim);
 }
 
