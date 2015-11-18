@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="console.css">
 <link rel="stylesheet" href="button.css">
 <script src="button.js"></script>
+<link rel="stylesheet" href="compass.css">
+<script src="compass.js"></script>
+<link rel="stylesheet" href="console.css">
 <link rel="stylesheet" href="orientmodel.css">
 <script src="orientmodel.js"></script>
 <script src="vehicle.js"></script>
@@ -13,6 +15,7 @@
 <script>
 var viewPort = document.getElementById('viewport');
 var orientModel = new spacex.OrientModel().attach(viewPort, 1, 1);
+var compass = new spacex.Compass().attach(viewPort, 44, 1);
 var vehicle = new spacex.Vehicle({velocity: 100});
 var upUntil = 0, downUntil = 0, leftUntil = 0, rightUntil = 0;
 var autoLevel = true;
@@ -111,6 +114,7 @@ function anim(now) {
   yButton.title(Math.floor(vehicle.y) + ' m');
   zButton.title(Math.floor(vehicle.z) + ' m');
   orientModel.drawFromYPR(vehicle.yaw, vehicle.pitch, vehicle.roll);
+  compass.drawFromYPR(vehicle.yaw, vehicle.pitch, vehicle.roll);
   requestAnimationFrame(anim);
 }
 
