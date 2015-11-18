@@ -14,6 +14,24 @@
 
 <script>
 var viewPort = document.getElementById('viewport');
+var bg = document.createElement('img');
+
+viewPort.appendChild(bg);
+bg.src = 'http://clipartzebra.com/images/2/view-of-earth-from-space/view-of-earth-from-space-03.jpg';
+bg.style.width = '100%';
+bg.style.height = '100%';
+
+var frontButton = new spacex.Button('Front View').attach(viewPort, 22, 19.5).active(true).click(function() {
+  frontButton.active(true);
+  rearButton.active(false);
+  bg.src = 'http://clipartzebra.com/images/2/view-of-earth-from-space/view-of-earth-from-space-03.jpg';
+});
+var rearButton = new spacex.Button('Rear View').attach(viewPort, 33, 19.5).click(function() {
+  frontButton.active(false);
+  rearButton.active(true);
+  bg.src = 'http://clipartzebra.com/images/2/view-of-earth-from-space/view-of-earth-from-space-04.jpg';
+});
+
 var orientModel = new spacex.OrientModel().attach(viewPort, 1, 1);
 var compass = new spacex.Compass().attach(viewPort, 44, 1);
 var vehicle = new spacex.Vehicle({velocity: 100});

@@ -21,7 +21,7 @@ spacex.Button = function(text) {
  * @param {Boolean} active Is the button active?
  */
 spacex.Button.prototype.active = function(active) {
-  this.button_.style.backgroundColor = active ? 'rgba(0, 255, 0, .5)' : 'transparent';
+  this.button_.style.backgroundColor = active ? 'rgba(0, 255, 0, .5)' : '';
   return this;
 };
 

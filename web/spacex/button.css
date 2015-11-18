@@ -1,5 +1,5 @@
 button.sx-button {
-  background: transparent;
+  background: rgba(0, 0, 0, .5);
   border: .3vw solid #3030b0;
   border-radius: 100vw;
   color: white;
