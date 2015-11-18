@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="console.css">
+<link rel="stylesheet" href="button.css">
+<script src="button.js"></script>
+<link rel="stylesheet" href="orientmodel.css">
+<script src="orientmodel.js"></script>
+
+<div id="viewport"></div>
+
+<script>
+var viewPort = document.getElementById('viewport');
+var orientModel = new spacex.OrientModel().attach(viewPort, 1, 1);
+var yaw = 0, pitch = 0, roll = 0;
+var upUntil = 0, downUntil = 0, leftUntil = 0, rightUntil = 0;
+var autoLevel = true;
+
+var buttonBar = new spacex.ButtonBar().attach(viewPort, 22, 8);
+var upButton = buttonBar.add('Pull Up').click(function() {
+  if (upUntil >= Date.now())
+    upUntil = 0;
+  else
+    upUntil = Date.now() + 5000;
+});
+var downButton = buttonBar.add('Push Down').click(function() {
+  if (downUntil >= Date.now())
+    downUntil = 0;
+  else
+    downUntil = Date.now() + 5000;
+});
+var leftButton = buttonBar.add('Bank Left').click(function() {
+  if (leftUntil >= Date.now())
+    leftUntil = 0;
+  else
+    leftUntil = Date.now() + 5000;
+});
+var rightButton = buttonBar.add('Bank Right').click(function() {
+  if (rightUntil >= Date.now())
+    rightUntil = 0;
+  else
+    rightUntil = Date.now() + 5000;
+});
+var levelButton = new spacex.Button('Auto Level').attach(viewPort, 22, 4).click(function() {
+  autoLevel = !autoLevel;
+});
+
+var last = 0;
+function anim(now) {
+  if (!last)
+    last = now;
+  var dt = (now - last) / 1000;
+  last = now;
+
+  pitch += 20 * (Math.random() - .5) * dt;
+  roll += 20 * (Math.random() - .5) * dt;
+
+  levelButton.active(autoLevel);
+  if (autoLevel) {
+    if (pitch > 5)
+      downUntil = Math.max(downUntil, Date.now() + 1000);
+    else if (pitch < -5)
+      upUntil = Math.max(upUntil, Date.now() + 1000);
+
+    if (roll > 5)
+      leftUntil = Math.max(leftUntil, Date.now() + 1000);
+    else if (roll < -5)
+      rightUntil = Math.max(rightUntil, Date.now() + 1000);
+  }
+
+  if (downUntil >= Date.now()) {
+    downButton.active(true);
+    pitch -= 5 * dt;
+  } else
+    downButton.active(false);
+  if (upUntil >= Date.now()) {
+    upButton.active(true);
+    pitch += 5 * dt;
+  } else
+    upButton.active(false);
+
+  if (leftUntil >= Date.now()) {
+    leftButton.active(true);
+    roll -= 5 * dt;
+  } else
+    leftButton.active(false);
+
+  if (rightUntil >= Date.now()) {
+    rightButton.active(true);
+    roll += 5 * dt;
+  } else
+    rightButton.active(false);
+
+  orientModel.drawFromYPR(yaw, pitch, roll);
+  requestAnimationFrame(anim);
+}
+
+requestAnimationFrame(anim);
+</script>

@@ -1,0 +1,35 @@
+button.sx-button {
+  background: transparent;
+  border: .3vw solid #3030b0;
+  border-radius: 100vw;
+  color: white;
+  font-weight: 900;
+  font-size: 1vw;
+  padding: .5vw;
+  width: 10vw;
+}
+
+button.sx-button:focus {
+  outline: 0;
+}
+
+div.button-bar {
+  display: inline-block;
+}
+
+div.button-bar > button.sx-button {
+  border-radius: 0;
+  border-top: 0;
+  display: block;
+}
+
+div.button-bar > button.sx-button:first-child {
+  border-top: .3vw solid #3030b0;
+  border-top-left-radius: 1vw;
+  border-top-right-radius: 1vw;
+}
+
+div.button-bar > button.sx-button:last-child {
+  border-bottom-left-radius: 1vw;
+  border-bottom-right-radius: 1vw;
+}
