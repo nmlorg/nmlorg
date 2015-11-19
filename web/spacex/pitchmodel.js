@@ -19,6 +19,7 @@ spacex.PitchModel = function(vehicle) {
 
 
 spacex.PitchModel.prototype.dim_ = 1000;
+spacex.PitchModel.prototype.x_ = 0;
 
 
 /**
@@ -36,9 +37,12 @@ spacex.PitchModel.prototype.attach = function(parent, x, y) {
 /**
  * Draw the model to its viewport based on the given yaw, pitch, and roll. When level, pitch and
  * roll will be 0. Yaw (compass heading) is not used.
+ * @param {number} dt The amount of time to advance, in seconds.
  */
-spacex.PitchModel.prototype.draw = function() {
+spacex.PitchModel.prototype.draw = function(dt) {
   var ctx = this.ctx_;
+
+  this.x_ = (this.x_ + this.vehicle_.velocity * dt) % (this.dim_ / 10);
 
   ctx.clearRect(0, 0, this.dim_, this.dim_);
   ctx.save();
@@ -54,6 +58,11 @@ spacex.PitchModel.prototype.draw = function() {
     // Draw the ground.
     ctx.fillStyle = 'rgba(165, 42, 42, .5)';
     ctx.fillRect(0, this.dim_ / 2, this.dim_, this.dim_ / 2);
+    // Draw some surface features to clearly indicate direction of motion.
+    ctx.strokeStyle = 'rgba(42, 165, 42, .5)';
+    for (var i = -1; i < 10; i++)
+      for (var j = 5; j < 10; j++)
+        ctx.strokeRect(this.x_ + i * this.dim_ / 10, j * this.dim_ / 10, this.dim_ / 10, this.dim_ / 10);
   ctx.restore();
   ctx.save();
     // Draw the ship.

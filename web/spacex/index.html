@@ -136,9 +136,9 @@ function anim(now) {
   xButton.title(Math.floor(vehicle.x) + ' m');
   yButton.title(Math.floor(vehicle.y) + ' m');
   zButton.title(Math.floor(vehicle.z) + ' m');
-  orientModel.draw();
-  pitchModel.draw();
-  compass.draw();
+  orientModel.draw(dt);
+  pitchModel.draw(dt);
+  compass.draw(dt);
   requestAnimationFrame(anim);
 }
 

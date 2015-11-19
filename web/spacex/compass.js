@@ -36,8 +36,9 @@ spacex.Compass.prototype.attach = function(parent, x, y) {
 /**
  * Draw the model to its viewport based on the given yaw, pitch, and roll. When facing due North,
  * yaw will be 0. Roll is not used.
+ * @param {number} dt The amount of time to advance, in seconds.
  */
-spacex.Compass.prototype.draw = function() {
+spacex.Compass.prototype.draw = function(dt) {
   var ctx = this.ctx_;
 
   ctx.clearRect(0, 0, this.dim_, this.dim_);
