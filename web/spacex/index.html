@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="console.css">
 <link rel="stylesheet" href="orientmodel.css">
 <script src="orientmodel.js"></script>
+<link rel="stylesheet" href="pitchmodel.css">
+<script src="pitchmodel.js"></script>
 <script src="vehicle.js"></script>
 
 <div id="viewport"></div>
@@ -21,24 +23,26 @@ bg.src = 'http://clipartzebra.com/images/2/view-of-earth-from-space/view-of-eart
 bg.style.width = '100%';
 bg.style.height = '100%';
 
-var frontButton = new spacex.Button('Front View').attach(viewPort, 22, 19.5).active(true).click(function() {
+var viewBar = new spacex.ButtonBar().attach(viewPort, 22, 27);
+var frontButton = viewBar.add('Front View').active(true).click(function() {
   frontButton.active(true);
   rearButton.active(false);
   bg.src = 'http://clipartzebra.com/images/2/view-of-earth-from-space/view-of-earth-from-space-03.jpg';
 });
-var rearButton = new spacex.Button('Rear View').attach(viewPort, 33, 19.5).click(function() {
+var rearButton = viewBar.add('Rear View').click(function() {
   frontButton.active(false);
   rearButton.active(true);
   bg.src = 'http://clipartzebra.com/images/2/view-of-earth-from-space/view-of-earth-from-space-04.jpg';
 });
 
 var orientModel = new spacex.OrientModel().attach(viewPort, 1, 1);
-var compass = new spacex.Compass().attach(viewPort, 44, 1);
+var pitchModel = new spacex.PitchModel().attach(viewPort, 22, 1);
+var compass = new spacex.Compass().attach(viewPort, 43, 1);
 var vehicle = new spacex.Vehicle({velocity: 100});
 var upUntil = 0, downUntil = 0, leftUntil = 0, rightUntil = 0;
 var autoLevel = true;
 
-var buttonBar = new spacex.ButtonBar().attach(viewPort, 22, 8);
+var buttonBar = new spacex.ButtonBar().attach(viewPort, 11, 22);
 var upButton = buttonBar.add('Pull Up').click(function() {
   if (upUntil >= Date.now())
     upUntil = 0;
@@ -63,16 +67,16 @@ var rightButton = buttonBar.add('Bank Right').click(function() {
   else
     rightUntil = Date.now() + 5000;
 });
-var levelButton = new spacex.Button('Auto Level').attach(viewPort, 22, 4).click(function() {
+
+var levelButton = new spacex.Button('Auto Level').attach(viewPort, 22, 22).click(function() {
   autoLevel = !autoLevel;
 });
 
-var orientBar = new spacex.ButtonBar().attach(viewPort, 33, 1.5);
-var yawButton = orientBar.add('0');
-var pitchButton = orientBar.add('0');
-var rollButton = orientBar.add('0');
+var yawButton = new spacex.Button('').attach(viewPort, 48, 17);
+var pitchButton = new spacex.Button('').attach(viewPort, 27, 17);
+var rollButton = new spacex.Button('').attach(viewPort, 6, 17);
 
-var posBar = new spacex.ButtonBar().attach(viewPort, 33, 10.5);
+var posBar = new spacex.ButtonBar().attach(viewPort, 48, 23);
 var xButton = posBar.add('0');
 var yButton = posBar.add('0');
 var zButton = posBar.add('0');
@@ -133,6 +137,7 @@ function anim(now) {
   yButton.title(Math.floor(vehicle.y) + ' m');
   zButton.title(Math.floor(vehicle.z) + ' m');
   orientModel.drawFromYPR(vehicle.yaw, vehicle.pitch, vehicle.roll);
+  pitchModel.drawFromYPR(vehicle.yaw, vehicle.pitch, vehicle.roll);
   compass.drawFromYPR(vehicle.yaw, vehicle.pitch, vehicle.roll);
   requestAnimationFrame(anim);
 }
