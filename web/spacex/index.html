@@ -35,10 +35,10 @@ var rearButton = viewBar.add('Rear View').click(function() {
   bg.src = 'http://clipartzebra.com/images/2/view-of-earth-from-space/view-of-earth-from-space-04.jpg';
 });
 
-var orientModel = new spacex.OrientModel().attach(viewPort, 1, 1);
-var pitchModel = new spacex.PitchModel().attach(viewPort, 22, 1);
-var compass = new spacex.Compass().attach(viewPort, 43, 1);
 var vehicle = new spacex.Vehicle({velocity: 100});
+var orientModel = new spacex.OrientModel(vehicle).attach(viewPort, 1, 1);
+var pitchModel = new spacex.PitchModel(vehicle).attach(viewPort, 22, 1);
+var compass = new spacex.Compass(vehicle).attach(viewPort, 43, 1);
 var upUntil = 0, downUntil = 0, leftUntil = 0, rightUntil = 0;
 var autoLevel = true;
 
@@ -136,9 +136,9 @@ function anim(now) {
   xButton.title(Math.floor(vehicle.x) + ' m');
   yButton.title(Math.floor(vehicle.y) + ' m');
   zButton.title(Math.floor(vehicle.z) + ' m');
-  orientModel.drawFromYPR(vehicle.yaw, vehicle.pitch, vehicle.roll);
-  pitchModel.drawFromYPR(vehicle.yaw, vehicle.pitch, vehicle.roll);
-  compass.drawFromYPR(vehicle.yaw, vehicle.pitch, vehicle.roll);
+  orientModel.draw();
+  pitchModel.draw();
+  compass.draw();
   requestAnimationFrame(anim);
 }
 

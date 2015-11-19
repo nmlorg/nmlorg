@@ -6,9 +6,11 @@ spacex = window.spacex || {};
 
 /**
  * A model of the vehicle's compass heading.
+ * @param {spacex.Vehicle} vehicle The vehicle to render.
  * @constructor
  */
-spacex.Compass = function() {
+spacex.Compass = function(vehicle) {
+  this.vehicle_ = vehicle;
   this.canvas_ = document.createElement('canvas');
   this.canvas_.className = 'compass';
   this.canvas_.width = this.canvas_.height = this.dim_;
@@ -33,12 +35,9 @@ spacex.Compass.prototype.attach = function(parent, x, y) {
 
 /**
  * Draw the model to its viewport based on the given yaw, pitch, and roll. When facing due North,
- * yaw will be 0. Pitch and roll are not used.
- * @param {number} yaw The yaw or compass heading in degrees.
- * @param {number} pitch The pitch or climbing angle in degrees.
- * @param {number} roll The roll or banking angle in degrees.
+ * yaw will be 0. Roll is not used.
  */
-spacex.Compass.prototype.drawFromYPR = function(yaw, pitch, roll) {
+spacex.Compass.prototype.draw = function() {
   var ctx = this.ctx_;
 
   ctx.clearRect(0, 0, this.dim_, this.dim_);
@@ -46,7 +45,7 @@ spacex.Compass.prototype.drawFromYPR = function(yaw, pitch, roll) {
     // Move the origin to the center of the viewport.
     ctx.translate(this.dim_ / 2, this.dim_ / 2);
     // Rotate the viewport about the origin (now the center).
-    ctx.rotate(-yaw * Math.PI / 180);
+    ctx.rotate(-this.vehicle_.yaw * Math.PI / 180);
     // Move the origin back to the upper-left corner.
     ctx.translate(-this.dim_ / 2, -this.dim_ / 2);
     // Draw NW.
@@ -79,7 +78,7 @@ spacex.Compass.prototype.drawFromYPR = function(yaw, pitch, roll) {
     var vehicleLength = 3 * this.dim_ / 4;
     ctx.fillStyle = 'rgba(0, 0, 0, .5)';
     ctx.fillRect(7 * this.dim_ / 16, this.dim_ / 8, this.dim_ / 8, vehicleLength);
-    var vehicleShrink = 1 - Math.cos(Math.abs(pitch) * Math.PI / 180);
+    var vehicleShrink = 1 - Math.cos(Math.abs(this.vehicle_.pitch) * Math.PI / 180);
     ctx.fillStyle = 'rgba(255, 255, 255, .5)';
     ctx.fillRect(7 * this.dim_ / 16,
                  this.dim_ / 8 + vehicleShrink * vehicleLength / 2,

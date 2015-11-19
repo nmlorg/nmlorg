@@ -6,9 +6,11 @@ spacex = window.spacex || {};
 
 /**
  * A model of the vehicle's pitch/angle of attack.
+ * @param {spacex.Vehicle} vehicle The vehicle to render.
  * @constructor
  */
-spacex.PitchModel = function() {
+spacex.PitchModel = function(vehicle) {
+  this.vehicle_ = vehicle;
   this.canvas_ = document.createElement('canvas');
   this.canvas_.className = 'pitchmodel';
   this.canvas_.width = this.canvas_.height = this.dim_;
@@ -34,11 +36,8 @@ spacex.PitchModel.prototype.attach = function(parent, x, y) {
 /**
  * Draw the model to its viewport based on the given yaw, pitch, and roll. When level, pitch and
  * roll will be 0. Yaw (compass heading) is not used.
- * @param {number} yaw The yaw or compass heading in degrees.
- * @param {number} pitch The pitch or climbing angle in degrees.
- * @param {number} roll The roll or banking angle in degrees.
  */
-spacex.PitchModel.prototype.drawFromYPR = function(yaw, pitch, roll) {
+spacex.PitchModel.prototype.draw = function() {
   var ctx = this.ctx_;
 
   ctx.clearRect(0, 0, this.dim_, this.dim_);
@@ -46,7 +45,7 @@ spacex.PitchModel.prototype.drawFromYPR = function(yaw, pitch, roll) {
     // Move the origin to the center of the viewport.
     ctx.translate(this.dim_ / 2, this.dim_ / 2);
     // Rotate the viewport about the origin (now the center).
-    ctx.rotate(-pitch * Math.PI / 180);
+    ctx.rotate(-this.vehicle_.pitch * Math.PI / 180);
     // Move the origin back to the upper-left corner.
     ctx.translate(-this.dim_ / 2, -this.dim_ / 2);
     // Draw the sky.
@@ -58,7 +57,7 @@ spacex.PitchModel.prototype.drawFromYPR = function(yaw, pitch, roll) {
   ctx.restore();
   ctx.save();
     // Draw the ship.
-    var rollHeight = this.dim_ / 2 * Math.sin(roll * Math.PI / 180);
+    var rollHeight = this.dim_ / 2 * Math.sin(this.vehicle_.roll * Math.PI / 180);
     ctx.fillStyle = 'rgba(0, 255, 0, .5)';
     ctx.fillRect(this.dim_ / 3, 7 * this.dim_ / 16 + rollHeight, this.dim_ / 3, this.dim_ / 8);
     ctx.fillStyle = 'rgba(255, 255, 255, .5)';

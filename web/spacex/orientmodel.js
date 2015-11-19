@@ -6,9 +6,11 @@ spacex = window.spacex || {};
 
 /**
  * A model of the vehicle's orientation (deviating from Earth center).
+ * @param {spacex.Vehicle} vehicle The vehicle to render.
  * @constructor
  */
-spacex.OrientModel = function() {
+spacex.OrientModel = function(vehicle) {
+  this.vehicle_ = vehicle;
   this.canvas_ = document.createElement('canvas');
   this.canvas_.className = 'orientmodel';
   this.canvas_.width = this.canvas_.height = this.dim_;
@@ -34,11 +36,8 @@ spacex.OrientModel.prototype.attach = function(parent, x, y) {
 /**
  * Draw the model to its viewport based on the given yaw, pitch, and roll. When level, pitch and
  * roll will be 0. Yaw (compass heading) is not used.
- * @param {number} yaw The yaw or compass heading in degrees.
- * @param {number} pitch The pitch or climbing angle in degrees.
- * @param {number} roll The roll or banking angle in degrees.
  */
-spacex.OrientModel.prototype.drawFromYPR = function(yaw, pitch, roll) {
+spacex.OrientModel.prototype.draw = function() {
   var ctx = this.ctx_;
 
   ctx.clearRect(0, 0, this.dim_, this.dim_);
@@ -46,7 +45,7 @@ spacex.OrientModel.prototype.drawFromYPR = function(yaw, pitch, roll) {
     // Move the origin to the center of the viewport.
     ctx.translate(this.dim_ / 2, this.dim_ / 2);
     // Rotate the viewport about the origin (now the center).
-    ctx.rotate(-roll * Math.PI / 180);
+    ctx.rotate(-this.vehicle_.roll * Math.PI / 180);
     // Move the origin back to the upper-left corner.
     ctx.translate(-this.dim_ / 2, -this.dim_ / 2);
     // Draw the sky.
@@ -59,7 +58,7 @@ spacex.OrientModel.prototype.drawFromYPR = function(yaw, pitch, roll) {
   ctx.save();
     // Draw the ship. We draw a red rectangle for the front of the ship, then a white rectangle for
     // the back. The further the pitch is from 0, the more of the red will be shown.
-    var pitchHeight = this.dim_ / 2 * Math.sin(pitch * Math.PI / 180);
+    var pitchHeight = this.dim_ / 2 * Math.sin(this.vehicle_.pitch * Math.PI / 180);
     ctx.fillStyle = 'rgba(255, 0, 0, .5)';
     ctx.fillRect(this.dim_ / 4, 7 * this.dim_ / 16, 3 * this.dim_ / 16, this.dim_ / 8);
     ctx.fillStyle = 'rgba(0, 255, 0, .5)';
