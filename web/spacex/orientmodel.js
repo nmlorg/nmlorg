@@ -73,8 +73,7 @@ spacex.OrientModel.prototype.draw = function(dt) {
       }
   ctx.restore();
   ctx.save();
-    // Draw the ship. We draw a red rectangle for the front of the ship, then a white rectangle for
-    // the back. The further the pitch is from 0, the more of the red will be shown.
+    // Draw the ship.
     var pitchHeight = this.dim_ / 2 * Math.sin(this.vehicle_.pitch * Math.PI / 180);
     ctx.fillStyle = 'rgba(255, 0, 0, .5)';
     ctx.fillRect(this.dim_ / 4, 7 * this.dim_ / 16, 3 * this.dim_ / 16, this.dim_ / 8);
