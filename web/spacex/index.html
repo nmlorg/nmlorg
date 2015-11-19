@@ -6,10 +6,10 @@
 <link rel="stylesheet" href="compass.css">
 <script src="compass.js"></script>
 <link rel="stylesheet" href="console.css">
-<link rel="stylesheet" href="orientmodel.css">
-<script src="orientmodel.js"></script>
 <link rel="stylesheet" href="pitchmodel.css">
 <script src="pitchmodel.js"></script>
+<link rel="stylesheet" href="rollmodel.css">
+<script src="rollmodel.js"></script>
 <script src="vehicle.js"></script>
 
 <div id="viewport"></div>
@@ -36,7 +36,7 @@ var rearButton = viewBar.add('Rear View').click(function() {
 });
 
 var vehicle = new spacex.Vehicle({velocity: 100});
-var orientModel = new spacex.OrientModel(vehicle).attach(viewPort, 1, 1);
+var rollModel = new spacex.RollModel(vehicle).attach(viewPort, 1, 1);
 var pitchModel = new spacex.PitchModel(vehicle).attach(viewPort, 22, 1);
 var compass = new spacex.Compass(vehicle).attach(viewPort, 43, 1);
 var upUntil = 0, downUntil = 0, leftUntil = 0, rightUntil = 0;
@@ -136,7 +136,7 @@ function anim(now) {
   xButton.title(Math.floor(vehicle.x) + ' m');
   yButton.title(Math.floor(vehicle.y) + ' m');
   zButton.title(Math.floor(vehicle.z) + ' m');
-  orientModel.draw(dt);
+  rollModel.draw(dt);
   pitchModel.draw(dt);
   compass.draw(dt);
   requestAnimationFrame(anim);

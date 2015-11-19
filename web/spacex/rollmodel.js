@@ -5,28 +5,28 @@ spacex = window.spacex || {};
 
 
 /**
- * A model of the vehicle's orientation (deviating from Earth center).
+ * A model of the vehicle's roll/banking angle.
  * @param {spacex.Vehicle} vehicle The vehicle to render.
  * @constructor
  */
-spacex.OrientModel = function(vehicle) {
+spacex.RollModel = function(vehicle) {
   this.vehicle_ = vehicle;
   this.canvas_ = document.createElement('canvas');
-  this.canvas_.className = 'orientmodel';
+  this.canvas_.className = 'rollmodel';
   this.canvas_.width = this.canvas_.height = this.dim_;
   this.ctx_ = this.canvas_.getContext('2d');
 };
 
 
-spacex.OrientModel.prototype.dim_ = 1000;
-spacex.OrientModel.prototype.y_ = 0;
+spacex.RollModel.prototype.dim_ = 1000;
+spacex.RollModel.prototype.y_ = 0;
 
 
 /**
  * Add the model's viewport to the document.
  * @param {HTMLElement} parent An element reachable via document.body.
  */
-spacex.OrientModel.prototype.attach = function(parent, x, y) {
+spacex.RollModel.prototype.attach = function(parent, x, y) {
   parent.appendChild(this.canvas_);
   this.canvas_.style.left = (x || 0) + 'vw';
   this.canvas_.style.top = (y || 0) + 'vw';
@@ -39,7 +39,7 @@ spacex.OrientModel.prototype.attach = function(parent, x, y) {
  * roll will be 0. Yaw (compass heading) is not used.
  * @param {number} dt The amount of time to advance, in seconds.
  */
-spacex.OrientModel.prototype.draw = function(dt) {
+spacex.RollModel.prototype.draw = function(dt) {
   var ctx = this.ctx_;
 
   this.y_ = (this.y_ + this.dim_ / 10 + this.vehicle_.velocity * Math.cos(this.vehicle_.pitch * Math.PI / 180) * dt) % (this.dim_ / 10);
