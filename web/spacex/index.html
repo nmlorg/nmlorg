@@ -19,7 +19,7 @@ var viewPort = document.getElementById('viewport');
 var bg = document.createElement('img');
 
 viewPort.appendChild(bg);
-bg.src = 'http://clipartzebra.com/images/2/view-of-earth-from-space/view-of-earth-from-space-03.jpg';
+bg.src = 'http://n.ml.org/spacex/view-of-earth-from-space-03.jpg';
 bg.style.width = '100%';
 bg.style.height = '100%';
 
@@ -27,12 +27,12 @@ var viewBar = new spacex.ButtonBar().attach(viewPort, 22, 27);
 var frontButton = viewBar.add('Front View').active(true).click(function() {
   frontButton.active(true);
   rearButton.active(false);
-  bg.src = 'http://clipartzebra.com/images/2/view-of-earth-from-space/view-of-earth-from-space-03.jpg';
+  bg.src = 'http://n.ml.org/spacex/view-of-earth-from-space-03.jpg';
 });
 var rearButton = viewBar.add('Rear View').click(function() {
   frontButton.active(false);
   rearButton.active(true);
-  bg.src = 'http://clipartzebra.com/images/2/view-of-earth-from-space/view-of-earth-from-space-04.jpg';
+  bg.src = 'http://n.ml.org/spacex/view-of-earth-from-space-04.jpg';
 });
 
 var vehicle = new spacex.Vehicle({velocity: 100});
