@@ -42,7 +42,7 @@ spacex.OrientModel.prototype.attach = function(parent, x, y) {
 spacex.OrientModel.prototype.draw = function(dt) {
   var ctx = this.ctx_;
 
-  this.y_ = (this.y_ + this.vehicle_.velocity * dt) % (this.dim_ / 10);
+  this.y_ = (this.y_ + this.dim_ / 10 + this.vehicle_.velocity * Math.cos(this.vehicle_.pitch * Math.PI / 180) * dt) % (this.dim_ / 10);
 
   ctx.clearRect(0, 0, this.dim_, this.dim_);
   ctx.save();
