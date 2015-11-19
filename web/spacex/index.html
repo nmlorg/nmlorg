@@ -84,7 +84,6 @@ function anim(now) {
   var dt = (now - last) / 1000;
   last = now;
 
-  vehicle.yaw += 20 * (Math.random() - .5) * dt;
   vehicle.pitch += 20 * (Math.random() - .5) * dt;
   vehicle.roll += 20 * (Math.random() - .5) * dt;
 
@@ -123,6 +122,8 @@ function anim(now) {
     vehicle.roll += 5 * dt;
   } else
     rightButton.active(false);
+
+  vehicle.yaw += vehicle.roll / 10 * dt;
 
   vehicle.compound(dt);
   yawButton.title(Math.floor(vehicle.yaw) + ' \u00b0');
