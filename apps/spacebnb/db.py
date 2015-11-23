@@ -1,28 +1,19 @@
 #!/usr/bin/python
 
-import sqlalchemy
-from sqlalchemy.ext import declarative
+from google.appengine.ext import ndb
 
 
-ENGINE = sqlalchemy.create_engine('sqlite:///:memory:', echo=True)
-BASE = declarative.declarative_base()
-GetSession = sqlalchemy.orm.sessionmaker(bind=ENGINE)
-
-
-class Listing(BASE):
-  __tablename__ = 'listings'
-
-  id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-  user = sqlalchemy.Column(sqlalchemy.String)
-  title = sqlalchemy.Column(sqlalchemy.String(140))
-  description = sqlalchemy.Column(sqlalchemy.String(1024))
-  expiration = sqlalchemy.Column(sqlalchemy.String)
-  x = sqlalchemy.Column(sqlalchemy.Float)
-  y = sqlalchemy.Column(sqlalchemy.Float)
+class Listing(ndb.Model):
+  user = ndb.StringProperty()
+  title = ndb.StringProperty()
+  description = ndb.TextProperty()
+  expiration = ndb.TextProperty()
+  x = ndb.FloatProperty()
+  y = ndb.FloatProperty()
 
   def ToDict(self):
     return {
-        'id': self.id,
+        'id': self.key.id(),
         'user': self.user,
         'title': self.title,
         'description': self.description,
@@ -34,21 +25,14 @@ class Listing(BASE):
     }
 
 
-class Comment(BASE):
-  __tablename__ = 'comments'
-
-  id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-  listing_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('listings.id'),
-                                 nullable=False)
-  user = sqlalchemy.Column(sqlalchemy.String)
-  comment = sqlalchemy.Column(sqlalchemy.String(140))
+class Comment(ndb.Model):
+  listing_id = ndb.IntegerProperty()
+  user = ndb.StringProperty()
+  comment = ndb.TextProperty()
 
   def ToDict(self):
     return {
-        'id': self.id,
+        'id': self.key.id(),
         'user': self.user,
         'comment': self.comment,
     }
-
-
-BASE.metadata.create_all(ENGINE)
