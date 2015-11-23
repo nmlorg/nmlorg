@@ -9,5 +9,12 @@ handlers:
 - url: /api/.*
   script: spacebnb.app
 
+- url: /
+  static_file: static/index.html
+  upload: static/index.html
+
+- url: /
+  static_dir: static
+
 inbound_services:
 - warmup

@@ -81,10 +81,15 @@ class Listings(webapp2.RequestHandler):
     ndb.delete_multi(db.Listing.query().fetch(keys_only=True))
 
   def post(self):
-    data = json.loads(self.request.body)
+    content_type = self.request.headers.get('content-type', '').split(';', 1)[0]
+    if content_type == 'application/x-www-form-urlencoded':
+      data = self.request.POST
+    else:
+      data = json.loads(self.request.body)
+      data['x'] = data['location']['x']
+      data['y'] = data['location']['y']
     listing = db.Listing(user=data['user'], title=data['title'], description=data['description'],
-                         expiration=data['expiration'], x=data['location']['x'],
-                         y=data['location']['y'])
+                         expiration=data['expiration'], x=float(data['x']), y=float(data['y']))
     listing.put()
     self.response.headers['content-type'] = 'application/json'
     self.response.write(json.dumps({'id': listing.key.id()}))
