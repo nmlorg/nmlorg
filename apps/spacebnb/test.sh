@@ -72,9 +72,9 @@ asserteq '{"id": 3}'
 curl -s localhost:9090/api/listings/3/comments > test.out
 asserteq '[]'
 
-exit 0
-echo 'Bringing the number of listings up to 1000.'
-for i in {5..1000}; do
-  curl -s localhost:9090/api/listings --data-binary '{"user": "nmlorg", "title": "My title", "description": "My description", "expiration": "2999-03-01T00:00:00", "location": {"x": '${i}', "y": 1}}' --header content-type:application/json > test.out
-  asserteq '{"id": '${i}'}'
-done
+echo 'Testing mass-delete.'
+curl -s localhost:9090/api/listings -X DELETE > test.out
+asserteq ''
+
+curl -s localhost:9090/api/listings > test.out
+asserteq '[]'

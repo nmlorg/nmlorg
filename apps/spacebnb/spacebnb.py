@@ -84,6 +84,12 @@ class Listings(myserver.Handler):
     self.response.headers['content-type'] = 'application/json'
     self.response.write(json.dumps([listing.ToDict() for listing in q], sort_keys=True))
 
+  def delete(self):
+    session = db.GetSession()
+    session.query(db.Comment).delete()
+    session.query(db.Listing).delete()
+    session.commit()
+
   def post(self):
     session = db.GetSession()
     data = self.request.post_data
