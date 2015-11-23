@@ -1,128 +1,105 @@
 #!/usr/bin/python
 
-import collections
 import datetime
 import json
-import threading
 
+import db
 import myserver
-
-
-LISTINGS = []
-LISTINGS_COMMENTS = collections.defaultdict(list)
-LISTINGS_LOCK = threading.Lock()
-
-
-def GetActive(listings):
-  now = datetime.datetime.utcnow().isoformat()
-  for listing in listings:
-    if listing['expiration'] >= now:
-      yield listing
-
-
-def GetNondeleted(listings):
-  for listing in listings:
-    if listing is not None:
-      yield listing
-
-
-def FilterByDistanceFrom(listings, x, y, radius):
-  radius2 = radius ** 2
-  for listing in listings:
-    if (listing['location']['x'] - x) ** 2 + (listing['location']['y'] - y) ** 2 <= radius2:
-      yield listing
 
 
 class Comments(myserver.Handler):
   def get(self, listing_id):
+    session = db.GetSession()
     listing_id = long(listing_id)
-    with LISTINGS_LOCK:
-      if listing_id >= len(LISTINGS) or LISTINGS[listing_id] is None:
-        self.response.code = 404
-        return
-      comments = LISTINGS_COMMENTS[listing_id]
+    q = session.query(db.Comment).filter(db.Comment.listing_id == listing_id)
     self.response.headers['content-type'] = 'application/json'
-    self.response.write(json.dumps(comments, sort_keys=True))
+    self.response.write(json.dumps([comment.ToDict() for comment in q], sort_keys=True))
 
   def post(self, listing_id):
+    session = db.GetSession()
     listing_id = long(listing_id)
-    comment = self.request.post_data
-    with LISTINGS_LOCK:
-      if listing_id >= len(LISTINGS) or LISTINGS[listing_id] is None:
-        self.response.code = 404
-        return
-      comment['id'] = len(LISTINGS_COMMENTS[listing_id])
-      LISTINGS_COMMENTS[listing_id].append(comment)
+    data = self.request.post_data
+    comment = db.Comment(listing_id=listing_id, user=data['user'], comment=data['comment'])
+    session.add(comment)
+    session.commit()
     self.response.headers['content-type'] = 'application/json'
-    self.response.write(json.dumps({'id': comment['id']}))
+    self.response.write(json.dumps({'id': comment.id}))
 
 
 class Listing(myserver.Handler):
   def get(self, listing_id):
+    session = db.GetSession()
     listing_id = long(listing_id)
-    with LISTINGS_LOCK:
-      if listing_id >= len(LISTINGS) or LISTINGS[listing_id] is None:
-        self.response.code = 404
-        return
-      listing = LISTINGS[listing_id]
+    listing = session.query(db.Listing).filter(db.Listing.id == listing_id).first()
+    if listing is None:
+      self.response.code = 404
+      return
     self.response.headers['content-type'] = 'application/json'
-    self.response.write(json.dumps(listing, sort_keys=True))
+    self.response.write(json.dumps(listing.ToDict(), sort_keys=True))
 
   def delete(self, listing_id):
+    session = db.GetSession()
     listing_id = long(listing_id)
-    with LISTINGS_LOCK:
-      if listing_id >= len(LISTINGS) or LISTINGS[listing_id] is None:
-        self.response.code = 404
-        return
-      LISTINGS[listing_id] = None
-      LISTINGS_COMMENTS.pop(listing_id, None)
+    session.query(db.Comment).filter(db.Comment.listing_id == listing_id).delete()
+    session.query(db.Listing).filter(db.Listing.id == listing_id).delete()
+    session.commit()
 
   def put(self, listing_id):
+    session = db.GetSession()
     listing_id = long(listing_id)
-    with LISTINGS_LOCK:
-      if listing_id >= len(LISTINGS):
-        self.response.code = 404
-        return
-      listing = self.request.post_data
-      listing['id'] = listing_id
-      LISTINGS[listing_id] = listing
+    data = self.request.post_data
+    listing = db.Listing(id=listing_id, user=data['user'], title=data['title'],
+                         description=data['description'], expiration=data['expiration'],
+                         x=data['location']['x'], y=data['location']['y'])
+    session.merge(listing)
+    session.commit()
     self.response.headers['content-type'] = 'application/json'
-    self.response.write(json.dumps({'id': listing['id']}))
+    self.response.write(json.dumps({'id': listing.id}))
 
 
 class Listings(myserver.Handler):
   def get(self):
-    length = long(self.request.params.get('length', 0)) or len(LISTINGS)
-    page = long(self.request.params.get('page', 0))
-    start = page * length
+    session = db.GetSession()
 
-    listings = GetNondeleted(LISTINGS)
+    q = session.query(db.Listing)
 
     if self.request.params.get('active') == '1':
-      listings = GetActive(listings)
+      q = q.filter(db.Listing.expiration >= datetime.datetime.utcnow().isoformat())
 
     radius = float(self.request.params.get('radius', 0))
     if radius:
       x = float(self.request.params.get('x', 0))
       y = float(self.request.params.get('y', 0))
-      listings = FilterByDistanceFrom(listings, x, y, radius)
+      q = q.filter((db.Listing.x - x) * (db.Listing.x - x) +
+                   (db.Listing.y - y) * (db.Listing.y - y) <= radius ** 2)
+
+    length = long(self.request.params.get('length', 0))
+    if length:
+      q = q.limit(length)
+
+      page = long(self.request.params.get('page', 0))
+      if page:
+        q = q.offset(page * length)
 
     self.response.headers['content-type'] = 'application/json'
-    self.response.write(json.dumps(list(listings)[start:start + length], sort_keys=True))
+    self.response.write(json.dumps([listing.ToDict() for listing in q], sort_keys=True))
 
   def post(self):
-    listing = self.request.post_data
-    with LISTINGS_LOCK:
-      listing['id'] = len(LISTINGS)
-      LISTINGS.append(listing)
+    session = db.GetSession()
+    data = self.request.post_data
+    listing = db.Listing(user=data['user'], title=data['title'], description=data['description'],
+                         expiration=data['expiration'], x=data['location']['x'],
+                         y=data['location']['y'])
+    session.add(listing)
+    session.commit()
     self.response.headers['content-type'] = 'application/json'
-    self.response.write(json.dumps({'id': listing['id']}))
+    self.response.write(json.dumps({'id': listing.id}))
 
 
 if __name__ == '__main__':
   server = myserver.HTTPServer((
           ('/api/listings/([0-9]+)/comments/?$', Comments),
-          ('/api/listings/([0-9]+)$', Listing),
+          ('/api/listings/([0-9]+)/?$', Listing),
           ('/api/listings/?$', Listings),
       ), port=9090)
   print 'Now serving on port 9090.'

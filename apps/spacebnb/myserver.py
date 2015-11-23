@@ -4,6 +4,7 @@ import BaseHTTPServer
 import cgi
 import cStringIO as StringIO
 import json
+import logging
 import re
 
 
@@ -51,6 +52,7 @@ class HTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
           try:
             handler_method(*match.groups())
           except:
+            logging.exception('Exception while running handler:')
             response.code = 500
           self.send_response(response.code)
           for header, content in response.headers.iteritems():
