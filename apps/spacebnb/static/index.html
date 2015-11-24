@@ -5,6 +5,28 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
 <div class="container">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      Listings
+    </div>
+    <div class="panel-body">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>User name</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Expiration date</th>
+            <th>X position (meters)</th>
+            <th>Y position (meters)</th>
+          </tr>
+        </thead>
+        <tbody id="listings"></tbody>
+      </table>
+    </div>
+  </div>
+
   <div class="panel panel-info">
     <div class="panel-heading">
       Add a new listing
@@ -42,6 +64,34 @@
 </div>
 
 <script>
+var listingsBody = document.getElementById('listings');
+
+function loadListings() {
+  var xhr = new XMLHttpRequest();
+
+  xhr.addEventListener('load', function(e) {
+    if (xhr.status != 200) {
+      alert('Error!');
+      return;
+    }
+
+    var listings = JSON.parse(xhr.responseText);
+
+    listingsBody.textContent = '';
+    for (var i = 0; i < listings.length; i++) {
+      var listing = listings[i];
+      var tr = document.createElement('tr');
+      listingsBody.appendChild(tr);
+      tr.innerHTML = '<td>' + listing.id + '</td><td>' + listing.user + '</td><td>' +
+          listing.title + '</td><td>' + listing.description + '</td><td>' + listing.expiration +
+          '</td><td>' + listing.location.x + '</td><td>' + listing.location.y + '</td>';
+    }
+  });
+  xhr.open('GET', '/api/listings');
+  xhr.send();
+}
+
+
 var forms = document.getElementsByTagName('form');
 
 for (var i = 0; i < forms.length; i++) {
@@ -71,11 +121,14 @@ for (var i = 0; i < forms.length; i++) {
       if (xhr.status != 200)
         alert('Error!');
       else
-        console.log('Got', JSON.parse(xhr.responseText));
+        loadListings();
     });
     xhr.open(form.method, form.action);
     xhr.setRequestHeader('content-type', 'application/json');
     xhr.send(JSON.stringify(data));
   }.bind(null, form));
 }
+
+
+loadListings();
 </script>
