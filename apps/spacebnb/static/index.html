@@ -10,7 +10,7 @@
       Add a new listing
     </div>
     <div class="panel-body">
-      <form action="/api/listings" method="POST" enctype="application/json">
+      <form action="/api/listings" method="POST">
         <div class="form-group">
           <label>User name</label>
           <input class="form-control" name="user">
@@ -29,14 +29,53 @@
         </div>
         <div class="form-group">
           <label>X position (meters)</label>
-          <input class="form-control" name="x" type="number" step="any">
+          <input class="form-control" name="location[x]" type="number" step="any">
         </div>
         <div class="form-group">
           <label>Y position (meters)</label>
-          <input class="form-control" name="y" type="number" step="any">
+          <input class="form-control" name="location[y]" type="number" step="any">
         </div>
         <input class="form-control" type="submit">
       </form>
     </div>
   </div>
 </div>
+
+<script>
+var forms = document.getElementsByTagName('form');
+
+for (var i = 0; i < forms.length; i++) {
+  var form = forms[i];
+
+  form.addEventListener('submit', function(form, e) {
+    e.preventDefault();
+
+    var data = {};
+
+    for (var i = 0; i < form.length; i++) {
+      var element = form.elements[i];
+      var name = element.name.replace(/\]/g, '').split('[');
+      var container = data;
+
+      for (var j = 0; j < name.length - 1; j++) {
+        if (!(container[name[j]] instanceof Object))
+          container[name[j]] = {};
+        container = container[name[j]];
+      }
+      container[name[j]] = element.type == 'number' ? Number(element.value) : element.value;
+    }
+
+    var xhr = new XMLHttpRequest();
+
+    xhr.addEventListener('load', function(e) {
+      if (xhr.status != 200)
+        alert('Error!');
+      else
+        console.log('Got', JSON.parse(xhr.responseText));
+    });
+    xhr.open(form.method, form.action);
+    xhr.setRequestHeader('content-type', 'application/json');
+    xhr.send(JSON.stringify(data));
+  }.bind(null, form));
+}
+</script>
