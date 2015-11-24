@@ -93,6 +93,7 @@ function loadListings() {
 function buildListingRow(tr, listing) {
   var td = document.createElement('td');
   tr.appendChild(td);
+  td.style.whiteSpace = 'nowrap';
 
   var span = document.createElement('span');
   td.appendChild(span);
@@ -133,24 +134,89 @@ function buildListingRow(tr, listing) {
   var td = document.createElement('td');
   tr.appendChild(td);
   td.textContent = listing.id;
+
   var td = document.createElement('td');
   tr.appendChild(td);
-  td.textContent = listing.user;
+  var input = document.createElement('input');
+  td.appendChild(input);
+  input.className = 'form-control';
+  input.value = listing.user;
+  input.addEventListener('change', function(e) {
+    listing.user = this.value;
+    putListing(listing);
+  });
+
   var td = document.createElement('td');
   tr.appendChild(td);
-  td.textContent = listing.title;
+  var input = document.createElement('input');
+  td.appendChild(input);
+  input.className = 'form-control';
+  input.value = listing.title;
+  input.addEventListener('change', function(e) {
+    listing.title = this.value;
+    putListing(listing);
+  });
+
   var td = document.createElement('td');
   tr.appendChild(td);
-  td.textContent = listing.description;
+  var input = document.createElement('textarea');
+  td.appendChild(input);
+  input.className = 'form-control';
+  input.value = listing.description;
+  input.addEventListener('change', function(e) {
+    listing.description = this.value;
+    putListing(listing);
+  });
+
   var td = document.createElement('td');
   tr.appendChild(td);
-  td.textContent = listing.expiration;
+  var input = document.createElement('input');
+  td.appendChild(input);
+  input.className = 'form-control';
+  input.value = listing.expiration;
+  input.addEventListener('change', function(e) {
+    listing.expiration = this.value;
+    putListing(listing);
+  });
+
   var td = document.createElement('td');
   tr.appendChild(td);
-  td.textContent = listing.location.x;
+  var input = document.createElement('input');
+  td.appendChild(input);
+  input.className = 'form-control';
+  input.type = 'number';
+  input.step = 'any';
+  input.value = listing.location.x;
+  input.addEventListener('change', function(e) {
+    listing.location.x = Number(this.value);
+    putListing(listing);
+  });
+
   var td = document.createElement('td');
   tr.appendChild(td);
-  td.textContent = listing.location.y;
+  var input = document.createElement('input');
+  td.appendChild(input);
+  input.className = 'form-control';
+  input.type = 'number';
+  input.step = 'any';
+  input.value = listing.location.y;
+  input.addEventListener('change', function(e) {
+    listing.location.y = Number(this.value);
+    putListing(listing);
+  });
+}
+
+
+function putListing(listing) {
+  var xhr = new XMLHttpRequest();
+
+  xhr.addEventListener('load', function(e) {
+    if (xhr.status != 200)
+      alert('Error!');
+  });
+  xhr.open('PUT', '/api/listings/' + listing.id);
+  xhr.setRequestHeader('content-type', 'application/json');
+  xhr.send(JSON.stringify(listing));
 }
 
 
