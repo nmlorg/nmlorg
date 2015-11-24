@@ -9,22 +9,20 @@
     <div class="panel-heading">
       Listings
     </div>
-    <div class="panel-body">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>User name</th>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Expiration date</th>
-            <th>X position (meters)</th>
-            <th>Y position (meters)</th>
-          </tr>
-        </thead>
-        <tbody id="listings"></tbody>
-      </table>
-    </div>
+    <table class="panel-body table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>User name</th>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Expiration date</th>
+          <th>X position (meters)</th>
+          <th>Y position (meters)</th>
+        </tr>
+      </thead>
+      <tbody id="listings"></tbody>
+    </table>
   </div>
 
   <div class="panel panel-info">
@@ -82,9 +80,22 @@ function loadListings() {
       var listing = listings[i];
       var tr = document.createElement('tr');
       listingsBody.appendChild(tr);
-      tr.innerHTML = '<td>' + listing.id + '</td><td>' + listing.user + '</td><td>' +
-          listing.title + '</td><td>' + listing.description + '</td><td>' + listing.expiration +
-          '</td><td>' + listing.location.x + '</td><td>' + listing.location.y + '</td>';
+      tr.innerHTML = '<td><span class="glyphicon glyphicon-trash"> ' + listing.id + '</td><td>' +
+          listing.user + '</td><td>' + listing.title + '</td><td>' + listing.description +
+          '</td><td>' + listing.expiration + '</td><td>' + listing.location.x + '</td><td>' +
+          listing.location.y + '</td>';
+      tr.addEventListener('click', function(listing, e) {
+        var xhr = new XMLHttpRequest();
+
+        xhr.addEventListener('load', function(e) {
+          if (xhr.status != 200)
+            alert('Error!');
+          else
+            window.setTimeout(loadListings, 500);
+        });
+        xhr.open('DELETE', '/api/listings/' + listing.id);
+        xhr.send();
+      }.bind(null, listing));
     }
   });
   xhr.open('GET', '/api/listings');
@@ -121,7 +132,7 @@ for (var i = 0; i < forms.length; i++) {
       if (xhr.status != 200)
         alert('Error!');
       else
-        loadListings();
+        window.setTimeout(loadListings, 500);
     });
     xhr.open(form.method, form.action);
     xhr.setRequestHeader('content-type', 'application/json');
