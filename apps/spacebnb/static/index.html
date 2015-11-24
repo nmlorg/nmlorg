@@ -82,6 +82,7 @@ function loadListings() {
       var tr = document.createElement('tr');
 
       listingsBody.appendChild(tr);
+      listingsBody.appendChild(document.createElement('tr'));
       buildListingRow(tr, listing);
     }
   });
@@ -128,6 +129,71 @@ function buildListingRow(tr, listing) {
       }
     });
     xhr.open('GET', '/api/listings/' + listing.id);
+    xhr.send();
+  });
+
+  td.appendChild(document.createTextNode(' '));
+
+  var span = document.createElement('span');
+  td.appendChild(span);
+  span.className = 'glyphicon glyphicon-comment';
+  span.addEventListener('click', function(e) {
+    var xhr = new XMLHttpRequest();
+
+    xhr.addEventListener('load', function(e) {
+      if (xhr.status != 200)
+        alert('Error!');
+      else {
+        var comments = JSON.parse(xhr.responseText);
+        var commentsRow = tr.nextElementSibling;
+        commentsRow.textContent = '';
+        var td = document.createElement('td');
+        commentsRow.appendChild(td);
+        td.colSpan = 8;
+        for (var i = 0; i < comments.length; i++) {
+          var comment = comments[i];
+          var form = document.createElement('div');
+          td.appendChild(form);
+          form.className = 'form-inline';
+
+          var input = document.createElement('input');
+          form.appendChild(input);
+          input.className = 'form-control';
+          input.value = comment.user;
+
+          var input = document.createElement('textarea');
+          form.appendChild(input);
+          input.className = 'form-control';
+          input.value = comment.comment;
+        }
+
+        var form = document.createElement('form');
+        td.appendChild(form);
+        form.className = 'form-inline';
+        form.method = 'POST';
+        form.action = '/api/listings/' + listing.id + '/comments/';
+
+        var input = document.createElement('input');
+        form.appendChild(input);
+        input.className = 'form-control';
+        input.name = 'user';
+        input.placeholder = 'User';
+
+        var input = document.createElement('textarea');
+        form.appendChild(input);
+        input.className = 'form-control';
+        input.name = 'comment';
+        input.placeholder = 'Comment';
+
+        var input = document.createElement('input');
+        form.appendChild(input);
+        input.className = 'form-control';
+        input.type = 'submit';
+
+        fixForm(form);
+      }
+    });
+    xhr.open('GET', '/api/listings/' + listing.id + '/comments/');
     xhr.send();
   });
 
@@ -222,10 +288,12 @@ function putListing(listing) {
 
 var forms = document.getElementsByTagName('form');
 
-for (var i = 0; i < forms.length; i++) {
-  var form = forms[i];
+for (var i = 0; i < forms.length; i++)
+  fixForm(forms[i]);
 
-  form.addEventListener('submit', function(form, e) {
+
+function fixForm(form) {
+  form.addEventListener('submit', function(e) {
     e.preventDefault();
 
     var data = {};
@@ -254,7 +322,7 @@ for (var i = 0; i < forms.length; i++) {
     xhr.open(form.method, form.action);
     xhr.setRequestHeader('content-type', 'application/json');
     xhr.send(JSON.stringify(data));
-  }.bind(null, form));
+  });
 }
 
 
