@@ -12,6 +12,7 @@
     <table class="panel-body table table-striped">
       <thead>
         <tr>
+          <th></th>
           <th>ID</th>
           <th>User name</th>
           <th>Title</th>
@@ -79,27 +80,77 @@ function loadListings() {
     for (var i = 0; i < listings.length; i++) {
       var listing = listings[i];
       var tr = document.createElement('tr');
-      listingsBody.appendChild(tr);
-      tr.innerHTML = '<td><span class="glyphicon glyphicon-trash"></span> ' + listing.id +
-          '</td><td>' + listing.user + '</td><td>' + listing.title + '</td><td>' +
-          listing.description + '</td><td>' + listing.expiration + '</td><td>' +
-          listing.location.x + '</td><td>' + listing.location.y + '</td>';
-      tr.addEventListener('click', function(listing, e) {
-        var xhr = new XMLHttpRequest();
 
-        xhr.addEventListener('load', function(e) {
-          if (xhr.status != 200)
-            alert('Error!');
-          else
-            window.setTimeout(loadListings, 500);
-        });
-        xhr.open('DELETE', '/api/listings/' + listing.id);
-        xhr.send();
-      }.bind(null, listing));
+      listingsBody.appendChild(tr);
+      buildListingRow(tr, listing);
     }
   });
   xhr.open('GET', '/api/listings');
   xhr.send();
+}
+
+
+function buildListingRow(tr, listing) {
+  var td = document.createElement('td');
+  tr.appendChild(td);
+
+  var span = document.createElement('span');
+  td.appendChild(span);
+  span.className = 'glyphicon glyphicon-trash';
+  span.addEventListener('click', function(e) {
+    var xhr = new XMLHttpRequest();
+
+    xhr.addEventListener('load', function(e) {
+      if (xhr.status != 200)
+        alert('Error!');
+      else
+        window.setTimeout(loadListings, 500);
+    });
+    xhr.open('DELETE', '/api/listings/' + listing.id);
+    xhr.send();
+  });
+
+  td.appendChild(document.createTextNode(' '));
+
+  var span = document.createElement('span');
+  td.appendChild(span);
+  span.className = 'glyphicon glyphicon-refresh';
+  span.addEventListener('click', function(e) {
+    var xhr = new XMLHttpRequest();
+
+    xhr.addEventListener('load', function(e) {
+      if (xhr.status != 200)
+        alert('Error!');
+      else {
+        tr.textContent = '';
+        buildListingRow(tr, JSON.parse(xhr.responseText));
+      }
+    });
+    xhr.open('GET', '/api/listings/' + listing.id);
+    xhr.send();
+  });
+
+  var td = document.createElement('td');
+  tr.appendChild(td);
+  td.textContent = listing.id;
+  var td = document.createElement('td');
+  tr.appendChild(td);
+  td.textContent = listing.user;
+  var td = document.createElement('td');
+  tr.appendChild(td);
+  td.textContent = listing.title;
+  var td = document.createElement('td');
+  tr.appendChild(td);
+  td.textContent = listing.description;
+  var td = document.createElement('td');
+  tr.appendChild(td);
+  td.textContent = listing.expiration;
+  var td = document.createElement('td');
+  tr.appendChild(td);
+  td.textContent = listing.location.x;
+  var td = document.createElement('td');
+  tr.appendChild(td);
+  td.textContent = listing.location.y;
 }
 
 
