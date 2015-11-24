@@ -80,10 +80,10 @@ function loadListings() {
       var listing = listings[i];
       var tr = document.createElement('tr');
       listingsBody.appendChild(tr);
-      tr.innerHTML = '<td><span class="glyphicon glyphicon-trash"> ' + listing.id + '</td><td>' +
-          listing.user + '</td><td>' + listing.title + '</td><td>' + listing.description +
-          '</td><td>' + listing.expiration + '</td><td>' + listing.location.x + '</td><td>' +
-          listing.location.y + '</td>';
+      tr.innerHTML = '<td><span class="glyphicon glyphicon-trash"></span> ' + listing.id +
+          '</td><td>' + listing.user + '</td><td>' + listing.title + '</td><td>' +
+          listing.description + '</td><td>' + listing.expiration + '</td><td>' +
+          listing.location.x + '</td><td>' + listing.location.y + '</td>';
       tr.addEventListener('click', function(listing, e) {
         var xhr = new XMLHttpRequest();
 
