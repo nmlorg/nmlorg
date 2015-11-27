@@ -30,6 +30,14 @@ spacex.Matrix.zero = function(rows, cols) {
 };
 
 
+spacex.Matrix.prototype.copy = function() {
+  var ret = new spacex.Matrix(this.rows, this.cols);
+
+  ret.m_ = this.m_.slice();
+  return ret;
+};
+
+
 spacex.Matrix.prototype.multiply_ = function(n, m, p, A, B) {
   var ret = spacex.Matrix.zero(n, p);
 
