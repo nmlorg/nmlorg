@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<div id="container">
+<pre>
+Matrix.multiply = function(A, B) {
+  var n = A.rows;
+  var m = A.cols = B.rows;
+  var p = B.cols;
+  var C = Matrix.zero(n, p);
+
+  for (var i = 1; i <= n; i++)
+    for (var j = 1; j <= p; j++)
+      for (var k = 1; k <= m; k++)
+        C[i * p + j] += A[i * m + k] * B[k * p + j];
+
+  return C;
+};
+</div>
+
+<script>
+var container = document.getElementById('container');
+
+function drawMult(n, m, p) {
+  var row = document.createElement('span');
+  container.appendChild(row);
+  row.className = 'clearfix';
+  row.appendChild(document.createElement('hr'));
+
+  var tableA = document.createElement('table');
+  row.appendChild(tableA);
+  tableA.className = 'pull-left';
+  var tr = document.createElement('tr');
+  tableA.appendChild(tr);
+  var td = document.createElement('td');
+  tr.appendChild(td);
+  var td = document.createElement('td');
+  tr.appendChild(td);
+  td.colSpan = m;
+  td.className = 'text-center';
+  td.textContent = 'm = ' + m;
+  for (var i = 0; i < n; i++) {
+    var tr = document.createElement('tr');
+    tableA.appendChild(tr);
+    if (!i) {
+      var td = document.createElement('td');
+      tr.appendChild(td);
+      td.rowSpan = n;
+      td.textContent = 'n = ' + n;
+    }
+    for (var j = 0; j < m; j++) {
+      var td = document.createElement('td');
+      tr.appendChild(td);
+      var code = document.createElement('code');
+      td.appendChild(code);
+      code.innerHTML = (!i && !j ? '[' : '&nbsp;') + 'A' + (i + 1) + (j + 1) + ((i == n - 1) && (j == m - 1) ? ']' : ',');
+    }
+  }
+
+  var tableB = document.createElement('table');
+  row.appendChild(tableB);
+  tableB.className = 'pull-left';
+  var tr = document.createElement('tr');
+  tableB.appendChild(tr);
+  var td = document.createElement('td');
+  tr.appendChild(td);
+  td.rowSpan = m + 1;
+  td.style.fontSize = '200%';
+  td.innerHTML = '&nbsp; \u00d7 &nbsp;';
+  var td = document.createElement('td');
+  tr.appendChild(td);
+  var td = document.createElement('td');
+  tr.appendChild(td);
+  td.colSpan = p;
+  td.className = 'text-center';
+  td.textContent = 'p = ' + p;
+  var td = document.createElement('td');
+  tr.appendChild(td);
+  td.rowSpan = m + 1;
+  td.style.fontSize = '200%';
+  td.innerHTML = '&nbsp; = &nbsp;';
+  for (var i = 0; i < m; i++) {
+    var tr = document.createElement('tr');
+    tableB.appendChild(tr);
+    if (!i) {
+      var td = document.createElement('td');
+      tr.appendChild(td);
+      td.rowSpan = m;
+      td.textContent = 'm = ' + m;
+    }
+    for (var j = 0; j < p; j++) {
+      var td = document.createElement('td');
+      tr.appendChild(td);
+      var code = document.createElement('code');
+      td.appendChild(code);
+      code.innerHTML = (!i && !j ? '[' : '&nbsp;') + 'B' + (i + 1) + (j + 1) + ((i == m - 1) && (j == p - 1) ? ']' : ',');
+    }
+  }
+
+  var tableC = document.createElement('table');
+  row.appendChild(tableC);
+  tableC.className = 'pull-left';
+  var tr = document.createElement('tr');
+  tableC.appendChild(tr);
+  var td = document.createElement('td');
+  tr.appendChild(td);
+  var td = document.createElement('td');
+  tr.appendChild(td);
+  td.colSpan = p;
+  td.className = 'text-center';
+  td.textContent = 'p = ' + p;
+  for (var i = 0; i < n; i++) {
+    var tr = document.createElement('tr');
+    tableC.appendChild(tr);
+    if (!i) {
+      var td = document.createElement('td');
+      tr.appendChild(td);
+      td.rowSpan = n;
+      td.textContent = 'n = ' + n;
+    }
+    for (var j = 0; j < p; j++) {
+      var td = document.createElement('td');
+      tr.appendChild(td);
+      var code = document.createElement('code');
+      td.appendChild(code);
+      code.innerHTML = !i && !j ? '[' : '&nbsp;';
+      for (var k = 0; k < m; k++)
+        code.innerHTML += (k ? ' + ' : '') + 'A' + (i + 1) + (k + 1) + '\u00d7' + 'B' + (k + 1) + (j + 1);
+      code.innerHTML += (i == n - 1) && (j == p - 1) ? ']' : ',';
+    }
+  }
+}
+
+for (var p = 1; p < 5; p++)
+  for (var n = 1; n < 5; n++)
+    for (var m = 1; m < 5; m++)
+      drawMult(n, m, p);
+</script>
