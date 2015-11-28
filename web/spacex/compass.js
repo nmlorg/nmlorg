@@ -70,22 +70,13 @@ spacex.Compass.prototype.draw = function(dt) {
     ctx.fillText('E', this.dim_ - 50 - 35, this.dim_ / 2);
     ctx.fillText('W', 15, this.dim_ / 2);
   ctx.restore();
-  ctx.save();
-    // Draw the ship.
-    ctx.fillStyle = 'rgba(255, 0, 0, .5)';
-    ctx.fillRect(this.dim_ / 4, 7 * this.dim_ / 16, 3 * this.dim_ / 16, this.dim_ / 8);
-    ctx.fillStyle = 'rgba(0, 255, 0, .5)';
-    ctx.fillRect(9 * this.dim_ / 16, 7 * this.dim_ / 16, 3 * this.dim_ / 16, this.dim_ / 8);
-    var vehicleLength = 3 * this.dim_ / 4;
-    ctx.fillStyle = 'rgba(0, 0, 0, .5)';
-    ctx.fillRect(7 * this.dim_ / 16, this.dim_ / 8, this.dim_ / 8, vehicleLength);
-    var vehicleShrink = 1 - Math.cos(Math.abs(this.vehicle_.pitch) * Math.PI / 180);
-    ctx.fillStyle = 'rgba(255, 255, 255, .5)';
-    ctx.fillRect(7 * this.dim_ / 16,
-                 this.dim_ / 8 + vehicleShrink * vehicleLength / 2,
-                 this.dim_ / 8, 
-                 (1 - vehicleShrink) * vehicleLength);
-  ctx.restore();
+
+  var camera = new spacex.Camera();
+
+  camera.rotateZ(90);
+  camera.rotateX(-90);
+  camera.rotateX(this.vehicle_.roll);
+  spacex.model.drawVehicle(ctx, camera);
 
   return this;
 };
