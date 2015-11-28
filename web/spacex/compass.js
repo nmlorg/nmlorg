@@ -50,16 +50,16 @@ spacex.Compass.prototype.draw = function(dt) {
     // Move the origin back to the upper-left corner.
     ctx.translate(-this.dim_ / 2, -this.dim_ / 2);
     // Draw NW.
-    ctx.fillStyle = 'rgba(0, 255, 128, .5)';
+    ctx.fillStyle = 'rgba(0, 0, 128, .5)';
     ctx.fillRect(0, 0, this.dim_ / 2, this.dim_ / 2);
     // Draw NE.
-    ctx.fillStyle = 'rgba(0, 128, 255, .5)';
+    ctx.fillStyle = 'rgba(0, 0, 255, .5)';
     ctx.fillRect(this.dim_ / 2, 0, this.dim_ / 2, this.dim_ / 2);
     // Draw SW.
-    ctx.fillStyle = 'rgba(255, 128, 0, .5)';
+    ctx.fillStyle = 'rgba(0, 0, 255, .5)';
     ctx.fillRect(0, this.dim_ / 2, this.dim_ / 2, this.dim_ / 2);
     // Draw SE.
-    ctx.fillStyle = 'rgba(255, 0, 128, .5)';
+    ctx.fillStyle = 'rgba(0, 0, 128, .5)';
     ctx.fillRect(this.dim_ / 2, this.dim_ / 2, this.dim_ / 2, this.dim_ / 2);
     // Draw labels.
     ctx.fillStyle = 'rgba(255, 255, 255, 1)';
