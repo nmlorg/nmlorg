@@ -72,21 +72,12 @@ spacex.RollModel.prototype.draw = function(dt) {
         ctx.strokeRect(i * this.dim_ / 10, this.dim_ / 2 + y, this.dim_ / 10, height);
       }
   ctx.restore();
-  ctx.save();
-    // Draw the ship.
-    var pitchHeight = this.dim_ / 2 * Math.sin(this.vehicle_.pitch * Math.PI / 180);
-    ctx.fillStyle = 'rgba(255, 0, 0, .5)';
-    ctx.fillRect(this.dim_ / 4, 7 * this.dim_ / 16, 3 * this.dim_ / 16, this.dim_ / 8);
-    ctx.fillStyle = 'rgba(0, 255, 0, .5)';
-    ctx.fillRect(9 * this.dim_ / 16, 7 * this.dim_ / 16, 3 * this.dim_ / 16, this.dim_ / 8);
-    ctx.fillStyle = 'rgba(255, 255, 255, .5)';
-    ctx.fillRect(7 * this.dim_ / 16, 7 * this.dim_ / 16 - pitchHeight, this.dim_ / 8, this.dim_ / 8);
-    ctx.fillStyle = 'rgba(255, 255, 255, .1)';
-    ctx.fillRect(7 * this.dim_ / 16, 7 * this.dim_ / 16 - pitchHeight, this.dim_ / 8, pitchHeight * 2);
-    ctx.fillRect(7 * this.dim_ / 16, 7 * this.dim_ / 16 - pitchHeight + this.dim_ / 8, this.dim_ / 8, pitchHeight * 2);
-    ctx.fillStyle = 'rgba(255, 255, 255, .5)';
-    ctx.fillRect(7 * this.dim_ / 16, 7 * this.dim_ / 16 + pitchHeight, this.dim_ / 8, this.dim_ / 8);
-  ctx.restore();
+
+  var camera = new spacex.Camera();
+
+  camera.rotateY(-90);
+  camera.rotateZ(this.vehicle_.pitch);
+  spacex.model.drawVehicle(ctx, camera);
 
   return this;
 };
