@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://www.webglearth.com/v2/api.js"></script>
+
 <link rel="stylesheet" href="button.css">
 <script src="button.js"></script>
 <script src="camera.js"></script>
 <link rel="stylesheet" href="compass.css">
 <script src="compass.js"></script>
 <link rel="stylesheet" href="console.css">
+<script src="globe.js"></script>
+<link rel="stylesheet" href="globe.css">
 <script src="matrix.js"></script>
 <script src="model.js"></script>
 <link rel="stylesheet" href="pitchmodel.css">
@@ -38,10 +43,11 @@ var rearButton = viewBar.add('Rear View').click(function() {
   bg.src = 'http://n.ml.org/spacex/view-of-earth-from-space-04.jpg';
 });
 
-var vehicle = new spacex.Vehicle({velocity: 100});
+var vehicle = new spacex.Vehicle({velocity: 27359});
 var rollModel = new spacex.RollModel(vehicle).attach(viewPort, 1, 1);
 var pitchModel = new spacex.PitchModel(vehicle).attach(viewPort, 22, 1);
 var compass = new spacex.Compass(vehicle).attach(viewPort, 43, 1);
+var globe = new spacex.Globe(vehicle).attach(viewPort, 64, 1);
 var upUntil = 0, downUntil = 0, leftUntil = 0, rightUntil = 0;
 var autoLevel = true;
 
@@ -136,12 +142,13 @@ function anim(now) {
   yawButton.title(Math.floor(vehicle.yaw * 10) / 10 + ' \u00b0');
   pitchButton.title(Math.floor(vehicle.pitch) + ' \u00b0');
   rollButton.title(Math.floor(vehicle.roll) + ' \u00b0');
-  xButton.title(Math.floor(vehicle.x) + ' m');
-  yButton.title(Math.floor(vehicle.y) + ' m');
+  xButton.title(Math.floor(vehicle.x / 1000) + ' km');
+  yButton.title(Math.floor(vehicle.y / 1000) + ' km');
   zButton.title(Math.floor(vehicle.z) + ' m');
   rollModel.draw(dt);
   pitchModel.draw(dt);
   compass.draw(dt);
+  globe.draw(dt);
   requestAnimationFrame(anim);
 }
 
