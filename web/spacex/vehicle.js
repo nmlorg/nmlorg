@@ -59,7 +59,7 @@ spacex.Vehicle.prototype.compound = function(dt) {
   while (this.lat < -90)
     this.lat += 180;
   while (this.lat > 90)
-    this.lt -= 180;
+    this.lat -= 180;
 
   this.lon += dx / 111320 / Math.cos(this.lat * Math.PI / 180);
   while (this.lon < -180)
