@@ -23,8 +23,8 @@ spacex.Vehicle.prototype.velocity = 0;
 spacex.Vehicle.prototype.yaw = 0;
 spacex.Vehicle.prototype.pitch = 0;
 spacex.Vehicle.prototype.roll = 0;
-spacex.Vehicle.prototype.x = 0;
-spacex.Vehicle.prototype.y = 0;
+spacex.Vehicle.prototype.lat = 0;
+spacex.Vehicle.prototype.lon = 0;
 spacex.Vehicle.prototype.z = 0;
 
 
@@ -51,10 +51,23 @@ spacex.Vehicle.prototype.compound = function(dt) {
   var velTime = this.velocity * dt;
   var yawRad = (90 - this.yaw) * Math.PI / 180;
   var pitchRad = this.pitch * Math.PI / 180;
+  var dx = velTime * Math.cos(pitchRad) * Math.cos(yawRad);
+  var dy = velTime * Math.cos(pitchRad) * Math.sin(yawRad);
+  var dz = velTime * Math.sin(pitchRad);
 
-  this.x += velTime * Math.cos(pitchRad) * Math.cos(yawRad);
-  this.y += velTime * Math.cos(pitchRad) * Math.sin(yawRad);
-  this.z += velTime * Math.sin(pitchRad);
+  this.lat += dy / 110575;
+  while (this.lat < -90)
+    this.lat += 180;
+  while (this.lat > 90)
+    this.lt -= 180;
+
+  this.lon += dx / 111320 / Math.cos(this.lat * Math.PI / 180);
+  while (this.lon < -180)
+    this.lon += 360;
+  while (this.lon > 180)
+    this.lon -= 360;
+
+  this.z += dz;
 };
 
 })();

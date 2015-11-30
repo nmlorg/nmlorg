@@ -39,10 +39,7 @@ spacex.Globe.prototype.attach = function(parent, x, y) {
  * @param {number} dt The amount of time to advance, in seconds.
  */
 spacex.Globe.prototype.draw = function(dt) {
-  var lat = this.vehicle_.y / 110575;
-  var lon = this.vehicle_.x / 111320 / Math.cos(lat * Math.PI / 180);
-
-  this.earth_.setCenter([lat, lon]);
+  this.earth_.setCenter([this.vehicle_.lat, this.vehicle_.lon]);
 
   return this;
 };
