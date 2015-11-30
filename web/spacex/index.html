@@ -47,7 +47,7 @@ var vehicle = new spacex.Vehicle({velocity: 27359});
 var rollModel = new spacex.RollModel(vehicle).attach(viewPort, 1, 1);
 var pitchModel = new spacex.PitchModel(vehicle).attach(viewPort, 22, 1);
 var compass = new spacex.Compass(vehicle).attach(viewPort, 43, 1);
-var globe = new spacex.Globe(vehicle).attach(viewPort, 64, 1);
+var globe = new spacex.Globe(vehicle).attach(viewPort, 64, 2);
 var upUntil = 0, downUntil = 0, leftUntil = 0, rightUntil = 0;
 var autoLevel = true;
 

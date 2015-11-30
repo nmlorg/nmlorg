@@ -75,6 +75,7 @@ spacex.Compass.prototype.draw = function(dt) {
 
   camera.rotateZ(90);
   camera.rotateX(-90);
+  camera.rotateZ(this.vehicle_.pitch);
   camera.rotateX(this.vehicle_.roll);
   spacex.model.drawVehicle(ctx, camera);
 
