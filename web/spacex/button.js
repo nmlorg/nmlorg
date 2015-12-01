@@ -61,9 +61,10 @@ spacex.Button.prototype.title = function(text) {
  * A set of buttons.
  * @constructor
  */
-spacex.ButtonBar = function() {
+spacex.ButtonBar = function(horiz) {
+  this.horiz = !!horiz;
   this.div_ = document.createElement('div');
-  this.div_.className = 'button-bar';
+  this.div_.className = 'button-bar button-bar-' + (this.horiz ? 'horiz' : 'vert');
 };
 
 

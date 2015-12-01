@@ -19,17 +19,35 @@ div.button-bar {
 
 div.button-bar > button.sx-button {
   border-radius: 0;
+}
+
+div.button-bar-horiz > button.sx-button {
+  border-left: 0;
+}
+
+div.button-bar-horiz > button.sx-button:first-child {
+  border-left: .3vw solid #3030b0;
+  border-bottom-left-radius: 1vw;
+  border-top-left-radius: 1vw;
+}
+
+div.button-bar-horiz > button.sx-button:last-child {
+  border-bottom-right-radius: 1vw;
+  border-top-right-radius: 1vw;
+}
+
+div.button-bar-vert > button.sx-button {
   border-top: 0;
   display: block;
 }
 
-div.button-bar > button.sx-button:first-child {
+div.button-bar-vert > button.sx-button:first-child {
   border-top: .3vw solid #3030b0;
   border-top-left-radius: 1vw;
   border-top-right-radius: 1vw;
 }
 
-div.button-bar > button.sx-button:last-child {
+div.button-bar-vert > button.sx-button:last-child {
   border-bottom-left-radius: 1vw;
   border-bottom-right-radius: 1vw;
 }
