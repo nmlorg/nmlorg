@@ -85,7 +85,8 @@ var yawButton = new spacex.Button('').attach(viewPort, 48, 17);
 var pitchButton = new spacex.Button('').attach(viewPort, 27, 17);
 var rollButton = new spacex.Button('').attach(viewPort, 6, 17);
 
-var posBar = new spacex.ButtonBar().attach(viewPort, 48, 23);
+var posBar = new spacex.ButtonBar().attach(viewPort, 48, 22);
+var velocityButton = posBar.add('0');
 var latButton = posBar.add('0');
 var lonButton = posBar.add('0');
 var zButton = posBar.add('0');
@@ -142,6 +143,7 @@ function anim(now) {
   yawButton.title(Math.floor(vehicle.yaw * 10) / 10 + ' \u00b0');
   pitchButton.title(Math.floor(vehicle.pitch) + ' \u00b0');
   rollButton.title(Math.floor(vehicle.roll) + ' \u00b0');
+  velocityButton.title(Math.floor(vehicle.velocity) + ' m\u2215s');
   latButton.title(Math.floor(Math.abs(vehicle.lat) * 10) / 10 + ' \u00b0 ' + (vehicle.lat > 0 ? 'N' : 'S'));
   lonButton.title(Math.floor(Math.abs(vehicle.lon) * 10) / 10 + ' \u00b0 ' + (vehicle.lon > 0 ? 'E' : 'W'));
   zButton.title(Math.floor(vehicle.z / 1000) + ' km');
