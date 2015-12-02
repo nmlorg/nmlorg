@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+      integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+      crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-2.1.4.min.js" 
+        integrity="sha256-8WqyJLuWKRBVhxXIL1jBDD7SDxU936oZkCnxQbWwJVw"
+        crossorigin="anonymous"></script>
+
+<body>
+
+<script>
+$(document.body).append($('<div>')
+    .addClass('container')
+    .append($('<div>')
+        .addClass('col-sm-4')
+        .append($('<div>')
+            .addClass('panel panel-info')
+            .append($('<div>')
+                .addClass('panel-heading')
+                .append('Heading')
+            )
+            .append($('<div>')
+                .addClass('panel-body')
+                .append('Body')
+            )
+            .append($('<div>')
+                .addClass('panel-footer')
+                .append('Footer')
+            )
+        )
+        .append($('<div>')
+            .addClass('panel panel-warning')
+            .append($('<div>')
+                .addClass('panel-heading')
+                .append('Heading')
+            )
+            .append($('<div>')
+                .addClass('panel-body')
+                .append('Body')
+            )
+            .append($('<div>')
+                .addClass('panel-footer')
+                .append('Footer')
+            )
+        )
+    )
+    .append($('<div>')
+        .addClass('col-sm-8')
+        .append($('<div>')
+            .addClass('panel panel-default')
+            .append($('<div>')
+                .addClass('panel-heading')
+                .append('Heading')
+            )
+            .append($('<div>')
+                .addClass('panel-body')
+                .append($('<p>')
+                    .append('Long HTML content.')
+                )
+                .append($('<p>')
+                    .append('Long HTML content.')
+                )
+                .append($('<p>')
+                    .append('Long HTML content.')
+                )
+                .append($('<p>')
+                    .append('Long HTML content.')
+                )
+                .append($('<p>')
+                    .append('Long HTML content.')
+                )
+                .append($('<p>')
+                    .append('Long HTML content.')
+                )
+            )
+            .append($('<div>')
+                .addClass('panel-footer')
+                .append('Footer')
+            )
+        )
+    )
+);
+</script>
