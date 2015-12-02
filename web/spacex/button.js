@@ -44,6 +44,7 @@ spacex.Button.prototype.attach = function(parent, x, y) {
  */
 spacex.Button.prototype.click = function(handler) {
   this.button_.addEventListener('click', handler);
+  this.button_.style.cursor = 'pointer';
   return this;
 };
 
