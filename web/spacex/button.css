@@ -13,6 +13,10 @@ button.active {
   background: rgba(0, 255, 0, .5);
 }
 
+button.small {
+  width: 4vw;
+}
+
 button:focus {
   outline: 0;
 }

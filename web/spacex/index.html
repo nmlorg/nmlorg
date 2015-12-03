@@ -10,17 +10,14 @@
     <div style="height: 18vw; top: 1vw; width: 35vw" data-widget="globe"></div>
   </div>
   <div class="row">
-    <div class="button-bar button-bar-vert">
-      <button data-set="background"
-              data-value="http://n.ml.org/spacex/view-of-earth-from-space-03.jpg">Front View</button>
-      <button data-set="background"
-              data-value="http://n.ml.org/spacex/view-of-earth-from-space-04.jpg">Rear View</button>
-    </div>
-    <div class="button-bar button-bar-vert">
+    <div class="col">
+      <div class="button-bar button-bar-vert">
+        <button data-set="background"
+                data-value="http://n.ml.org/spacex/view-of-earth-from-space-03.jpg">Front View</button>
+        <button data-set="background"
+                data-value="http://n.ml.org/spacex/view-of-earth-from-space-04.jpg">Rear View</button>
+      </div>
       <button data-pattern="Math.floor(vehicle.velocity) + ' m\u2215s'"></button>
-      <button data-pattern="Math.floor(Math.abs(vehicle.lat) * 10) / 10 + ' \u00b0 ' + (vehicle.lat > 0 ? 'N' : 'S')"></button>
-      <button data-pattern="Math.floor(Math.abs(vehicle.lon) * 10) / 10 + ' \u00b0 ' + (vehicle.lon > 0 ? 'E' : 'W')"></button>
-      <button data-pattern="Math.floor(vehicle.z / 1000) + ' km'"></button>
     </div>
     <div class="col">
       <button style="left: 5vw" data-thrust="up">Pull Up</button>
@@ -29,6 +26,52 @@
         <button data-thrust="right">Bank Right</button>
       </div>
       <button style="left: 5vw" data-thrust="down">Push Down</button>
+    </div>
+    <div class="col">
+      <div class="button-bar button-bar-horiz">
+        <button class="small" onclick="targeting.yaw = true; targeting.lat = targeting.lon = targeting.roll = false; target.yaw -= 1;">&#x21e9;</button>
+        <button data-pattern="fmtCompass(vehicle.yaw)"></button>
+        <button data-pattern="'\u2192 ' + fmtCompass(target.yaw)"></button>
+        <button class="small" onclick="targeting.yaw = true; targeting.lat = targeting.lon = targeting.roll = false; target.yaw += 1;">&#x21e7;</button>
+      </div>
+      <div class="button-bar button-bar-horiz">
+        <button class="small" onclick="targeting.pitch = true; targeting.z = false; target.pitch -= 1;">&#x21e9;</button>
+        <button data-pattern="fmtDeg(vehicle.pitch, 'down', 'up')"></button>
+        <button data-pattern="'\u2192 ' + fmtDeg(target.pitch, 'down', 'up', 10)"></button>
+        <button class="small" onclick="targeting.pitch = true; targeting.z = false; target.pitch += 1;">&#x21e7;</button>
+      </div>
+      <div class="button-bar button-bar-horiz">
+        <button class="small" onclick="targeting.roll = true; targeting.lat = targeting.lon = targeting.yaw = false; target.roll -= 1;">&#x21e9;</button>
+        <button data-pattern="fmtDeg(vehicle.roll, 'left', 'right')"></button>
+        <button data-pattern="'\u2192 ' + fmtDeg(target.roll, 'left', 'right', 10)"></button>
+        <button class="small" onclick="targeting.roll = true; targeting.lat = targeting.lon = targeting.yaw = false; target.roll += 1;">&#x21e7;</button>
+      </div>
+    </div>
+    <div class="col">
+      <div class="button-bar button-bar-horiz">
+        <button class="small" onclick="targeting.lat = true; targeting.yaw = targeting.roll = false; target.lat -= 1;">&#x21e9;</button>
+        <button class="small" onclick="targeting.lat = true; targeting.yaw = targeting.roll = false; target.lat -= .01;">&#x2193;</button>
+        <button data-pattern="fmtDeg(vehicle.lat, 'S', 'N', 10)"></button>
+        <button data-pattern="'\u2192 ' + fmtDeg(target.lat, 'S', 'N', 100)"></button>
+        <button class="small" onclick="targeting.lat = true; targeting.yaw = targeting.roll = false; target.lat += .01;">&#x2191;</button>
+        <button class="small" onclick="targeting.lat = true; targeting.yaw = targeting.roll = false; target.lat += 1;">&#x21e7;</button>
+      </div>
+      <div class="button-bar button-bar-horiz">
+        <button class="small" onclick="targeting.lon = true; targeting.yaw = targeting.roll = false; target.lon -= 1;">&#x21e9;</button>
+        <button class="small" onclick="targeting.lon = true; targeting.yaw = targeting.roll = false; target.lon -= .01;">&#x2193;</button>
+        <button data-pattern="fmtDeg(vehicle.lon, 'W', 'E', 10)"></button>
+        <button data-pattern="'\u2192 ' + fmtDeg(target.lon, 'W', 'E', 100)"></button>
+        <button class="small" onclick="targeting.lon = true; targeting.yaw = targeting.roll = false; target.lon += .01;">&#x2191;</button>
+        <button class="small" onclick="targeting.lon = true; targeting.yaw = targeting.roll = false; target.lon += 1;">&#x21e7;</button>
+      </div>
+      <div class="button-bar button-bar-horiz">
+        <button class="small" onclick="targeting.z = true; targeting.pitch = false; target.z -= 10000;">&#x21e9;</button>
+        <button class="small" onclick="targeting.z = true; targeting.pitch = false; target.z -= 100;">&#x2193;</button>
+        <button data-pattern="Math.floor(vehicle.z / 1000) + ' km'"></button>
+        <button data-pattern="'\u2192 ' + Math.floor(target.z / 100) / 10 + ' km'"></button>
+        <button class="small" onclick="targeting.z = true; targeting.pitch = false; target.z += 100;">&#x2191;</button>
+        <button class="small" onclick="targeting.z = true; targeting.pitch = false; target.z += 10000;">&#x21e7;</button>
+      </div>
     </div>
   </div>
 </div>
@@ -54,6 +97,8 @@
 var viewPort = document.getElementById('viewport');
 var vehicle = new spacex.Vehicle({velocity: 27359});
 var thrust = {'down': 0, 'left': 0, 'right': 0, 'up': 0};
+var target = {'lat': 37.3894, 'lon': 122.0819, 'z': 382500, 'yaw': 0, 'pitch': 0, 'roll': 0};
+var targeting = {'lat': false, 'lon': false, 'z': false, 'yaw': false, 'pitch': false, 'roll': false};
 var widgets = [];
 var widgetMap = {
     'compass': spacex.Compass,
@@ -127,6 +172,31 @@ for (var i = 0; i < buttons.length; i++) {
         thrust[direction] = now + 5000;
     });
   }
+}
+
+function fmtCompass(deg) {
+  var s = Math.floor(deg) + ' \u00b0 ';
+  if ((deg < -157.5) || (deg > 157.5))
+    return s + 'S';
+  else if (deg < -112.2)
+    return s + 'SW';
+  else if (deg < -67.5)
+    return s + 'W';
+  else if (deg < -22.5)
+    return s + 'NW';
+  else if (deg < 22.5)
+    return s + 'N';
+  else if (deg < 67.5)
+    return s + 'NE';
+  else if (deg < 112.5)
+    return s + 'E';
+  else
+    return s + 'SE';
+}
+
+function fmtDeg(deg, lower, upper, precision) {
+  precision = precision || 1;
+  return Math.floor(deg * precision) / precision + ' \u00b0 ' + (deg < 0 ? lower : upper);
 }
 
 var last = 0;
