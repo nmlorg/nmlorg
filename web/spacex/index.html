@@ -67,9 +67,7 @@ for (var i = 0; i < divs.length; i++) {
   var div = divs[i];
 
   if (widgetMap[div.dataset.widget]) {
-    var textContent = div.textContent;
-    div.textContent = '';
-    var widget = new widgetMap[div.dataset.widget](vehicle, textContent).attach(div);
+    var widget = new widgetMap[div.dataset.widget](vehicle).attach(div);
     if (widget.draw)
       widgets.push(widget.draw.bind(widget));
   }
