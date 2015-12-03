@@ -210,17 +210,34 @@ requestAnimationFrame(function anim(now) {
   vehicle.pitch += 20 * (Math.random() - .5) * dt;
   vehicle.roll += 20 * (Math.random() - .5) * dt;
 
-  if (targeting.latlon) {
-    if (Math.pow(vehicle.lat - target.lat, 2) + Math.pow(vehicle.lon - target.lon, 2) > 5) {
+  if (targeting.latlon || targeting.yaw || targeting.roll) {
+    var targetRoll = target.roll;
+
+    if (targeting.latlon || targeting.yaw) {
+      var targetYaw = target.yaw;
+
+      if (targeting.latlon) {
+        if (Math.pow(vehicle.lat - target.lat, 2) + Math.pow(vehicle.lon - target.lon, 2) > 5) {
+        }
+      }
+
+      targetRoll = 5 * Math.max(-2, Math.min(2, targetYaw - vehicle.yaw));
+    }
+
+    if (vehicle.roll > targetRoll + 1) {
+      thrust.left = Math.max(thrust.left, now + 100);
+      thrust.right = 0;
+    } else if (vehicle.roll < targetRoll - 1) {
+      thrust.left = 0;
+      thrust.right = Math.max(thrust.right, now + 100);
     }
   }
+
   if (targeting.z || targeting.pitch) {
     var targetPitch = target.pitch;
 
-    if (targeting.z) {
-      var dz = target.z - vehicle.z;
-      targetPitch = Math.max(-10000, Math.min(10000, dz)) / 1000;
-    }
+    if (targeting.z)
+      targetPitch = Math.max(-10000, Math.min(10000, target.z - vehicle.z)) / 1000;
 
     if (vehicle.pitch > targetPitch + 1) {
       thrust.down = Math.max(thrust.down, now + 100);
@@ -229,10 +246,6 @@ requestAnimationFrame(function anim(now) {
       thrust.down = 0;
       thrust.up = Math.max(thrust.up, now + 100);
     }
-  }
-  if (targeting.yaw) {
-  }
-  if (targeting.roll) {
   }
 
   if (thrust.down >= now)
