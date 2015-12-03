@@ -97,7 +97,7 @@
 var viewPort = document.getElementById('viewport');
 var vehicle = new spacex.Vehicle({velocity: 27359});
 var thrust = {'down': 0, 'left': 0, 'right': 0, 'up': 0};
-var target = {'lat': 37.3894, 'lon': 122.0819, 'z': 382500, 'yaw': 0, 'pitch': 0, 'roll': 0};
+var target = {'lat': 37.39, 'lon': -122.08, 'z': 382500, 'yaw': 0, 'pitch': 0, 'roll': 0};
 var targeting = {'latlon': false, 'z': false, 'yaw': false, 'pitch': false, 'roll': false};
 var widgets = [];
 var widgetMap = {
@@ -211,38 +211,30 @@ requestAnimationFrame(function anim(now) {
   vehicle.roll += 20 * (Math.random() - .5) * dt;
 
   if (targeting.latlon || targeting.yaw || targeting.roll) {
-    var targetRoll = target.roll;
-
     if (targeting.latlon || targeting.yaw) {
-      var targetYaw = target.yaw;
+      if (targeting.latlon)
+        target.yaw = 90 - Math.atan2(target.lat - vehicle.lat, target.lon - vehicle.lon) * 180 / Math.PI;
 
-      if (targeting.latlon) {
-        if (Math.pow(vehicle.lat - target.lat, 2) + Math.pow(vehicle.lon - target.lon, 2) > 5) {
-        }
-      }
-
-      targetRoll = 5 * Math.max(-2, Math.min(2, targetYaw - vehicle.yaw));
+      target.roll = 10 * Math.max(-2, Math.min(2, target.yaw - vehicle.yaw));
     }
 
-    if (vehicle.roll > targetRoll + 1) {
+    if (vehicle.roll > target.roll + 1) {
       thrust.left = Math.max(thrust.left, now + 100);
       thrust.right = 0;
-    } else if (vehicle.roll < targetRoll - 1) {
+    } else if (vehicle.roll < target.roll - 1) {
       thrust.left = 0;
       thrust.right = Math.max(thrust.right, now + 100);
     }
   }
 
   if (targeting.z || targeting.pitch) {
-    var targetPitch = target.pitch;
-
     if (targeting.z)
-      targetPitch = Math.max(-10000, Math.min(10000, target.z - vehicle.z)) / 1000;
+      target.pitch = Math.max(-10000, Math.min(10000, target.z - vehicle.z)) / 1000;
 
-    if (vehicle.pitch > targetPitch + 1) {
+    if (vehicle.pitch > target.pitch + 1) {
       thrust.down = Math.max(thrust.down, now + 100);
       thrust.up = 0;
-    } else if (vehicle.pitch < targetPitch - 1) {
+    } else if (vehicle.pitch < target.pitch - 1) {
       thrust.down = 0;
       thrust.up = Math.max(thrust.up, now + 100);
     }
