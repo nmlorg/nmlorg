@@ -17,7 +17,7 @@
         <button data-set="background"
                 data-value="http://n.ml.org/spacex/view-of-earth-from-space-04.jpg">Rear View</button>
       </div>
-      <button data-pattern="Math.floor(vehicle.velocity) + ' m\u2215s'"></button>
+      <button data-pattern="Math.round(vehicle.velocity) + ' m\u2215s'"></button>
     </div>
     <div class="col">
       <button style="left: 5vw" data-thrust="up">Pull Up</button>
@@ -67,8 +67,8 @@
       <div class="button-bar button-bar-horiz">
         <button class="small" onclick="targeting.z = true; targeting.pitch = false; target.z -= 10000;">&#x21e9;</button>
         <button class="small" onclick="targeting.z = true; targeting.pitch = false; target.z -= 100;">&#x2193;</button>
-        <button data-pattern="Math.floor(vehicle.z / 1000) + ' km'"></button>
-        <button data-pattern="'\u2192 ' + Math.floor(target.z / 100) / 10 + ' km'"></button>
+        <button data-pattern="Math.round(vehicle.z / 1000) + ' km'"></button>
+        <button data-pattern="'\u2192 ' + Math.round(target.z / 100) / 10 + ' km'"></button>
         <button class="small" onclick="targeting.z = true; targeting.pitch = false; target.z += 100;">&#x2191;</button>
         <button class="small" onclick="targeting.z = true; targeting.pitch = false; target.z += 10000;">&#x21e7;</button>
       </div>
@@ -175,7 +175,7 @@ for (var i = 0; i < buttons.length; i++) {
 }
 
 function fmtCompass(deg) {
-  var s = Math.floor(deg) + ' \u00b0 ';
+  var s = Math.round(deg) + ' \u00b0 ';
   if ((deg < -157.5) || (deg > 157.5))
     return s + 'S';
   else if (deg < -112.2)
@@ -196,7 +196,7 @@ function fmtCompass(deg) {
 
 function fmtDeg(deg, lower, upper, precision) {
   precision = precision || 1;
-  return Math.floor(deg * precision) / precision + ' \u00b0 ' + (deg < 0 ? lower : upper);
+  return Math.round(deg * precision) / precision + ' \u00b0 ' + (deg < 0 ? lower : upper);
 }
 
 var last = 0;
@@ -214,27 +214,23 @@ requestAnimationFrame(function anim(now) {
     if (Math.pow(vehicle.lat - target.lat, 2) + Math.pow(vehicle.lon - target.lon, 2) > 5) {
     }
   }
-  if (targeting.z) {
-    if (vehicle.pitch > 10) {
+  if (targeting.z || targeting.pitch) {
+    var targetPitch = target.pitch;
+
+    if (targeting.z) {
+      var dz = target.z - vehicle.z;
+      targetPitch = Math.max(-10000, Math.min(10000, dz)) / 1000;
+    }
+
+    if (vehicle.pitch > targetPitch + 1) {
       thrust.down = Math.max(thrust.down, now + 100);
       thrust.up = 0;
-    } else if (vehicle.pitch < -10) {
+    } else if (vehicle.pitch < targetPitch - 1) {
       thrust.down = 0;
       thrust.up = Math.max(thrust.up, now + 100);
-    } else {
-      var dz = target.z - vehicle.z;
-      if ((dz < -500) && (vehicle.pitch > -5)) {
-        thrust.down = Math.max(thrust.down, now + 100);
-        thrust.up = 0;
-      } else if ((dz > 500) && (vehicle.pitch < 5)) {
-        thrust.down = 0;
-        thrust.up = Math.max(thrust.up, now + 100);
-      }
     }
   }
   if (targeting.yaw) {
-  }
-  if (targeting.pitch) {
   }
   if (targeting.roll) {
   }
