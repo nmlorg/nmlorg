@@ -2,11 +2,36 @@
   box-sizing: border-box;
 }
 
-body, html {
-  background-color: black;
+body {
   margin: 0;
 }
 
-div#viewport > * {
+div#viewport {
+  background-color: black;
+  background-size: cover;
+  font-size: 0;
+  height: 100%;
   position: absolute;
+  width: 100%;
+}
+
+div#viewport div.col > * {
+  position: relative;
+  margin-top: 1vw;
+}
+
+div#viewport div.col > *:first-child {
+  margin-top: 0;
+}
+
+div#viewport > div.row {
+  clear: both;
+}
+
+div#viewport > div.row > * {
+  float: left;
+  margin: 1vw 0 0 1vw;
+  min-height: 2vw;
+  min-width: 2vw;
+  position: relative;
 }

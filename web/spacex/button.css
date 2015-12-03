@@ -1,53 +1,53 @@
-button.sx-button {
+button {
   background: rgba(0, 0, 0, .5);
   border: .3vw solid #3030b0;
   border-radius: 100vw;
   color: white;
   font-weight: 900;
   font-size: 1vw;
-  height: 2.5vw;
+  height: 2vw;
   width: 10vw;
 }
 
-button.sx-button:focus {
+button.active {
+  background: rgba(0, 255, 0, .5);
+}
+
+button:focus {
   outline: 0;
 }
 
-div.button-bar {
-  display: inline-block;
-}
-
-div.button-bar > button.sx-button {
+div.button-bar > button {
   border-radius: 0;
 }
 
-div.button-bar-horiz > button.sx-button {
+div.button-bar-horiz > button {
   border-left: 0;
 }
 
-div.button-bar-horiz > button.sx-button:first-child {
+div.button-bar-horiz > button:first-child {
   border-left: .3vw solid #3030b0;
   border-bottom-left-radius: 1vw;
   border-top-left-radius: 1vw;
 }
 
-div.button-bar-horiz > button.sx-button:last-child {
+div.button-bar-horiz > button:last-child {
   border-bottom-right-radius: 1vw;
   border-top-right-radius: 1vw;
 }
 
-div.button-bar-vert > button.sx-button {
+div.button-bar-vert > button {
   border-top: 0;
   display: block;
 }
 
-div.button-bar-vert > button.sx-button:first-child {
+div.button-bar-vert > button:first-child {
   border-top: .3vw solid #3030b0;
   border-top-left-radius: 1vw;
   border-top-right-radius: 1vw;
 }
 
-div.button-bar-vert > button.sx-button:last-child {
+div.button-bar-vert > button:last-child {
   border-bottom-left-radius: 1vw;
   border-bottom-right-radius: 1vw;
 }
