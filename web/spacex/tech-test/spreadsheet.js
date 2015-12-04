@@ -45,11 +45,63 @@ spacex.Spreadsheet = function(body) {
 
 
 /**
+ * Fetch the value of the given cell.
+ * @param {number} row The row, with 0 being the top row.
+ * @param {number} col The column, with 0 being the left edge (first cell of each row).
+ * @param {boolean} preserve_formula Return the cell's formula instead of its computed value.
+ */
+spacex.Spreadsheet.prototype.getCell = function(row, col, preserve_formula) {
+  var body = this.body_;
+
+  if ((row >= body.rows.length) && (col >= body.rows[row].cells.length))
+    return '';
+  var input = body.rows[row].cells[col].firstChild;
+  var value = preserve_formula ? input.dataset.formula : input.value;
+
+  // Anything that isn't a "number" will turn into NaN, which is not equal to itself.
+  if ((value != '') && (Number(value) == Number(value)))
+    return Number(value);
+  return value;
+};
+
+
+/**
+ * Evaluate a spreadsheet formula, like '=A1+B2*4'.
+ * @param {string} s The expression to evaluate.
+ */
+spacex.Spreadsheet.prototype.eval = function(s) {
+  if (s[0] != '=')
+    return s;
+
+  var pieces = s.substr(1).split(/([A-Z]+)([0-9]+)/);
+
+  for (var i = 1; i + 1 < pieces.length; i += 3) {
+    var colStr = pieces[i];
+    var col = 0;
+
+    for (var j = 0; j < colStr.length; j++) {
+      col *= 26;
+      col += colStr.charCodeAt(j) - 64;
+    }
+
+    var rowStr = pieces[i + 1];
+    var row = Number(rowStr);
+
+    pieces[i] = this.getCell(row - 1, col - 1) || 0;
+    pieces[i + 1] = '';
+  }
+
+  return eval(pieces.join(''));
+};
+
+
+/**
  * Return the spreadsheet's data in a normalized form: All number-like fields are converted to
  * numbers, empty cells at the end of each row are omitted, and empty rows at the end of the table
  * are omitted.
+ * @param {boolean} preserve_formula Save a cell's formula instead of its computed value.
  */
-spacex.Spreadsheet.prototype.export = function() {
+spacex.Spreadsheet.prototype.export = function(preserve_formula) {
   var body = this.body_;
   var data = [];
 
@@ -58,7 +110,7 @@ spacex.Spreadsheet.prototype.export = function() {
     var row = body.rows[lastRow];
 
     for (var j = 0; j < row.cells.length - 1; j++)
-      if (row.cells[j].firstChild.value != '')
+      if (this.getCell(lastRow, j, preserve_formula) != '')
         break;
 
     if (j < row.cells.length - 1) {
@@ -72,14 +124,10 @@ spacex.Spreadsheet.prototype.export = function() {
 
     data[i] = [];
     for (var j = 0; j < row.cells.length; j++) {
-      value = row.cells[j].firstChild.value;
+      value = this.getCell(i, j, preserve_formula);
 
-      if (value != '') {
-        // Anything that isn't a "number" will turn into NaN, which is not equal to itself.
-        if (Number(value) == Number(value))
-          value = Number(value);
+      if (value != '')
         data[i][j] = value;
-      }
     }
   }
 
@@ -129,12 +177,17 @@ spacex.Spreadsheet.prototype.setCell = function(row, col, value) {
       var td = tr.insertCell();
       var input = document.createElement('input');
       td.appendChild(input);
+      input.dataset.formula = '';
+      input.addEventListener('blur', function(sheet, e) {
+        this.value = sheet.eval(this.dataset.formula);
+      }.bind(input, this));
       input.addEventListener('change', function(sheet, row, col, e) {
-        sheet.setCell(row, col, this.value);
+        this.dataset.formula = this.value;
       }.bind(input, this, i, j));
       input.addEventListener('focus', function(sheet, row, col, e) {
         sheet.row = row;
         sheet.col = col;
+        this.value = this.dataset.formula;
         this.setSelectionRange(0, this.value.length);
       }.bind(input, this, i, j));
     }
@@ -142,7 +195,9 @@ spacex.Spreadsheet.prototype.setCell = function(row, col, value) {
 
   if ((value === null) || (value === undefined))
     value = '';
-  body.rows[row].cells[col].firstChild.value = value;
+  var input = body.rows[row].cells[col].firstChild;
+  input.dataset.formula = value;
+  input.value = this.eval(value);
 };
 
 })();

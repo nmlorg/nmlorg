@@ -2,32 +2,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-
-
-<!-- If you create a file named "local.js" that declares a variable like:
-
-       var HARNESS_URL = 'file:///path/to/harness.js';
-
-     that path will be loaded in without any modifications to this file.
-  -->
-<script src="local.js"></script>
-<script>
-if (window.HARNESS_URL) {
-  var script = document.createElement('script');
-  script.src = HARNESS_URL;
-  document.head.appendChild(script);
-}
-</script>
-
-
-
 <table class="spreadsheet" border="0" cellspacing="0" cellpadding="0">
   <thead>
     <tr>
       <td colspan="1000">
         <input id="key">
         <button id="load">Load</button>
-        <button id="save">Save</button>
+        <button id="save" title="Call save_data with formula cells intact.">Save</button>
+        <button id="export" title="Call save_data with formula cells evaluated.">Export</button>
       </td>
     </tr>
   </thead>
@@ -49,23 +31,33 @@ document.getElementById('load').addEventListener('click', function(e) {
 });
 
 document.getElementById('save').addEventListener('click', function(e) {
+  var data = spreadsheet.export(true);
+
+  save_data(keyInput.value, JSON.stringify(data));
+});
+
+document.getElementById('export').addEventListener('click', function(e) {
   var data = spreadsheet.export();
 
   save_data(keyInput.value, JSON.stringify(data));
 });
 
-function load_data(key) {
-  console.log('Placeholder: Loading', key);
-  return JSON.stringify([
-      [null, null, 'First row!'],
-      [],
-      [1, 2, 3, null, 5, 'Numbers!'],
-  ]);
+if (!window.load_data) {
+  function load_data(key) {
+    console.log('Placeholder: Loading', key);
+    return JSON.stringify([
+        [null, null, 'First row!'],
+        [],
+        [1, 2, 3, null, '=A3+B3*C3', 'Numbers!'],
+    ]);
+  }
 }
 
-function save_data(key, value) {
-  console.log('Placeholder: Saving', key, value);
-  console.log(JSON.parse(value));
+if (!window.save_data) {
+  function save_data(key, value) {
+    console.log('Placeholder: Saving', key, value);
+    console.log(JSON.parse(value));
+  }
 }
 
 </script>
