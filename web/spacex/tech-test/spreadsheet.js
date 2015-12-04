@@ -11,7 +11,7 @@ spacex = window.spacex || {};
  */
 spacex.Spreadsheet = function(body) {
   this.body_ = body;
-  this.setCell(0, 0, '');
+  this.setCell(2, 2, '');
   this.row = this.col = 0;
 
   body.addEventListener('keydown', function(sheet, e) {
