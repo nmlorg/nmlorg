@@ -43,7 +43,7 @@ document.getElementById('export').addEventListener('click', function(e) {
 });
 
 if (!window.load_data) {
-  function load_data(key) {
+  load_data = function(key) {
     console.log('Placeholder: Loading', key);
     return JSON.stringify([
         [null, null, 'First row!'],
@@ -54,7 +54,7 @@ if (!window.load_data) {
 }
 
 if (!window.save_data) {
-  function save_data(key, value) {
+  save_data = function(key, value) {
     console.log('Placeholder: Saving', key, value);
     console.log(JSON.parse(value));
   }
