@@ -2,85 +2,70 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
-      integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
-      crossorigin="anonymous">
-<script src="https://code.jquery.com/jquery-2.1.4.min.js" 
-        integrity="sha256-8WqyJLuWKRBVhxXIL1jBDD7SDxU936oZkCnxQbWwJVw"
-        crossorigin="anonymous"></script>
 
-<body>
+
+<!-- If you create a file named "local.js" that declares a variable like:
+
+       var HARNESS_URL = 'file:///path/to/harness.js';
+
+     that path will be loaded in without any modifications to this file.
+  -->
+<script src="local.js"></script>
+<script>
+if (window.HARNESS_URL) {
+  var script = document.createElement('script');
+  script.src = HARNESS_URL;
+  document.head.appendChild(script);
+}
+</script>
+
+
+
+<table class="spreadsheet" border="0" cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <td colspan="1000">
+        <input id="key">
+        <button id="load">Load</button>
+        <button id="save">Save</button>
+      </td>
+    </tr>
+  </thead>
+  <tbody id="data"></tbody>
+</table>
+
+<link rel="stylesheet" href="spreadsheet.css"></script>
+<script src="spreadsheet.js"></script>
 
 <script>
-$(document.body).append($('<div>')
-    .addClass('container')
-    .append($('<div>')
-        .addClass('col-sm-4')
-        .append($('<div>')
-            .addClass('panel panel-info')
-            .append($('<div>')
-                .addClass('panel-heading')
-                .append('Heading')
-            )
-            .append($('<div>')
-                .addClass('panel-body')
-                .append('Body')
-            )
-            .append($('<div>')
-                .addClass('panel-footer')
-                .append('Footer')
-            )
-        )
-        .append($('<div>')
-            .addClass('panel panel-warning')
-            .append($('<div>')
-                .addClass('panel-heading')
-                .append('Heading')
-            )
-            .append($('<div>')
-                .addClass('panel-body')
-                .append('Body')
-            )
-            .append($('<div>')
-                .addClass('panel-footer')
-                .append('Footer')
-            )
-        )
-    )
-    .append($('<div>')
-        .addClass('col-sm-8')
-        .append($('<div>')
-            .addClass('panel panel-default')
-            .append($('<div>')
-                .addClass('panel-heading')
-                .append('Heading')
-            )
-            .append($('<div>')
-                .addClass('panel-body')
-                .append($('<p>')
-                    .append('Long HTML content.')
-                )
-                .append($('<p>')
-                    .append('Long HTML content.')
-                )
-                .append($('<p>')
-                    .append('Long HTML content.')
-                )
-                .append($('<p>')
-                    .append('Long HTML content.')
-                )
-                .append($('<p>')
-                    .append('Long HTML content.')
-                )
-                .append($('<p>')
-                    .append('Long HTML content.')
-                )
-            )
-            .append($('<div>')
-                .addClass('panel-footer')
-                .append('Footer')
-            )
-        )
-    )
-);
+var dataElement = document.getElementById('data');
+var spreadsheet = new spacex.Spreadsheet(dataElement);
+var keyInput = document.getElementById('key');
+
+document.getElementById('load').addEventListener('click', function(e) {
+  var data = JSON.parse(load_data(keyInput.value));
+
+  spreadsheet.load(data);
+});
+
+document.getElementById('save').addEventListener('click', function(e) {
+  var data = spreadsheet.export();
+
+  save_data(keyInput.value, JSON.stringify(data));
+});
+
+function load_data(key) {
+  console.log('Placeholder: Loading', key);
+  return JSON.stringify([
+      [null, null, 'First row!'],
+      [],
+      [1, 2, 3, null, 5, 'Numbers!'],
+  ]);
+}
+
+function save_data(key, value) {
+  console.log('Placeholder: Saving', key, value);
+  console.log(JSON.parse(value));
+}
+
 </script>

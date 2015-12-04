@@ -1,0 +1,33 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+table.spreadsheet {
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+
+table.spreadsheet > thead > tr > td {
+  padding: 10px;
+}
+
+table.spreadsheet > thead > tr > td > * {
+  background-color: white;
+  border: 1px solid black;
+  font-size: 20px;
+  height: 40px;
+  margin: 10px;
+  padding: 5px;
+  vertical-align: middle;
+}
+
+table.spreadsheet > tbody > tr > td > input {
+  height: 100%;
+  padding: 0;
+  width: 100%;
+}
