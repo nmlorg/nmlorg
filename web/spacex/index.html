@@ -87,8 +87,8 @@
 <link rel="stylesheet" href="compass.css">
 <script src="compass.js"></script>
 <link rel="stylesheet" href="console.css">
-<script src="globe.js"></script>
 <link rel="stylesheet" href="globe.css">
+<script src="globe.js"></script>
 <script src="matrix.js"></script>
 <script src="model.js"></script>
 <link rel="stylesheet" href="pitchmodel.css">
@@ -209,6 +209,19 @@ function fmtDeg(deg, lower, upper, precision) {
   return Math.round(deg * precision) / precision + ' \u00b0 ' + (deg < 0 ? lower : upper);
 }
 
+/**
+ * Give the shortest circumference distance between a and b, i.e. the smallest value ret where
+ * (b + ret) % 360 = a % 360.
+ */
+function degDiff(a, b) {
+  var min = a - 180, max = a + 180;
+  while (b < min)
+    b += 360;
+  while (b > max)
+    b -= 360;
+  return a - b;
+}
+
 var last = 0;
 requestAnimationFrame(function anim(now) {
   if (!last)
@@ -225,7 +238,7 @@ requestAnimationFrame(function anim(now) {
       if (targeting.latlon)
         target.yaw = 90 - Math.atan2(target.lat - vehicle.lat, target.lon - vehicle.lon) * 180 / Math.PI;
 
-      target.roll = 10 * Math.max(-2, Math.min(2, target.yaw - vehicle.yaw));
+      target.roll = 10 * Math.max(-2, Math.min(2, degDiff(target.yaw, vehicle.yaw)));
     }
 
     if (vehicle.roll > target.roll + 1) {
