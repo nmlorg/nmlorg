@@ -31,20 +31,23 @@
       <div class="button-bar button-bar-horiz">
         <button class="small" onclick="targeting.yaw = true; targeting.latlon = targeting.roll = false; target.yaw -= 1;">&#x21e9;</button>
         <button data-pattern="fmtCompass(vehicle.yaw)"></button>
-        <button data-pattern="'\u2192 ' + fmtCompass(target.yaw)"></button>
+        <button data-pattern="'\u2192 ' + fmtCompass(target.yaw)"
+                data-targeting="yaw"></button>
         <button class="small" onclick="targeting.yaw = true; targeting.latlon = targeting.roll = false; target.yaw += 1;">&#x21e7;</button>
       </div>
       <div class="button-bar button-bar-horiz">
         <button class="small" onclick="targeting.pitch = true; targeting.z = false; target.pitch -= 1;">&#x21e9;</button>
         <button data-pattern="fmtDeg(vehicle.pitch, 'down', 'up')"></button>
-        <button data-pattern="'\u2192 ' + fmtDeg(target.pitch, 'down', 'up', 10)"></button>
+        <button data-pattern="'\u2192 ' + fmtDeg(target.pitch, 'down', 'up', 10)"
+                data-targeting="pitch"></button>
         <button class="small" onclick="targeting.pitch = true; targeting.z = false; target.pitch += 1;">&#x21e7;</button>
       </div>
       <div class="button-bar button-bar-horiz">
-        <button class="small" onclick="targeting.roll = true; targeting.latlon = targeting.yaw = false; target.roll -= 1;">&#x21e9;</button>
+        <button class="small" onclick="targeting.roll = true; targeting.latlon = targeting.yaw = false; target.roll -= 1;">&#x21e6;</button>
         <button data-pattern="fmtDeg(vehicle.roll, 'left', 'right')"></button>
-        <button data-pattern="'\u2192 ' + fmtDeg(target.roll, 'left', 'right', 10)"></button>
-        <button class="small" onclick="targeting.roll = true; targeting.latlon = targeting.yaw = false; target.roll += 1;">&#x21e7;</button>
+        <button data-pattern="'\u2192 ' + fmtDeg(target.roll, 'left', 'right', 10)"
+                data-targeting="roll"></button>
+        <button class="small" onclick="targeting.roll = true; targeting.latlon = targeting.yaw = false; target.roll += 1;">&#x21e8;</button>
       </div>
     </div>
     <div class="col">
@@ -52,23 +55,26 @@
         <button class="small" onclick="targeting.latlon = true; targeting.yaw = targeting.roll = false; target.lat -= 1;">&#x21e9;</button>
         <button class="small" onclick="targeting.latlon = true; targeting.yaw = targeting.roll = false; target.lat -= .01;">&#x2193;</button>
         <button data-pattern="fmtDeg(vehicle.lat, 'S', 'N', 10)"></button>
-        <button data-pattern="'\u2192 ' + fmtDeg(target.lat, 'S', 'N', 100)"></button>
+        <button data-pattern="'\u2192 ' + fmtDeg(target.lat, 'S', 'N', 100)"
+                data-targeting="latlon"></button>
         <button class="small" onclick="targeting.latlon = true; targeting.yaw = targeting.roll = false; target.lat += .01;">&#x2191;</button>
         <button class="small" onclick="targeting.latlon = true; targeting.yaw = targeting.roll = false; target.lat += 1;">&#x21e7;</button>
       </div>
       <div class="button-bar button-bar-horiz">
-        <button class="small" onclick="targeting.latlon = true; targeting.yaw = targeting.roll = false; target.lon -= 1;">&#x21e9;</button>
-        <button class="small" onclick="targeting.latlon = true; targeting.yaw = targeting.roll = false; target.lon -= .01;">&#x2193;</button>
+        <button class="small" onclick="targeting.latlon = true; targeting.yaw = targeting.roll = false; target.lon -= 1;">&#x21e6;</button>
+        <button class="small" onclick="targeting.latlon = true; targeting.yaw = targeting.roll = false; target.lon -= .01;">&#x2190;</button>
         <button data-pattern="fmtDeg(vehicle.lon, 'W', 'E', 10)"></button>
-        <button data-pattern="'\u2192 ' + fmtDeg(target.lon, 'W', 'E', 100)"></button>
-        <button class="small" onclick="targeting.latlon = true; targeting.yaw = targeting.roll = false; target.lon += .01;">&#x2191;</button>
-        <button class="small" onclick="targeting.latlon = true; targeting.yaw = targeting.roll = false; target.lon += 1;">&#x21e7;</button>
+        <button data-pattern="'\u2192 ' + fmtDeg(target.lon, 'W', 'E', 100)"
+                data-targeting="latlon"></button>
+        <button class="small" onclick="targeting.latlon = true; targeting.yaw = targeting.roll = false; target.lon += .01;">&#x2192;</button>
+        <button class="small" onclick="targeting.latlon = true; targeting.yaw = targeting.roll = false; target.lon += 1;">&#x21e8;</button>
       </div>
       <div class="button-bar button-bar-horiz">
         <button class="small" onclick="targeting.z = true; targeting.pitch = false; target.z -= 10000;">&#x21e9;</button>
         <button class="small" onclick="targeting.z = true; targeting.pitch = false; target.z -= 100;">&#x2193;</button>
         <button data-pattern="Math.round(vehicle.z / 1000) + ' km'"></button>
-        <button data-pattern="'\u2192 ' + Math.round(target.z / 100) / 10 + ' km'"></button>
+        <button data-pattern="'\u2192 ' + Math.round(target.z / 100) / 10 + ' km'"
+                data-targeting="z"></button>
         <button class="small" onclick="targeting.z = true; targeting.pitch = false; target.z += 100;">&#x2191;</button>
         <button class="small" onclick="targeting.z = true; targeting.pitch = false; target.z += 10000;">&#x21e7;</button>
       </div>
@@ -159,7 +165,7 @@ for (var i = 0; i < buttons.length; i++) {
       buttonValues[name] = value;
     });
   } else if (button.dataset.thrust) {
-    widgets.push(function(dt, now) {
+    widgets.push(function(dt) {
       this.className = thrust[this.dataset.thrust] >= Date.now() ? 'active' : '';
     }.bind(button));
     button.style.cursor = 'pointer';
@@ -171,6 +177,10 @@ for (var i = 0; i < buttons.length; i++) {
       else
         thrust[direction] = now + 5000;
     });
+  } else if (button.dataset.targeting) {
+    widgets.push(function(dt) {
+      this.className = targeting[this.dataset.targeting] ? 'active' : '';
+    }.bind(button));
   }
 }
 
