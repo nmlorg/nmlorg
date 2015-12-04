@@ -37,9 +37,26 @@ spacex.Spreadsheet = function(body) {
         sheet.setCell(sheet.row + 1, 0, '')
       sheet.row++;
       body.rows[sheet.row].cells[sheet.col].firstChild.focus();
+    } else if ((keyCode == 8) && (this.mouseRow != -1)) {  // Backspace
+      for (var i = sheet.mouseRow; i <= sheet.endRow; i++)
+        for (var j = sheet.mouseCol; j <= sheet.endCol; j++)
+          sheet.setCell(i, j, '');
     } else
       return;
     e.preventDefault();
+  }.bind(body, this));
+
+  this.mouseRow = this.mouseCol = this.endRow = this.endCol = -1;
+
+  body.addEventListener('mousedown', function(sheet, e) {
+    sheet.mouseRow = Number(e.target.dataset.row);
+    sheet.mouseCol = Number(e.target.dataset.col);
+  }.bind(body, this));
+
+  body.addEventListener('mouseup', function(sheet, e) {
+    sheet.endRow = Number(e.target.dataset.row);
+    sheet.endCol = Number(e.target.dataset.col);
+    sheet.setHighlight();
   }.bind(body, this));
 };
 
@@ -178,6 +195,8 @@ spacex.Spreadsheet.prototype.setCell = function(row, col, value) {
       var input = document.createElement('input');
       td.appendChild(input);
       input.dataset.formula = '';
+      input.dataset.row = i;
+      input.dataset.col = j;
       input.addEventListener('blur', function(sheet, e) {
         this.value = sheet.eval(this.dataset.formula);
       }.bind(input, this));
@@ -185,8 +204,9 @@ spacex.Spreadsheet.prototype.setCell = function(row, col, value) {
         this.dataset.formula = this.value;
       }.bind(input, this, i, j));
       input.addEventListener('focus', function(sheet, row, col, e) {
-        sheet.row = row;
-        sheet.col = col;
+        sheet.mouseRow = sheet.endRow = sheet.row = row;
+        sheet.mouseCol = sheet.endCol = sheet.col = col;
+        sheet.setHighlight();
         this.value = this.dataset.formula;
         this.setSelectionRange(0, this.value.length);
       }.bind(input, this, i, j));
@@ -198,6 +218,38 @@ spacex.Spreadsheet.prototype.setCell = function(row, col, value) {
   var input = body.rows[row].cells[col].firstChild;
   input.dataset.formula = value;
   input.value = this.eval(value);
+};
+
+
+/**
+ * Mark all cells from mouseRow, mouseCol through endRow, endCol as being selected.
+ */
+spacex.Spreadsheet.prototype.setHighlight = function() {
+  var body = this.body_;
+
+  if (this.mouseRow == -1) {
+    this.mouseRow = this.endRow;
+    this.mouseCol = this.endCol;
+  }
+
+  if (this.mouseRow > this.endRow) {
+    var tmp = this.mouseRow;
+    this.mouseRow = this.endRow;
+    this.endRow = tmp;
+  }
+  if (this.mouseCol > this.endCol) {
+    var tmp = this.mouseCol;
+    this.mouseCol = this.endCol;
+    this.endCol = tmp;
+  }
+
+  for (var i = 0; i < body.rows.length; i++) {
+    var row = body.rows[i];
+
+    for (var j = 0; j < row.cells.length; j++)
+      row.cells[j].firstChild.className = (
+          (i >= this.mouseRow) && (i <= this.endRow) && (j >= this.mouseCol) && (j <= this.endCol) ? 'active' : '');
+  }
 };
 
 })();

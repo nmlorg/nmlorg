@@ -33,3 +33,7 @@ table.spreadsheet > tbody > tr > td > input {
   padding: 0;
   width: 100%;
 }
+
+table.spreadsheet > tbody > tr > td > input.active {
+  border: 1px solid red;
+}
