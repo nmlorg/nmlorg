@@ -26,26 +26,35 @@ table.spreadsheet > tbody > tr > td {
 }
 
 div#data {
-  border: 1px solid lightgrey;
+  border: 1px solid #ccc;
   display: inline-block;
   white-space: nowrap;
 }
 
 div#data > div > input {
-  border: 1px solid lightgrey;
+  border: 1px solid #ccc;
   outline: none;
   width: 10em;
 }
 
 div#data > div:first-child > input {
+  background-color: #eee;
   text-align: center;
 }
 
+div#data > div:first-child > input.active,
+div#data > div > input:first-child.active {
+  background-color: #ddd;
+  border-color: #ccc;
+}
+
 div#data > div > input:first-child {
+  background-color: #eee;
   text-align: center;
   width: 3em;
 }
 
 div#data > div > input.active {
+  background-color: #def;
   border-color: #08f;
 }

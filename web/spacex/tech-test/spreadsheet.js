@@ -255,10 +255,16 @@ spacex.Spreadsheet.prototype.setHighlight = function() {
     this.endCol = tmp;
   }
 
-  for (var i = 0; i < body.children.length; i++) {
+  for (var i = 1; i < body.children.length; i++)
+    body.children[i].children[0].className = (i >= this.mouseRow) && (i <= this.endRow) ? 'active' : '';
+
+  for (var j = 1; j < body.children[0].children.length; j++)
+    body.children[0].children[j].className = (j >= this.mouseCol) && (j <= this.endCol) ? 'active' : '';
+
+  for (var i = 1; i < body.children.length; i++) {
     var row = body.children[i];
 
-    for (var j = 0; j < row.children.length; j++)
+    for (var j = 1; j < row.children.length; j++)
       row.children[j].className = (
           (i >= this.mouseRow) && (i <= this.endRow) && (j >= this.mouseCol) && (j <= this.endCol) ? 'active' : '');
   }
