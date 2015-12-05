@@ -37,6 +37,15 @@ div#data > div > input {
   width: 10em;
 }
 
+div#data > div:first-child > input {
+  text-align: center;
+}
+
+div#data > div > input:first-child {
+  text-align: center;
+  width: 3em;
+}
+
 div#data > div > input.active {
   border-color: #08f;
 }

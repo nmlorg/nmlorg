@@ -12,29 +12,29 @@ spacex = window.spacex || {};
 spacex.Spreadsheet = function(body) {
   this.body_ = body;
   this.setCell(2, 2, '');
-  this.row = this.col = 0;
+  this.row = this.col = 1;
 
   body.addEventListener('keydown', function(sheet, e) {
     var keyCode = e.keyCode & 0x7f;
 
     if (keyCode == 37) {  // Left
-      if (sheet.col > 0) {
+      if (sheet.col > 1) {
         sheet.col--;
         body.children[sheet.row].children[sheet.col].focus();
       }
     } else if (keyCode == 38) {  // Up
-      if (sheet.row > 0) {
+      if (sheet.row > 1) {
         sheet.row--;
         body.children[sheet.row].children[sheet.col].focus();
       }
     } else if (keyCode == 39) {  // Right
       if (sheet.col == body.children[0].children.length - 1)
-        sheet.setCell(0, sheet.col + 1, '')
+        sheet.setCell(1, sheet.col + 1, '')
       sheet.col++;
       body.children[sheet.row].children[sheet.col].focus();
     } else if ((keyCode == 40) || (keyCode == 13)) {  // Down or Enter
       if (sheet.row == body.children.length - 1)
-        sheet.setCell(sheet.row + 1, 0, '')
+        sheet.setCell(sheet.row + 1, 1, '')
       sheet.row++;
       body.children[sheet.row].children[sheet.col].focus();
     } else if ((keyCode == 8) && (this.mouseRow != -1)) {  // Backspace
@@ -104,7 +104,7 @@ spacex.Spreadsheet.prototype.eval = function(s) {
     var rowStr = pieces[i + 1];
     var row = Number(rowStr);
 
-    pieces[i] = this.getCell(row - 1, col - 1) || 0;
+    pieces[i] = this.getCell(row, col) || 0;
     pieces[i + 1] = '';
   }
 
@@ -122,10 +122,10 @@ spacex.Spreadsheet.prototype.export = function(preserve_formula) {
   var body = this.body_;
   var data = [];
 
-  for (var lastRow = body.children.length - 1; lastRow >= 0; lastRow--) {
+  for (var lastRow = body.children.length - 1; lastRow > 0; lastRow--) {
     var row = body.children[lastRow];
 
-    for (var j = 0; j < row.children.length; j++)
+    for (var j = 1; j < row.children.length; j++)
       if (this.getCell(lastRow, j, preserve_formula) != '')
         break;
 
@@ -135,11 +135,11 @@ spacex.Spreadsheet.prototype.export = function(preserve_formula) {
     }
   }
 
-  for (var i = 0; i < lastRow + 1; i++) {
+  for (var i = 1; i < lastRow + 1; i++) {
     var row = body.children[i];
 
     data[i] = [];
-    for (var j = 0; j < row.children.length; j++) {
+    for (var j = 1; j < row.children.length; j++) {
       value = this.getCell(i, j, preserve_formula);
 
       if (value != '')
@@ -164,7 +164,7 @@ spacex.Spreadsheet.prototype.load = function(data) {
     var row = data[i];
 
     for (var j = 0; j < row.length; j++)
-      this.setCell(i, j, row[j]);
+      this.setCell(i + 1, j + 1, row[j]);
   }
 };
 
@@ -192,22 +192,36 @@ spacex.Spreadsheet.prototype.setCell = function(row, col, value) {
     for (var j = tr.children.length; j < width; j++) {
       var input = document.createElement('input');
       tr.appendChild(input);
-      input.dataset.formula = '';
-      input.dataset.row = i;
-      input.dataset.col = j;
-      input.addEventListener('blur', function(sheet, e) {
-        this.value = sheet.eval(this.dataset.formula);
-      }.bind(input, this));
-      input.addEventListener('change', function(sheet, row, col, e) {
-        this.dataset.formula = this.value;
-      }.bind(input, this, i, j));
-      input.addEventListener('focus', function(sheet, row, col, e) {
-        sheet.mouseRow = sheet.endRow = sheet.row = row;
-        sheet.mouseCol = sheet.endCol = sheet.col = col;
-        sheet.setHighlight();
-        this.value = this.dataset.formula;
-        this.setSelectionRange(0, this.value.length);
-      }.bind(input, this, i, j));
+      if ((i == 0) && (j == 0)) {
+        input.disabled = true;
+      } else if (i == 0) {
+        input.disabled = true;
+        var tmp = j;
+        while (tmp) {
+          input.value = String.fromCharCode(65 + ((tmp - 1) % 26)) + input.value;
+          tmp = (tmp - 1) / 26 >> 0;
+        }
+      } else if (j == 0) {
+        input.disabled = true;
+        input.value = i;
+      } else {
+        input.dataset.formula = '';
+        input.dataset.row = i;
+        input.dataset.col = j;
+        input.addEventListener('blur', function(sheet, e) {
+          this.value = sheet.eval(this.dataset.formula);
+        }.bind(input, this));
+        input.addEventListener('change', function(sheet, row, col, e) {
+          this.dataset.formula = this.value;
+        }.bind(input, this, i, j));
+        input.addEventListener('focus', function(sheet, row, col, e) {
+          sheet.mouseRow = sheet.endRow = sheet.row = row;
+          sheet.mouseCol = sheet.endCol = sheet.col = col;
+          sheet.setHighlight();
+          this.value = this.dataset.formula;
+          this.setSelectionRange(0, this.value.length);
+        }.bind(input, this, i, j));
+      }
     }
   }
 
