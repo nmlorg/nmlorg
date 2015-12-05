@@ -6,7 +6,7 @@ spacex = window.spacex || {};
 
 /**
  * A very simple spreadsheet.
- * @param {HTMLTableSectionElement} body A TBODY section within a visible TABLE.
+ * @param {HTMLDivElement} body A visible DIV.
  * @constructor
  */
 spacex.Spreadsheet = function(body) {
@@ -20,23 +20,23 @@ spacex.Spreadsheet = function(body) {
     if (keyCode == 37) {  // Left
       if (sheet.col > 0) {
         sheet.col--;
-        body.rows[sheet.row].cells[sheet.col].firstChild.focus();
+        body.children[sheet.row].children[sheet.col].focus();
       }
     } else if (keyCode == 38) {  // Up
       if (sheet.row > 0) {
         sheet.row--;
-        body.rows[sheet.row].cells[sheet.col].firstChild.focus();
+        body.children[sheet.row].children[sheet.col].focus();
       }
     } else if (keyCode == 39) {  // Right
-      if (sheet.col == body.rows[0].cells.length - 1)
+      if (sheet.col == body.children[0].children.length - 1)
         sheet.setCell(0, sheet.col + 1, '')
       sheet.col++;
-      body.rows[sheet.row].cells[sheet.col].firstChild.focus();
+      body.children[sheet.row].children[sheet.col].focus();
     } else if ((keyCode == 40) || (keyCode == 13)) {  // Down or Enter
-      if (sheet.row == body.rows.length - 1)
+      if (sheet.row == body.children.length - 1)
         sheet.setCell(sheet.row + 1, 0, '')
       sheet.row++;
-      body.rows[sheet.row].cells[sheet.col].firstChild.focus();
+      body.children[sheet.row].children[sheet.col].focus();
     } else if ((keyCode == 8) && (this.mouseRow != -1)) {  // Backspace
       for (var i = sheet.mouseRow; i <= sheet.endRow; i++)
         for (var j = sheet.mouseCol; j <= sheet.endCol; j++)
@@ -70,9 +70,9 @@ spacex.Spreadsheet = function(body) {
 spacex.Spreadsheet.prototype.getCell = function(row, col, preserve_formula) {
   var body = this.body_;
 
-  if ((row >= body.rows.length) && (col >= body.rows[row].cells.length))
+  if ((row >= body.children.length) && (col >= body.children[row].children.length))
     return '';
-  var input = body.rows[row].cells[col].firstChild;
+  var input = body.children[row].children[col];
   var value = preserve_formula ? input.dataset.formula : input.value;
 
   // Anything that isn't a "number" will turn into NaN, which is not equal to itself.
@@ -122,25 +122,24 @@ spacex.Spreadsheet.prototype.export = function(preserve_formula) {
   var body = this.body_;
   var data = [];
 
-  // The actual last row (and column) is always entirely empty, so we start at length - 2.
-  for (var lastRow = body.rows.length - 2; lastRow >= 0; lastRow--) {
-    var row = body.rows[lastRow];
+  for (var lastRow = body.children.length - 1; lastRow >= 0; lastRow--) {
+    var row = body.children[lastRow];
 
-    for (var j = 0; j < row.cells.length - 1; j++)
+    for (var j = 0; j < row.children.length; j++)
       if (this.getCell(lastRow, j, preserve_formula) != '')
         break;
 
-    if (j < row.cells.length - 1) {
+    if (j < row.children.length) {
       // We broke before reaching the end of the row, so this is the last row with data.
       break;
     }
   }
 
   for (var i = 0; i < lastRow + 1; i++) {
-    var row = body.rows[i];
+    var row = body.children[i];
 
     data[i] = [];
-    for (var j = 0; j < row.cells.length; j++) {
+    for (var j = 0; j < row.children.length; j++) {
       value = this.getCell(i, j, preserve_formula);
 
       if (value != '')
@@ -179,21 +178,20 @@ spacex.Spreadsheet.prototype.load = function(data) {
 spacex.Spreadsheet.prototype.setCell = function(row, col, value) {
   var body = this.body_
 
-  // The initial table looks like [['']]. If we call setCell(3, 2, 'hi'), we need to add 4 more rows
-  // (extending by 3 to the 4th row for our new value, then 1 more for a blank row), then 3 more
-  // columns to all rows (old and new--the new ones needing the initial blank column added as well).
-  for (var i = body.rows.length; i <= row + 1; i++)
-    body.insertRow();
+  // The initial table looks like [['']]. If we call setCell(3, 2, 'hi'), we need to add 3 more rows
+  // (extending by 3 to the 4th row for our new value), then 2 more columns to all rows (old and
+  // new--the new ones needing the initial blank column added as well).
+  for (var i = body.children.length; i <= row; i++)
+    body.appendChild(document.createElement('div'));
 
-  var width = Math.max(col + 2, body.rows[0].cells.length);
+  var width = Math.max(col + 1, body.children[0].children.length);
 
-  for (var i = 0; i < body.rows.length; i++) {
-    var tr = body.rows[i];
+  for (var i = 0; i < body.children.length; i++) {
+    var tr = body.children[i];
 
-    for (var j = tr.cells.length; j < width; j++) {
-      var td = tr.insertCell();
+    for (var j = tr.children.length; j < width; j++) {
       var input = document.createElement('input');
-      td.appendChild(input);
+      tr.appendChild(input);
       input.dataset.formula = '';
       input.dataset.row = i;
       input.dataset.col = j;
@@ -215,7 +213,7 @@ spacex.Spreadsheet.prototype.setCell = function(row, col, value) {
 
   if ((value === null) || (value === undefined))
     value = '';
-  var input = body.rows[row].cells[col].firstChild;
+  var input = body.children[row].children[col];
   input.dataset.formula = value;
   input.value = this.eval(value);
 };
@@ -243,11 +241,11 @@ spacex.Spreadsheet.prototype.setHighlight = function() {
     this.endCol = tmp;
   }
 
-  for (var i = 0; i < body.rows.length; i++) {
-    var row = body.rows[i];
+  for (var i = 0; i < body.children.length; i++) {
+    var row = body.children[i];
 
-    for (var j = 0; j < row.cells.length; j++)
-      row.cells[j].firstChild.className = (
+    for (var j = 0; j < row.children.length; j++)
+      row.children[j].className = (
           (i >= this.mouseRow) && (i <= this.endRow) && (j >= this.mouseCol) && (j <= this.endCol) ? 'active' : '');
   }
 };

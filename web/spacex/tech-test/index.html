@@ -2,19 +2,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<table class="spreadsheet" border="0" cellspacing="0" cellpadding="0">
-  <thead>
-    <tr>
-      <td colspan="1000">
-        <input id="key">
-        <button id="load">Load</button>
-        <button id="save" title="Call save_data with formula cells intact.">Save</button>
-        <button id="export" title="Call save_data with formula cells evaluated.">Export</button>
-      </td>
-    </tr>
-  </thead>
-  <tbody id="data"></tbody>
-</table>
+<div class="heading">
+  <input id="key">
+  <button id="load">Load</button>
+  <button id="save" title="Call save_data with formula cells intact.">Save</button>
+  <button id="export" title="Call save_data with formula cells evaluated.">Export</button>
+</div>
+
+<div id="data"></div>
 
 <link rel="stylesheet" href="spreadsheet.css"></script>
 <script src="spreadsheet.js"></script>
