@@ -138,12 +138,12 @@ spacex.Spreadsheet.prototype.export = function(preserve_formula) {
   for (var i = 1; i < lastRow + 1; i++) {
     var row = body.children[i];
 
-    data[i] = [];
+    data[i - 1] = [];
     for (var j = 1; j < row.children.length; j++) {
       value = this.getCell(i, j, preserve_formula);
 
       if (value != '')
-        data[i][j] = value;
+        data[i - 1][j - 1] = value;
     }
   }
 
