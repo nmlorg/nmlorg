@@ -19,32 +19,43 @@ spacex.Spreadsheet = function(body) {
     var keyCode = e.keyCode & 0x7f;
 
     if (keyCode == 37) {  // Left
-      if (sheet.col > 1) {
+      if (!sheet.editing && (sheet.col > 1)) {
         sheet.col--;
         sheet.focus();
+        e.preventDefault();
       }
     } else if (keyCode == 38) {  // Up
-      if (sheet.row > 1) {
+      if (!sheet.editing && (sheet.row > 1)) {
         sheet.row--;
         sheet.focus();
+        e.preventDefault();
       }
     } else if (keyCode == 39) {  // Right
-      if (sheet.col == body.children[0].children.length - 1)
-        sheet.setCell(1, sheet.col + 1, '')
-      sheet.col++;
-      sheet.focus();
+      if (!sheet.editing) {
+        if (sheet.col == body.children[0].children.length - 1)
+          sheet.setCell(1, sheet.col + 1, '')
+        sheet.col++;
+        sheet.focus();
+        e.preventDefault();
+      }
     } else if ((keyCode == 40) || (keyCode == 13)) {  // Down or Enter
-      if (sheet.row == body.children.length - 1)
-        sheet.setCell(sheet.row + 1, 1, '')
-      sheet.row++;
-      sheet.focus();
+      if (!sheet.editing) {
+        if (sheet.row == body.children.length - 1)
+          sheet.setCell(sheet.row + 1, 1, '')
+        sheet.row++;
+        sheet.focus();
+        e.preventDefault();
+      } else if (keyCode == 13)
+        sheet.focus();
     } else if ((keyCode == 8) && (sheet.mouseRow != -1)) {  // Backspace
-      for (var i = sheet.mouseRow; i <= sheet.endRow; i++)
-        for (var j = sheet.mouseCol; j <= sheet.endCol; j++)
-          sheet.setCell(i, j, '');
+      if (!sheet.editing) {
+        for (var i = sheet.mouseRow; i <= sheet.endRow; i++)
+          for (var j = sheet.mouseCol; j <= sheet.endCol; j++)
+            sheet.setCell(i, j, '');
+        e.preventDefault();
+      }
     } else
-      return;
-    e.preventDefault();
+      sheet.editing = true;
   }.bind(body, this));
 
   this.mouseRow = this.mouseCol = this.endRow = this.endCol = -1;
@@ -66,7 +77,10 @@ spacex.Spreadsheet = function(body) {
  * Focus on the currently selected cell.
  */
 spacex.Spreadsheet.prototype.focus = function() {
-  this.body_.children[this.row].children[this.col].focus();
+  this.editing = false;
+  var input = this.body_.children[this.row].children[this.col]
+  input.blur();
+  input.focus();
 };
 
 
@@ -223,6 +237,9 @@ spacex.Spreadsheet.prototype.setCell = function(row, col, value) {
         input.addEventListener('change', function(sheet, row, col, e) {
           this.dataset.formula = this.value;
         }.bind(input, this, i, j));
+        input.addEventListener('click', function(sheet, e) {
+          sheet.editing = true;
+        }.bind(input, this));
         input.addEventListener('focus', function(sheet, row, col, e) {
           sheet.mouseRow = sheet.endRow = sheet.row = row;
           sheet.mouseCol = sheet.endCol = sheet.col = col;
