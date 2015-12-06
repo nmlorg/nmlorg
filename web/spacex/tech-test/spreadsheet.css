@@ -23,6 +23,10 @@ div.heading > * {
   vertical-align: middle;
 }
 
+div.heading > button {
+  width: 6em;
+}
+
 div.heading > input {
   border-color: white;
   font-style: italic;
