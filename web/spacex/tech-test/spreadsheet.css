@@ -1,5 +1,6 @@
 * {
   box-sizing: border-box;
+  outline: none;
 }
 
 body {
@@ -13,7 +14,8 @@ div.heading {
 
 div.heading > * {
   background-color: white;
-  border: 1px solid black;
+  border: 2px solid #ccc;
+  color: #bbb;
   font-size: 20px;
   height: 40px;
   margin: 10px;
@@ -21,8 +23,17 @@ div.heading > * {
   vertical-align: middle;
 }
 
-table.spreadsheet > tbody > tr > td {
-  width: 10em;
+div.heading > input {
+  border-color: white;
+  font-style: italic;
+  width: 15em;
+}
+
+div.heading > input:hover,
+div.heading > input:focus {
+  border-color: #ccc;
+  color: black;
+  font-style: inherit;
 }
 
 div#data {
