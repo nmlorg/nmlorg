@@ -13,6 +13,7 @@ spacex.Spreadsheet = function(body) {
   this.body_ = body;
   this.setCell(2, 2, '');
   this.row = this.col = 1;
+  this.focus();
 
   body.addEventListener('keydown', function(sheet, e) {
     var keyCode = e.keyCode & 0x7f;
@@ -20,24 +21,24 @@ spacex.Spreadsheet = function(body) {
     if (keyCode == 37) {  // Left
       if (sheet.col > 1) {
         sheet.col--;
-        body.children[sheet.row].children[sheet.col].focus();
+        sheet.focus();
       }
     } else if (keyCode == 38) {  // Up
       if (sheet.row > 1) {
         sheet.row--;
-        body.children[sheet.row].children[sheet.col].focus();
+        sheet.focus();
       }
     } else if (keyCode == 39) {  // Right
       if (sheet.col == body.children[0].children.length - 1)
         sheet.setCell(1, sheet.col + 1, '')
       sheet.col++;
-      body.children[sheet.row].children[sheet.col].focus();
+      sheet.focus();
     } else if ((keyCode == 40) || (keyCode == 13)) {  // Down or Enter
       if (sheet.row == body.children.length - 1)
         sheet.setCell(sheet.row + 1, 1, '')
       sheet.row++;
-      body.children[sheet.row].children[sheet.col].focus();
-    } else if ((keyCode == 8) && (this.mouseRow != -1)) {  // Backspace
+      sheet.focus();
+    } else if ((keyCode == 8) && (sheet.mouseRow != -1)) {  // Backspace
       for (var i = sheet.mouseRow; i <= sheet.endRow; i++)
         for (var j = sheet.mouseCol; j <= sheet.endCol; j++)
           sheet.setCell(i, j, '');
@@ -58,6 +59,14 @@ spacex.Spreadsheet = function(body) {
     sheet.endCol = Number(e.target.dataset.col);
     sheet.setHighlight();
   }.bind(body, this));
+};
+
+
+/**
+ * Focus on the currently selected cell.
+ */
+spacex.Spreadsheet.prototype.focus = function() {
+  this.body_.children[this.row].children[this.col].focus();
 };
 
 
