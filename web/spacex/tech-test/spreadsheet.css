@@ -8,6 +8,10 @@ body {
   margin: 0;
 }
 
+body, button, input {
+  font-family: sans-serif;
+}
+
 div.heading {
   padding: 10px;
 }
