@@ -23,7 +23,9 @@ div.heading > * {
   vertical-align: middle;
 }
 
-div.heading > button {
+div.heading > * {
+  text-align: center;
+  text-decoration: none;
   width: 6em;
 }
 
