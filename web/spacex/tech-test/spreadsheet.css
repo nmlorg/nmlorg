@@ -76,6 +76,9 @@ div#data > div > input:first-child {
 }
 
 div#data > div > input.active {
-  background-color: #def;
   border-color: #08f;
+}
+
+div#data.editing > div > input.active {
+  background-color: #def;
 }

@@ -54,8 +54,10 @@ spacex.Spreadsheet = function(body) {
             sheet.setCell(i, j, '');
         e.preventDefault();
       }
-    } else
+    } else {
       sheet.editing = true;
+      body.className = 'editing';
+    }
   }.bind(body, this));
 
   this.mouseRow = this.mouseCol = this.endRow = this.endCol = -1;
@@ -77,8 +79,10 @@ spacex.Spreadsheet = function(body) {
  * Focus on the currently selected cell.
  */
 spacex.Spreadsheet.prototype.focus = function() {
+  var body = this.body_;
   this.editing = false;
-  var input = this.body_.children[this.row].children[this.col]
+  body.className = '';
+  var input = body.children[this.row].children[this.col]
   input.blur();
   input.focus();
 };
@@ -239,6 +243,7 @@ spacex.Spreadsheet.prototype.setCell = function(row, col, value) {
         }.bind(input, this, i, j));
         input.addEventListener('click', function(sheet, e) {
           sheet.editing = true;
+          body.className = 'editing';
         }.bind(input, this));
         input.addEventListener('focus', function(sheet, row, col, e) {
           sheet.mouseRow = sheet.endRow = sheet.row = row;
