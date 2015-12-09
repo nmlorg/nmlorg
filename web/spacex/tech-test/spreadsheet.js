@@ -114,8 +114,10 @@ spacex.Spreadsheet.prototype.getCell = function(row, col, preserve_formula) {
  * @param {string} s The expression to evaluate.
  */
 spacex.Spreadsheet.prototype.eval = function(s) {
+  var parents = new spacex.Set();
+
   if (s[0] != '=')
-    return s;
+    return [s, parents];
 
   var pieces = s.substr(1).split(/([A-Z]+)([0-9]+)/);
 
@@ -133,9 +135,10 @@ spacex.Spreadsheet.prototype.eval = function(s) {
 
     pieces[i] = this.getCell(row, col) || 0;
     pieces[i + 1] = '';
+    parents.add([row, col]);
   }
 
-  return eval(pieces.join(''));
+  return [eval(pieces.join('')), parents];
 };
 
 
@@ -232,12 +235,13 @@ spacex.Spreadsheet.prototype.setCell = function(row, col, value) {
         input.disabled = true;
         input.value = i;
       } else {
+        input.dataset.children = input.dataset.parents = '[]';
         input.dataset.formula = '';
         input.dataset.row = i;
         input.dataset.col = j;
-        input.addEventListener('blur', function(sheet, e) {
-          this.value = sheet.eval(this.dataset.formula);
-        }.bind(input, this));
+        input.addEventListener('blur', function(sheet, row, col, e) {
+          sheet.setCell(row, col, this.dataset.formula);
+        }.bind(input, this, i, j));
         input.addEventListener('change', function(sheet, row, col, e) {
           this.dataset.formula = this.value;
         }.bind(input, this, i, j));
@@ -259,8 +263,31 @@ spacex.Spreadsheet.prototype.setCell = function(row, col, value) {
   if ((value === null) || (value === undefined))
     value = '';
   var input = body.children[row].children[col];
+  var parents = new spacex.Set(input.dataset.parents);
+  for (var parent of parents) {
+    var parentRow = parent[0], parentCol = parent[1];
+    var parentInput = body.children[parentRow].children[parentCol];
+    var children = new spacex.Set(parentInput.dataset.children);
+    children.delete([row, col]);
+    parentInput.dataset.children = children;
+  }
   input.dataset.formula = value;
-  input.value = this.eval(value);
+  var tmp = this.eval(value);
+  input.value = tmp[0];
+  input.dataset.parents = tmp[1];
+  for (var parent of tmp[1]) {
+    var parentRow = parent[0], parentCol = parent[1];
+    var parentInput = body.children[parentRow].children[parentCol];
+    var children = new spacex.Set(parentInput.dataset.children);
+    children.add([row, col]);
+    parentInput.dataset.children = children;
+  }
+  var children = new spacex.Set(input.dataset.children);
+  for (var child of children) {
+    var childRow = child[0], childCol = child[1];
+    var childInput = body.children[childRow].children[childCol];
+    this.setCell(childRow, childCol, childInput.dataset.formula);
+  }
 };
 
 
