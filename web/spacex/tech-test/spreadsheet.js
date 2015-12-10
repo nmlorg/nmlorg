@@ -167,13 +167,16 @@ spacex.Spreadsheet.prototype.export = function(preserve_formula) {
 
   for (var i = 1; i < lastRow + 1; i++) {
     var row = body.children[i];
+    var dataRow = data[i - 1] = [];
 
-    data[i - 1] = [];
     for (var j = 1; j < row.children.length; j++) {
       value = this.getCell(i, j, preserve_formula);
 
-      if (value != '')
-        data[i - 1][j - 1] = value;
+      if (value != '') {
+        for (var k = dataRow.length; k < j - 1; k++)
+          dataRow[k] = '';
+        dataRow[k] = value;
+      }
     }
   }
 
