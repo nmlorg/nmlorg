@@ -42,19 +42,13 @@ document.getElementById('export').addEventListener('click', function(e) {
 
 if (!window.load_data) {
   load_data = function(key) {
-    console.log('Placeholder: Loading', key);
-    return JSON.stringify([
-        ['', '', 'First row!'],
-        [],
-        [1, 2, 3, '', '=A3+B3*C3', 'Numbers!'],
-    ]);
+    return localStorage.getItem(key) || '[[], ["", ""]]';
   }
 }
 
 if (!window.save_data) {
   save_data = function(key, value) {
-    console.log('Placeholder: Saving', key, value);
-    console.log(JSON.parse(value));
+    localStorage.setItem(key, value);
   }
 }
 
