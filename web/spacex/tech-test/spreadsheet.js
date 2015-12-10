@@ -11,7 +11,7 @@ spacex = window.spacex || {};
  */
 spacex.Spreadsheet = function(body) {
   this.body_ = body;
-  this.setCell(2, 2, '');
+  this.pokeCell(2, 2);
   this.row = this.col = 1;
   this.focus();
 
@@ -33,7 +33,7 @@ spacex.Spreadsheet = function(body) {
     } else if (keyCode == 39) {  // Right
       if (!sheet.editing) {
         if (sheet.col == body.children[0].children.length - 1)
-          sheet.setCell(1, sheet.col + 1, '')
+          sheet.pokeCell(1, sheet.col + 1);
         sheet.col++;
         sheet.focus();
         e.preventDefault();
@@ -41,7 +41,7 @@ spacex.Spreadsheet = function(body) {
     } else if ((keyCode == 40) || (keyCode == 13)) {  // Down or Enter
       if (!sheet.editing) {
         if (sheet.row == body.children.length - 1)
-          sheet.setCell(sheet.row + 1, 1, '')
+          sheet.pokeCell(sheet.row + 1, 1);
         sheet.row++;
         sheet.focus();
         e.preventDefault();
@@ -97,7 +97,7 @@ spacex.Spreadsheet.prototype.focus = function() {
 spacex.Spreadsheet.prototype.getCell = function(row, col, preserve_formula) {
   var body = this.body_;
 
-  if ((row >= body.children.length) && (col >= body.children[row].children.length))
+  if ((row >= body.children.length) || (col >= body.children[row].children.length))
     return '';
   var input = body.children[row].children[col];
   var value = preserve_formula ? input.dataset.formula : input.value;
@@ -203,15 +203,14 @@ spacex.Spreadsheet.prototype.load = function(data) {
 
 
 /**
- * Set the referenced cell to the given value, adding rows/columns as necessary.
- * @param {number} row The row, with 0 being the top row.
- * @param {number} col The column, with 0 being the left edge (first cell of each row).
- * @param {string|null|number} value The new value for the cell.
+ * Make sure the referenced cell exists, adding rows/columns as necessary.
+ * @param {number} row The row, with 1 being the top row.
+ * @param {number} col The column, with 1 being the left edge (first cell of each row).
  */
-spacex.Spreadsheet.prototype.setCell = function(row, col, value) {
+spacex.Spreadsheet.prototype.pokeCell = function(row, col) {
   var body = this.body_
 
-  // The initial table looks like [['']]. If we call setCell(3, 2, 'hi'), we need to add 3 more rows
+  // The initial table looks like [['']]. If we call pokeCell(3, 2), we need to add 3 more rows
   // (extending by 3 to the 4th row for our new value), then 2 more columns to all rows (old and
   // new--the new ones needing the initial blank column added as well).
   for (var i = body.children.length; i <= row; i++)
@@ -263,13 +262,24 @@ spacex.Spreadsheet.prototype.setCell = function(row, col, value) {
     }
   }
 
+  return body.children[row].children[col];
+};
+
+
+/**
+ * Set the referenced cell to the given value, adding rows/columns as necessary.
+ * @param {number} row The row, with 1 being the top row.
+ * @param {number} col The column, with 1 being the left edge (first cell of each row).
+ * @param {string|null|number} value The new value for the cell.
+ */
+spacex.Spreadsheet.prototype.setCell = function(row, col, value) {
   if ((value === null) || (value === undefined))
     value = '';
-  var input = body.children[row].children[col];
+  var input = this.pokeCell(row, col);
   var parents = new spacex.Set(input.dataset.parents);
   for (var parent of parents) {
     var parentRow = parent[0], parentCol = parent[1];
-    var parentInput = body.children[parentRow].children[parentCol];
+    var parentInput = this.pokeCell(parentRow, parentCol);
     var children = new spacex.Set(parentInput.dataset.children);
     children.delete([row, col]);
     parentInput.dataset.children = children;
@@ -280,7 +290,7 @@ spacex.Spreadsheet.prototype.setCell = function(row, col, value) {
   input.dataset.parents = tmp[1];
   for (var parent of tmp[1]) {
     var parentRow = parent[0], parentCol = parent[1];
-    var parentInput = body.children[parentRow].children[parentCol];
+    var parentInput = this.pokeCell(parentRow, parentCol);
     var children = new spacex.Set(parentInput.dataset.children);
     children.add([row, col]);
     parentInput.dataset.children = children;
@@ -288,7 +298,7 @@ spacex.Spreadsheet.prototype.setCell = function(row, col, value) {
   var children = new spacex.Set(input.dataset.children);
   for (var child of children) {
     var childRow = child[0], childCol = child[1];
-    var childInput = body.children[childRow].children[childCol];
+    var childInput = this.pokeCell(childRow, childCol);
     this.setCell(childRow, childCol, childInput.dataset.formula);
   }
 };
