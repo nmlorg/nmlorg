@@ -6,11 +6,13 @@ nmlorg = window.nmlorg || {};
 
 /**
  * A very simple spreadsheet.
- * @param {HTMLDivElement} body A visible DIV.
+ * @param {HTMLElement} parent An element reachable at or from document.body.
  * @constructor
  */
-nmlorg.Spreadsheet = function(body) {
-  this.body_ = body;
+nmlorg.Spreadsheet = function(parent) {
+  var body = this.body_ = document.createElement('div');
+
+  parent.appendChild(body);
   this.pokeCell(2, 2);
   this.row = this.col = 1;
   this.focus();
@@ -56,7 +58,7 @@ nmlorg.Spreadsheet = function(body) {
       }
     } else {
       sheet.editing = true;
-      body.className = 'editing';
+      body.className = 'spreadsheet editing';
     }
   }.bind(body, this));
 
@@ -81,7 +83,7 @@ nmlorg.Spreadsheet = function(body) {
 nmlorg.Spreadsheet.prototype.focus = function() {
   var body = this.body_;
   this.editing = false;
-  body.className = '';
+  body.className = 'spreadsheet';
   var input = body.children[this.row].children[this.col]
   input.blur();
   input.focus();
@@ -249,7 +251,7 @@ nmlorg.Spreadsheet.prototype.pokeCell = function(row, col) {
         }.bind(input, this, i, j));
         input.addEventListener('click', function(sheet, e) {
           sheet.editing = true;
-          body.className = 'editing';
+          body.className = 'spreadsheet editing';
         }.bind(input, this));
         input.addEventListener('focus', function(sheet, row, col, e) {
           sheet.mouseRow = sheet.endRow = sheet.row = row;

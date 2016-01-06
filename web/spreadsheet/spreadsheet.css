@@ -50,39 +50,39 @@ div.heading > input:focus {
   font-style: inherit;
 }
 
-div#data {
+div.spreadsheet {
   border: 1px solid #ccc;
   display: inline-block;
   white-space: nowrap;
 }
 
-div#data > div > input {
+div.spreadsheet > div > input {
   border: 1px solid #ccc;
   outline: none;
   width: 10em;
 }
 
-div#data > div:first-child > input {
+div.spreadsheet > div:first-child > input {
   background-color: #eee;
   text-align: center;
 }
 
-div#data > div:first-child > input.active,
-div#data > div > input:first-child.active {
+div.spreadsheet > div:first-child > input.active,
+div.spreadsheet > div > input:first-child.active {
   background-color: #ddd;
   border-color: #ccc;
 }
 
-div#data > div > input:first-child {
+div.spreadsheet > div > input:first-child {
   background-color: #eee;
   text-align: center;
   width: 3em;
 }
 
-div#data > div > input.active {
+div.spreadsheet > div > input.active {
   border-color: #08f;
 }
 
-div#data.editing > div > input.active {
+div.spreadsheet.editing > div > input.active {
   background-color: #def;
 }

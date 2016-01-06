@@ -11,15 +11,12 @@
      style="float: right">Code</a>
 </div>
 
-<div id="data"></div>
-
 <script src="set.js"></script>
 <link rel="stylesheet" href="spreadsheet.css"></script>
 <script src="spreadsheet.js"></script>
 
 <script>
-var dataElement = document.getElementById('data');
-var spreadsheet = new nmlorg.Spreadsheet(dataElement);
+var spreadsheet = new nmlorg.Spreadsheet(document.body);
 var keyInput = document.getElementById('key');
 
 document.getElementById('load').addEventListener('click', function(e) {
