@@ -148,7 +148,7 @@ nmlorg.Spreadsheet.prototype.eval = function(s) {
     var row = address[0], col = address[1];
 
     pieces[i] = this.getCell(row, col) || 0;
-    parents.add([row, col]);
+    parents.add(label);
   }
 
   return [eval(pieces.join('')), parents];
@@ -316,30 +316,34 @@ nmlorg.Spreadsheet.prototype.pokeCell = function(row, col) {
  * @param {string|null|number} value The new value for the cell.
  */
 nmlorg.Spreadsheet.prototype.setCell = function(row, col, value) {
+  var label = this.encodeLabel(row, col);
   if ((value === null) || (value === undefined))
     value = '';
   var input = this.pokeCell(row, col);
   var parents = new nmlorg.Set(input.dataset.parents);
-  for (var parent of parents) {
+  for (var parentLabel of parents) {
+    var parent = this.decodeLabel(parentLabel);
     var parentRow = parent[0], parentCol = parent[1];
     var parentInput = this.pokeCell(parentRow, parentCol);
     var children = new nmlorg.Set(parentInput.dataset.children);
-    children.delete([row, col]);
+    children.delete(label);
     parentInput.dataset.children = children;
   }
   input.dataset.formula = value;
   var tmp = this.eval(value);
   input.value = tmp[0];
   input.dataset.parents = tmp[1];
-  for (var parent of tmp[1]) {
+  for (var parentLabel of tmp[1]) {
+    var parent = this.decodeLabel(parentLabel);
     var parentRow = parent[0], parentCol = parent[1];
     var parentInput = this.pokeCell(parentRow, parentCol);
     var children = new nmlorg.Set(parentInput.dataset.children);
-    children.add([row, col]);
+    children.add(label);
     parentInput.dataset.children = children;
   }
   var children = new nmlorg.Set(input.dataset.children);
-  for (var child of children) {
+  for (var childLabel of children) {
+    var child = this.decodeLabel(childLabel);
     var childRow = child[0], childCol = child[1];
     var childInput = this.pokeCell(childRow, childCol);
     this.setCell(childRow, childCol, childInput.dataset.formula);
