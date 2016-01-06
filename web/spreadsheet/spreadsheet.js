@@ -86,6 +86,27 @@ nmlorg.Spreadsheet.prototype.attach = function(parent) {
 
 
 /**
+ * Decode a string like 'AB10' to [10, 28].
+ * @param {string} label A string like 'AB10'.
+ */
+nmlorg.Spreadsheet.prototype.decodeLabel = function(label) {
+  if (!label.match(/^([A-Z]+)([0-9]+)$/))
+    return;
+
+  var col = 0;
+
+  for (var i = 0; i < RegExp.$1.length; i++) {
+    col *= 26;
+    col += RegExp.$1.charCodeAt(i) - 64;
+  }
+
+  var row = Number(RegExp.$2);
+
+  return [row, col];
+};
+
+
+/**
  * Evaluate a spreadsheet formula, like '=A1+B2*4'.
  * @param {string} s The expression to evaluate.
  */
@@ -95,22 +116,14 @@ nmlorg.Spreadsheet.prototype.eval = function(s) {
   if (s[0] != '=')
     return [s, parents];
 
-  var pieces = s.substr(1).split(/([A-Z]+)([0-9]+)/);
+  var pieces = s.substr(1).split(/([A-Z]+[0-9]+)/);
 
-  for (var i = 1; i + 1 < pieces.length; i += 3) {
-    var colStr = pieces[i];
-    var col = 0;
-
-    for (var j = 0; j < colStr.length; j++) {
-      col *= 26;
-      col += colStr.charCodeAt(j) - 64;
-    }
-
-    var rowStr = pieces[i + 1];
-    var row = Number(rowStr);
+  for (var i = 1; i + 1 < pieces.length; i += 2) {
+    var label = pieces[i];
+    var address = this.decodeLabel(label);
+    var row = address[0], col = address[1];
 
     pieces[i] = this.getCell(row, col) || 0;
-    pieces[i + 1] = '';
     parents.add([row, col]);
   }
 
