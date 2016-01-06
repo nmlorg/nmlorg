@@ -6,16 +6,13 @@ nmlorg = window.nmlorg || {};
 
 /**
  * A very simple spreadsheet.
- * @param {HTMLElement} parent An element reachable at or from document.body.
  * @constructor
  */
-nmlorg.Spreadsheet = function(parent) {
+nmlorg.Spreadsheet = function() {
   var body = this.body_ = document.createElement('div');
 
-  parent.appendChild(body);
   this.pokeCell(2, 2);
   this.row = this.col = 1;
-  this.focus();
 
   body.addEventListener('keydown', function(sheet, e) {
     var keyCode = e.keyCode & 0x7f;
@@ -78,36 +75,13 @@ nmlorg.Spreadsheet = function(parent) {
 
 
 /**
- * Focus on the currently selected cell.
+ * Add the spreadsheet's viewport to the document.
+ * @param {HTMLElement} parent An element reachable at or from document.body.
  */
-nmlorg.Spreadsheet.prototype.focus = function() {
-  var body = this.body_;
-  this.editing = false;
-  body.className = 'spreadsheet';
-  var input = body.children[this.row].children[this.col]
-  input.blur();
-  input.focus();
-};
-
-
-/**
- * Fetch the value of the given cell.
- * @param {number} row The row, with 0 being the top row.
- * @param {number} col The column, with 0 being the left edge (first cell of each row).
- * @param {boolean} preserve_formula Return the cell's formula instead of its computed value.
- */
-nmlorg.Spreadsheet.prototype.getCell = function(row, col, preserve_formula) {
-  var body = this.body_;
-
-  if ((row >= body.children.length) || (col >= body.children[row].children.length))
-    return '';
-  var input = body.children[row].children[col];
-  var value = preserve_formula ? input.dataset.formula : input.value;
-
-  // Anything that isn't a "number" will turn into NaN, which is not equal to itself.
-  if ((value != '') && (Number(value) == Number(value)))
-    return Number(value);
-  return value;
+nmlorg.Spreadsheet.prototype.attach = function(parent) {
+  parent.appendChild(this.body_);
+  this.focus();
+  return this;
 };
 
 
@@ -183,6 +157,40 @@ nmlorg.Spreadsheet.prototype.export = function(preserve_formula) {
   }
 
   return data;
+};
+
+
+/**
+ * Focus on the currently selected cell.
+ */
+nmlorg.Spreadsheet.prototype.focus = function() {
+  var body = this.body_;
+  this.editing = false;
+  body.className = 'spreadsheet';
+  var input = body.children[this.row].children[this.col];
+  input.blur();
+  input.focus();
+};
+
+
+/**
+ * Fetch the value of the given cell.
+ * @param {number} row The row, with 0 being the top row.
+ * @param {number} col The column, with 0 being the left edge (first cell of each row).
+ * @param {boolean} preserve_formula Return the cell's formula instead of its computed value.
+ */
+nmlorg.Spreadsheet.prototype.getCell = function(row, col, preserve_formula) {
+  var body = this.body_;
+
+  if ((row >= body.children.length) || (col >= body.children[row].children.length))
+    return '';
+  var input = body.children[row].children[col];
+  var value = preserve_formula ? input.dataset.formula : input.value;
+
+  // Anything that isn't a "number" will turn into NaN, which is not equal to itself.
+  if ((value != '') && (Number(value) == Number(value)))
+    return Number(value);
+  return value;
 };
 
 

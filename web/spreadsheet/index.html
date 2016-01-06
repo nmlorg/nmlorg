@@ -16,7 +16,7 @@
 <script src="spreadsheet.js"></script>
 
 <script>
-var spreadsheet = new nmlorg.Spreadsheet(document.body);
+var spreadsheet = new nmlorg.Spreadsheet().attach(document.body);
 var keyInput = document.getElementById('key');
 
 document.getElementById('load').addEventListener('click', function(e) {
