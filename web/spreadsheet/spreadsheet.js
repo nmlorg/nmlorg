@@ -135,7 +135,7 @@ nmlorg.Spreadsheet.prototype.encodeLabel = function(row, col) {
  * @param {string} s The expression to evaluate.
  */
 nmlorg.Spreadsheet.prototype.eval = function(s) {
-  var parents = new nmlorg.Set();
+  var parents = new Set();
 
   if (s[0] != '=')
     return [s, parents];
@@ -280,8 +280,7 @@ nmlorg.Spreadsheet.prototype.pokeCell = function(row, col) {
         input.disabled = true;
         input.value = i;
       } else {
-        input.dataset.children = input.dataset.parents = '[]';
-        input.dataset.formula = '';
+        input.dataset.formula = input.dataset.children = input.dataset.parents = '';
         input.dataset.row = i;
         input.dataset.col = j;
         input.addEventListener('blur', function(sheet, row, col, e) {
@@ -320,28 +319,28 @@ nmlorg.Spreadsheet.prototype.setCell = function(row, col, value) {
   if ((value === null) || (value === undefined))
     value = '';
   var input = this.pokeCell(row, col);
-  var parents = new nmlorg.Set(input.dataset.parents);
+  var parents = this.splitSet(input.dataset.parents);
   for (var parentLabel of parents) {
     var parent = this.decodeLabel(parentLabel);
     var parentRow = parent[0], parentCol = parent[1];
     var parentInput = this.pokeCell(parentRow, parentCol);
-    var children = new nmlorg.Set(parentInput.dataset.children);
+    var children = this.splitSet(parentInput.dataset.children);
     children.delete(label);
-    parentInput.dataset.children = children;
+    parentInput.dataset.children = [...children].join(',');
   }
   input.dataset.formula = value;
   var tmp = this.eval(value);
   input.value = tmp[0];
-  input.dataset.parents = tmp[1];
+  input.dataset.parents = [...tmp[1]].join(',');
   for (var parentLabel of tmp[1]) {
     var parent = this.decodeLabel(parentLabel);
     var parentRow = parent[0], parentCol = parent[1];
     var parentInput = this.pokeCell(parentRow, parentCol);
-    var children = new nmlorg.Set(parentInput.dataset.children);
+    var children = this.splitSet(parentInput.dataset.children);
     children.add(label);
-    parentInput.dataset.children = children;
+    parentInput.dataset.children = [...children].join(',');
   }
-  var children = new nmlorg.Set(input.dataset.children);
+  var children = this.splitSet(input.dataset.children);
   for (var childLabel of children) {
     var child = this.decodeLabel(childLabel);
     var childRow = child[0], childCol = child[1];
@@ -386,6 +385,18 @@ nmlorg.Spreadsheet.prototype.setHighlight = function() {
       row.children[j].className = (
           (i >= this.mouseRow) && (i <= this.endRow) && (j >= this.mouseCol) && (j <= this.endCol) ? 'active' : '');
   }
+};
+
+
+/**
+ * Split 'a,b,c' into ['a', 'b', 'c'], while splitting '' into [] (instead of ['']), and return the
+ * result as a Set.
+ * @param {string} s An empty or comma-delimited string.
+ */
+nmlorg.Spreadsheet.prototype.splitSet = function(s) {
+  if (!s)
+    return new Set();
+  return new Set(s.split(','));
 };
 
 })();
