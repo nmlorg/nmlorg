@@ -33,6 +33,10 @@ div.heading > * {
   width: 6em;
 }
 
+div.heading > button {
+  cursor: pointer;
+}
+
 div.heading > input {
   border-color: white;
   font-style: italic;

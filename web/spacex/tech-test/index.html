@@ -25,7 +25,8 @@ var keyInput = document.getElementById('key');
 document.getElementById('load').addEventListener('click', function(e) {
   var data = JSON.parse(load_data(keyInput.value));
 
-  spreadsheet.load(data);
+  spreadsheet.load(data || []);
+  spreadsheet.pokeCell(2, 2);
 });
 
 document.getElementById('save').addEventListener('click', function(e) {
