@@ -107,6 +107,30 @@ nmlorg.Spreadsheet.prototype.decodeLabel = function(label) {
 
 
 /**
+ * Encode a number like 28 to the string 'AB'.
+ * @param {number} col The column number to encode.
+ */
+nmlorg.Spreadsheet.prototype.encodeCol = function(col) {
+  var colStr = '';
+  while (col) {
+    colStr = String.fromCharCode(65 + ((col - 1) % 26)) + colStr;
+    col = (col - 1) / 26 >> 0;
+  }
+  return colStr;
+};
+
+
+/**
+ * Encode a tuple like [10, 28] to the string 'AB10'.
+ * @param {number} row The row number to encode.
+ * @param {number} col The column number to encode.
+ */
+nmlorg.Spreadsheet.prototype.encodeLabel = function(row, col) {
+  return this.encodeCol(col) + row;
+};
+
+
+/**
  * Evaluate a spreadsheet formula, like '=A1+B2*4'.
  * @param {string} s The expression to evaluate.
  */
@@ -251,11 +275,7 @@ nmlorg.Spreadsheet.prototype.pokeCell = function(row, col) {
         input.disabled = true;
       } else if (i == 0) {
         input.disabled = true;
-        var tmp = j;
-        while (tmp) {
-          input.value = String.fromCharCode(65 + ((tmp - 1) % 26)) + input.value;
-          tmp = (tmp - 1) / 26 >> 0;
-        }
+        input.value = this.encodeCol(j);
       } else if (j == 0) {
         input.disabled = true;
         input.value = i;
