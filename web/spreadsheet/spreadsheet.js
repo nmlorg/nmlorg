@@ -1,7 +1,7 @@
 (function() {
 
 /** @namespace */
-spacex = window.spacex || {};
+nmlorg = window.nmlorg || {};
 
 
 /**
@@ -9,7 +9,7 @@ spacex = window.spacex || {};
  * @param {HTMLDivElement} body A visible DIV.
  * @constructor
  */
-spacex.Spreadsheet = function(body) {
+nmlorg.Spreadsheet = function(body) {
   this.body_ = body;
   this.pokeCell(2, 2);
   this.row = this.col = 1;
@@ -78,7 +78,7 @@ spacex.Spreadsheet = function(body) {
 /**
  * Focus on the currently selected cell.
  */
-spacex.Spreadsheet.prototype.focus = function() {
+nmlorg.Spreadsheet.prototype.focus = function() {
   var body = this.body_;
   this.editing = false;
   body.className = '';
@@ -94,7 +94,7 @@ spacex.Spreadsheet.prototype.focus = function() {
  * @param {number} col The column, with 0 being the left edge (first cell of each row).
  * @param {boolean} preserve_formula Return the cell's formula instead of its computed value.
  */
-spacex.Spreadsheet.prototype.getCell = function(row, col, preserve_formula) {
+nmlorg.Spreadsheet.prototype.getCell = function(row, col, preserve_formula) {
   var body = this.body_;
 
   if ((row >= body.children.length) || (col >= body.children[row].children.length))
@@ -113,8 +113,8 @@ spacex.Spreadsheet.prototype.getCell = function(row, col, preserve_formula) {
  * Evaluate a spreadsheet formula, like '=A1+B2*4'.
  * @param {string} s The expression to evaluate.
  */
-spacex.Spreadsheet.prototype.eval = function(s) {
-  var parents = new spacex.Set();
+nmlorg.Spreadsheet.prototype.eval = function(s) {
+  var parents = new nmlorg.Set();
 
   if (s[0] != '=')
     return [s, parents];
@@ -148,7 +148,7 @@ spacex.Spreadsheet.prototype.eval = function(s) {
  * are omitted.
  * @param {boolean} preserve_formula Save a cell's formula instead of its computed value.
  */
-spacex.Spreadsheet.prototype.export = function(preserve_formula) {
+nmlorg.Spreadsheet.prototype.export = function(preserve_formula) {
   var body = this.body_;
   var data = [];
 
@@ -189,7 +189,7 @@ spacex.Spreadsheet.prototype.export = function(preserve_formula) {
  * @param {Array.<Array.<string|null|number>>} data The initial data, as an array of arrays of rows
  *     of strings or numbers.
  */
-spacex.Spreadsheet.prototype.load = function(data) {
+nmlorg.Spreadsheet.prototype.load = function(data) {
   // Clear the existing body.
   this.body_.textContent = '';
 
@@ -207,7 +207,7 @@ spacex.Spreadsheet.prototype.load = function(data) {
  * @param {number} row The row, with 1 being the top row.
  * @param {number} col The column, with 1 being the left edge (first cell of each row).
  */
-spacex.Spreadsheet.prototype.pokeCell = function(row, col) {
+nmlorg.Spreadsheet.prototype.pokeCell = function(row, col) {
   var body = this.body_
 
   // The initial table looks like [['']]. If we call pokeCell(3, 2), we need to add 3 more rows
@@ -272,15 +272,15 @@ spacex.Spreadsheet.prototype.pokeCell = function(row, col) {
  * @param {number} col The column, with 1 being the left edge (first cell of each row).
  * @param {string|null|number} value The new value for the cell.
  */
-spacex.Spreadsheet.prototype.setCell = function(row, col, value) {
+nmlorg.Spreadsheet.prototype.setCell = function(row, col, value) {
   if ((value === null) || (value === undefined))
     value = '';
   var input = this.pokeCell(row, col);
-  var parents = new spacex.Set(input.dataset.parents);
+  var parents = new nmlorg.Set(input.dataset.parents);
   for (var parent of parents) {
     var parentRow = parent[0], parentCol = parent[1];
     var parentInput = this.pokeCell(parentRow, parentCol);
-    var children = new spacex.Set(parentInput.dataset.children);
+    var children = new nmlorg.Set(parentInput.dataset.children);
     children.delete([row, col]);
     parentInput.dataset.children = children;
   }
@@ -291,11 +291,11 @@ spacex.Spreadsheet.prototype.setCell = function(row, col, value) {
   for (var parent of tmp[1]) {
     var parentRow = parent[0], parentCol = parent[1];
     var parentInput = this.pokeCell(parentRow, parentCol);
-    var children = new spacex.Set(parentInput.dataset.children);
+    var children = new nmlorg.Set(parentInput.dataset.children);
     children.add([row, col]);
     parentInput.dataset.children = children;
   }
-  var children = new spacex.Set(input.dataset.children);
+  var children = new nmlorg.Set(input.dataset.children);
   for (var child of children) {
     var childRow = child[0], childCol = child[1];
     var childInput = this.pokeCell(childRow, childCol);
@@ -307,7 +307,7 @@ spacex.Spreadsheet.prototype.setCell = function(row, col, value) {
 /**
  * Mark all cells from mouseRow, mouseCol through endRow, endCol as being selected.
  */
-spacex.Spreadsheet.prototype.setHighlight = function() {
+nmlorg.Spreadsheet.prototype.setHighlight = function() {
   var body = this.body_;
 
   if (this.mouseRow == -1) {

@@ -7,7 +7,7 @@
   <button id="load">Load</button>
   <button id="save" title="Call save_data with formula cells intact.">Save</button>
   <button id="export" title="Call save_data with formula cells evaluated.">Export</button>
-  <a href="https://github.com/nmlorg/nmlorg.github.io/tree/master/web/spacex/tech-test"
+  <a href="https://github.com/nmlorg/nmlorg.github.io/tree/master/web/spreadsheet"
      style="float: right">Code</a>
 </div>
 
@@ -19,7 +19,7 @@
 
 <script>
 var dataElement = document.getElementById('data');
-var spreadsheet = new spacex.Spreadsheet(dataElement);
+var spreadsheet = new nmlorg.Spreadsheet(dataElement);
 var keyInput = document.getElementById('key');
 
 document.getElementById('load').addEventListener('click', function(e) {
