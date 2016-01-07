@@ -11,6 +11,7 @@ nmlorg = window.nmlorg || {};
 nmlorg.Spreadsheet = function() {
   var body = this.body_ = document.createElement('div');
 
+  body.className = 'spreadsheet';
   this.pokeCell(2, 2);
   this.row = this.col = 1;
 
@@ -55,7 +56,7 @@ nmlorg.Spreadsheet = function() {
       }
     } else {
       sheet.editing = true;
-      body.className = 'spreadsheet editing';
+      body.classList.add('editing');
     }
   }.bind(body, this));
 
@@ -203,7 +204,7 @@ nmlorg.Spreadsheet.prototype.export = function(preserve_formula) {
 nmlorg.Spreadsheet.prototype.focus = function() {
   var body = this.body_;
   this.editing = false;
-  body.className = 'spreadsheet';
+  body.classList.remove('editing');
   var input = body.children[this.row].children[this.col];
   input.blur();
   input.focus();
@@ -291,7 +292,7 @@ nmlorg.Spreadsheet.prototype.pokeCell = function(row, col) {
         }.bind(input, this, i, j));
         input.addEventListener('click', function(sheet, e) {
           sheet.editing = true;
-          body.className = 'spreadsheet editing';
+          body.classList.add('editing');
         }.bind(input, this));
         input.addEventListener('focus', function(sheet, row, col, e) {
           sheet.mouseRow = sheet.endRow = sheet.row = row;
