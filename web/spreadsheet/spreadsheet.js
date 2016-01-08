@@ -116,7 +116,8 @@ Object.defineProperty(nmlorg.Spreadsheet.prototype, 'editing', {
       return this.editing_;
     },
     'set': function(value) {
-      if (this.editing_ !== value) {
+      value = !!value;
+      if (this.editing_ != value) {
         this.editing_ = value;
         if (value)
           this.body_.classList.add('editing');
