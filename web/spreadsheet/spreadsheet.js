@@ -54,7 +54,11 @@ nmlorg.Spreadsheet = function() {
             sheet.setCell(i, j, '');
         e.preventDefault();
       }
-    } else
+    }
+  }.bind(body, this));
+
+  body.addEventListener('keypress', function(sheet, e) {
+    if (e.keyCode != 13)
       sheet.editing = true;
   }.bind(body, this));
 
