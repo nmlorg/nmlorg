@@ -276,7 +276,7 @@ nmlorg.Spreadsheet.prototype.load = function(data) {
  * @param {number} col The column, with 1 being the left edge (first cell of each row).
  */
 nmlorg.Spreadsheet.prototype.pokeCell = function(row, col) {
-  var body = this.body_
+  var body = this.body_;
 
   // The initial table looks like [['']]. If we call pokeCell(3, 2), we need to add 3 more rows
   // (extending by 3 to the 4th row for our new value), then 2 more columns to all rows (old and
