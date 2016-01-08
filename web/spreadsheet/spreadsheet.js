@@ -54,10 +54,8 @@ nmlorg.Spreadsheet = function() {
             sheet.setCell(i, j, '');
         e.preventDefault();
       }
-    } else {
+    } else
       sheet.editing = true;
-      body.classList.add('editing');
-    }
   }.bind(body, this));
 
   this.mouseRow = this.mouseCol = this.endRow = this.endCol = -1;
@@ -105,6 +103,22 @@ nmlorg.Spreadsheet.prototype.decodeLabel = function(label) {
 
   return [row, col];
 };
+
+
+Object.defineProperty(nmlorg.Spreadsheet.prototype, 'editing', {
+    'get': function() {
+      return this.editing_;
+    },
+    'set': function(value) {
+      if (this.editing_ !== value) {
+        this.editing_ = value;
+        if (value)
+          this.body_.classList.add('editing');
+        else
+          this.body_.classList.remove('editing');
+      }
+    },
+});
 
 
 /**
@@ -204,7 +218,6 @@ nmlorg.Spreadsheet.prototype.export = function(preserve_formula) {
 nmlorg.Spreadsheet.prototype.focus = function() {
   var body = this.body_;
   this.editing = false;
-  body.classList.remove('editing');
   var input = body.children[this.row].children[this.col];
   input.blur();
   input.focus();
@@ -292,7 +305,6 @@ nmlorg.Spreadsheet.prototype.pokeCell = function(row, col) {
         }.bind(input, this, i, j));
         input.addEventListener('click', function(sheet, e) {
           sheet.editing = true;
-          body.classList.add('editing');
         }.bind(input, this));
         input.addEventListener('focus', function(sheet, row, col, e) {
           sheet.mouseRow = sheet.endRow = sheet.row = row;
