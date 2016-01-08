@@ -93,17 +93,19 @@ nmlorg.Spreadsheet.prototype.attach = function(parent) {
  * @param {string} label A string like 'AB10'.
  */
 nmlorg.Spreadsheet.prototype.decodeLabel = function(label) {
-  if (!label.match(/^([A-Z]+)([0-9]+)$/))
+  var ret = label.match(/^([A-Z]+)([0-9]+)$/);
+
+  if (!ret)
     return;
 
   var col = 0;
 
-  for (var i = 0; i < RegExp.$1.length; i++) {
+  for (var i = 0; i < ret[1].length; i++) {
     col *= 26;
-    col += RegExp.$1.charCodeAt(i) - 64;
+    col += ret[1].charCodeAt(i) - 64;
   }
 
-  var row = Number(RegExp.$2);
+  var row = Number(ret[2]);
 
   return [row, col];
 };
