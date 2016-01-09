@@ -1,7 +1,7 @@
 (function() {
 
 /** @namespace */
-nmlorg = window.nmlorg || {};
+var nmlorg = window.nmlorg = window.nmlorg || {};
 
 
 /**
@@ -214,7 +214,7 @@ nmlorg.Spreadsheet.prototype.export = function(preserve_formula) {
     var dataRow = data[i - 1] = [];
 
     for (var j = 1; j < row.children.length; j++) {
-      value = this.getCell(i, j, preserve_formula);
+      var value = this.getCell(i, j, preserve_formula);
 
       if (value != '') {
         for (var k = dataRow.length; k < j - 1; k++)
