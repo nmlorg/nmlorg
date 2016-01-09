@@ -16,43 +16,51 @@ nmlorg.Spreadsheet = function() {
   this.row = this.col = 1;
 
   body.addEventListener('keydown', function(sheet, e) {
-    var keyCode = e.keyCode & 0x7f;
-
-    if (keyCode == 37) {  // Left
-      if (!sheet.editing && (sheet.col > 1)) {
-        sheet.col--;
-        sheet.focus();
-        e.preventDefault();
-      }
-    } else if (keyCode == 38) {  // Up
-      if (!sheet.editing && (sheet.row > 1)) {
-        sheet.row--;
-        sheet.focus();
-        e.preventDefault();
-      }
-    } else if (keyCode == 39) {  // Right
-      if (!sheet.editing) {
-        if (sheet.col == body.children[0].children.length - 1)
-          sheet.pokeCell(1, sheet.col + 1);
-        sheet.col++;
-        sheet.focus();
-        e.preventDefault();
-      }
-    } else if ((keyCode == 40) || (keyCode == 13)) {  // Down or Enter
-      if (!sheet.editing) {
-        if (sheet.row == body.children.length - 1)
+    if (sheet.editing) {
+      switch (e.keyCode) {
+        case 13:  // Enter
           sheet.pokeCell(sheet.row + 1, 1);
-        sheet.row++;
-        sheet.focus();
-        e.preventDefault();
-      } else if (keyCode == 13)
-        sheet.focus();
-    } else if ((keyCode == 8) && (sheet.mouseRow != -1)) {  // Backspace
-      if (!sheet.editing) {
-        for (var i = sheet.mouseRow; i <= sheet.endRow; i++)
-          for (var j = sheet.mouseCol; j <= sheet.endCol; j++)
-            sheet.setCell(i, j, '');
-        e.preventDefault();
+          sheet.row++;
+          sheet.focus();
+          e.preventDefault();
+          break;
+      }
+    } else {
+      switch (e.keyCode) {
+        case 8:  // Backspace
+          for (var i = sheet.mouseRow; i <= sheet.endRow; i++)
+            for (var j = sheet.mouseCol; j <= sheet.endCol; j++)
+              sheet.setCell(i, j, '');
+          e.preventDefault();
+          break;
+        case 13:  // Enter
+          sheet.editing = true;
+          e.preventDefault();
+          break;
+        case 37:  // Left
+          if (sheet.col > 1)
+            sheet.col--;
+          sheet.focus();
+          e.preventDefault();
+          break;
+        case 38:  // Up
+          if (sheet.row > 1)
+            sheet.row--;
+          sheet.focus();
+          e.preventDefault();
+          break;
+        case 39:  // Right
+          sheet.pokeCell(1, sheet.col + 1);
+          sheet.col++;
+          sheet.focus();
+          e.preventDefault();
+          break;
+        case 40:  // Down
+          sheet.pokeCell(sheet.row + 1, 1);
+          sheet.row++;
+          sheet.focus();
+          e.preventDefault();
+          break;
       }
     }
   }.bind(body, this));
