@@ -73,8 +73,9 @@ nmlorg.Spreadsheet = function() {
   this.mouseRow = this.mouseCol = this.endRow = this.endCol = -1;
 
   body.addEventListener('mousedown', function(sheet, e) {
-    sheet.mouseRow = Number(e.target.dataset.row);
-    sheet.mouseCol = Number(e.target.dataset.col);
+    sheet.row = sheet.mouseRow = Number(e.target.dataset.row);
+    sheet.col = sheet.mouseCol = Number(e.target.dataset.col);
+    sheet.focus();
   }.bind(body, this));
 
   body.addEventListener('mouseup', function(sheet, e) {
@@ -231,9 +232,8 @@ nmlorg.Spreadsheet.prototype.export = function(preserve_formula) {
  * Focus on the currently selected cell.
  */
 nmlorg.Spreadsheet.prototype.focus = function() {
-  var body = this.body_;
   this.editing = false;
-  var input = body.children[this.row].children[this.col];
+  var input = this.body_.children[this.row].children[this.col];
   input.blur();
   input.focus();
 };
