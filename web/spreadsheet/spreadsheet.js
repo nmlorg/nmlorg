@@ -12,14 +12,13 @@ nmlorg.Spreadsheet = function() {
   var body = this.body_ = document.createElement('div');
 
   body.className = 'spreadsheet';
-  this.pokeCell(2, 2);
+  this.getInput(2, 2);
   this.row = this.col = 1;
 
   body.addEventListener('keydown', function(sheet, e) {
     if (sheet.editing) {
       switch (e.keyCode) {
         case 13:  // Enter
-          sheet.pokeCell(sheet.row + 1, 1);
           sheet.row++;
           sheet.focus();
           e.preventDefault();
@@ -50,13 +49,11 @@ nmlorg.Spreadsheet = function() {
           e.preventDefault();
           break;
         case 39:  // Right
-          sheet.pokeCell(1, sheet.col + 1);
           sheet.col++;
           sheet.focus();
           e.preventDefault();
           break;
         case 40:  // Down
-          sheet.pokeCell(sheet.row + 1, 1);
           sheet.row++;
           sheet.focus();
           e.preventDefault();
@@ -233,7 +230,7 @@ nmlorg.Spreadsheet.prototype.export = function(preserve_formula) {
  */
 nmlorg.Spreadsheet.prototype.focus = function() {
   this.editing = false;
-  var input = this.body_.children[this.row].children[this.col];
+  var input = this.getInput(this.row, this.col);
   input.blur();
   input.focus();
 };
@@ -261,32 +258,14 @@ nmlorg.Spreadsheet.prototype.getCell = function(row, col, preserve_formula) {
 
 
 /**
- * Load the given data into the spreadsheet, overwriting anything already present.
- * @param {Array.<Array.<string|null|number>>} data The initial data, as an array of arrays of rows
- *     of strings or numbers.
- */
-nmlorg.Spreadsheet.prototype.load = function(data) {
-  // Clear the existing body.
-  this.body_.textContent = '';
-
-  for (var i = 0; i < data.length; i++) {
-    var row = data[i];
-
-    for (var j = 0; j < row.length; j++)
-      this.setCell(i + 1, j + 1, row[j]);
-  }
-};
-
-
-/**
- * Make sure the referenced cell exists, adding rows/columns as necessary.
+ * Return the referenced cell's HTMLInputElement, adding rows/columns as necessary.
  * @param {number} row The row, with 1 being the top row.
  * @param {number} col The column, with 1 being the left edge (first cell of each row).
  */
-nmlorg.Spreadsheet.prototype.pokeCell = function(row, col) {
+nmlorg.Spreadsheet.prototype.getInput = function(row, col) {
   var body = this.body_;
 
-  // The initial table looks like [['']]. If we call pokeCell(3, 2), we need to add 3 more rows
+  // The initial table looks like [['']]. If we call getInput(3, 2), we need to add 3 more rows
   // (extending by 3 to the 4th row for our new value), then 2 more columns to all rows (old and
   // new--the new ones needing the initial blank column added as well).
   for (var i = body.children.length; i <= row; i++)
@@ -337,6 +316,24 @@ nmlorg.Spreadsheet.prototype.pokeCell = function(row, col) {
 
 
 /**
+ * Load the given data into the spreadsheet, overwriting anything already present.
+ * @param {Array.<Array.<string|null|number>>} data The initial data, as an array of arrays of rows
+ *     of strings or numbers.
+ */
+nmlorg.Spreadsheet.prototype.load = function(data) {
+  // Clear the existing body.
+  this.body_.textContent = '';
+
+  for (var i = 0; i < data.length; i++) {
+    var row = data[i];
+
+    for (var j = 0; j < row.length; j++)
+      this.setCell(i + 1, j + 1, row[j]);
+  }
+};
+
+
+/**
  * Set the referenced cell to the given value, adding rows/columns as necessary.
  * @param {number} row The row, with 1 being the top row.
  * @param {number} col The column, with 1 being the left edge (first cell of each row).
@@ -346,12 +343,12 @@ nmlorg.Spreadsheet.prototype.setCell = function(row, col, value) {
   var label = this.encodeLabel(row, col);
   if ((value === null) || (value === undefined))
     value = '';
-  var input = this.pokeCell(row, col);
+  var input = this.getInput(row, col);
   var parents = this.splitSet(input.dataset.parents);
   for (var parentLabel of parents) {
     var parent = this.decodeLabel(parentLabel);
     var parentRow = parent[0], parentCol = parent[1];
-    var parentInput = this.pokeCell(parentRow, parentCol);
+    var parentInput = this.getInput(parentRow, parentCol);
     var children = this.splitSet(parentInput.dataset.children);
     children.delete(label);
     parentInput.dataset.children = [...children].join(',');
@@ -364,7 +361,7 @@ nmlorg.Spreadsheet.prototype.setCell = function(row, col, value) {
   for (var parentLabel of tmp[1]) {
     var parent = this.decodeLabel(parentLabel);
     var parentRow = parent[0], parentCol = parent[1];
-    var parentInput = this.pokeCell(parentRow, parentCol);
+    var parentInput = this.getInput(parentRow, parentCol);
     var children = this.splitSet(parentInput.dataset.children);
     children.add(label);
     parentInput.dataset.children = [...children].join(',');
@@ -373,7 +370,7 @@ nmlorg.Spreadsheet.prototype.setCell = function(row, col, value) {
   for (var childLabel of children) {
     var child = this.decodeLabel(childLabel);
     var childRow = child[0], childCol = child[1];
-    var childInput = this.pokeCell(childRow, childCol);
+    var childInput = this.getInput(childRow, childCol);
     this.setCell(childRow, childCol, childInput.dataset.formula);
   }
 };
