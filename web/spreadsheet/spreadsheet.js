@@ -243,7 +243,7 @@ nmlorg.Spreadsheet.prototype.focus = function() {
  * Fetch the value of the given cell.
  * @param {number} row The row, with 0 being the top row.
  * @param {number} col The column, with 0 being the left edge (first cell of each row).
- * @param {boolean} preserve_formula Return the cell's formula instead of its computed value.
+ * @param {boolean=} preserve_formula Return the cell's formula instead of its computed value.
  */
 nmlorg.Spreadsheet.prototype.getCell = function(row, col, preserve_formula) {
   var body = this.body_;
@@ -356,6 +356,7 @@ nmlorg.Spreadsheet.prototype.setCell = function(row, col, value) {
     children.delete(label);
     parentInput.dataset.children = [...children].join(',');
   }
+  value = String(value);
   input.dataset.formula = value;
   var tmp = this.eval(value);
   input.value = tmp[0];
