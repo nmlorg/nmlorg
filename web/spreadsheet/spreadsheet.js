@@ -67,17 +67,34 @@ nmlorg.Spreadsheet = function() {
       sheet.editing = true;
   }.bind(body, this));
 
-  this.mouseRow = this.mouseCol = this.endRow = this.endCol = -1;
+  this.mouseRow = this.mouseCol = this.endRow = this.endCol = 1;
 
   body.addEventListener('mousedown', function(sheet, e) {
-    sheet.row = sheet.mouseRow = Number(e.target.dataset.row);
-    sheet.col = sheet.mouseCol = Number(e.target.dataset.col);
+    sheet.row = sheet.mouseRow = sheet.endRow = Number(e.target.dataset.row);
+    sheet.col = sheet.mouseCol = sheet.endCol = Number(e.target.dataset.col);
+    if (sheet.row == 0) {
+      sheet.row = sheet.mouseRow = 1;
+      sheet.endRow = body.children.length - 1;
+    }
+    if (sheet.col == 0) {
+      sheet.col = sheet.mouseCol = 1;
+      sheet.endCol = body.children[0].children.length - 1;
+    }
     sheet.focus();
+    sheet.setHighlight();
   }.bind(body, this));
 
   body.addEventListener('mouseup', function(sheet, e) {
     sheet.endRow = Number(e.target.dataset.row);
     sheet.endCol = Number(e.target.dataset.col);
+    if (sheet.endRow == 0) {
+      sheet.mouseRow = 1;
+      sheet.endRow = body.children.length - 1;
+    }
+    if (sheet.endCol == 0) {
+      sheet.mouseCol = 1;
+      sheet.endCol = body.children[0].children.length - 1;
+    }
     sheet.setHighlight();
   }.bind(body, this));
 };
@@ -279,6 +296,8 @@ nmlorg.Spreadsheet.prototype.getInput = function(row, col) {
     for (var j = tr.children.length; j < width; j++) {
       var input = document.createElement('input');
       tr.appendChild(input);
+      input.dataset.row = i;
+      input.dataset.col = j;
       if ((i == 0) && (j == 0)) {
         input.disabled = true;
       } else if (i == 0) {
@@ -289,8 +308,6 @@ nmlorg.Spreadsheet.prototype.getInput = function(row, col) {
         input.value = i;
       } else {
         input.dataset.formula = input.dataset.children = input.dataset.parents = '';
-        input.dataset.row = i;
-        input.dataset.col = j;
         input.addEventListener('blur', function(sheet, row, col, e) {
           sheet.setCell(row, col, this.dataset.formula);
         }.bind(input, this, i, j));
@@ -381,11 +398,6 @@ nmlorg.Spreadsheet.prototype.setCell = function(row, col, value) {
  */
 nmlorg.Spreadsheet.prototype.setHighlight = function() {
   var body = this.body_;
-
-  if (this.mouseRow == -1) {
-    this.mouseRow = this.endRow;
-    this.mouseCol = this.endCol;
-  }
 
   if (this.mouseRow > this.endRow) {
     var tmp = this.mouseRow;
