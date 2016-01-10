@@ -63,8 +63,7 @@ nmlorg.Spreadsheet = function() {
   }.bind(body, this));
 
   body.addEventListener('keypress', function(sheet, e) {
-    if (e.keyCode != 13)
-      sheet.editing = true;
+    sheet.editing = true;
   }.bind(body, this));
 
   this.mouseRow = this.mouseCol = this.endRow = this.endCol = 1;
