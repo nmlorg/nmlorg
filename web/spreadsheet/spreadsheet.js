@@ -33,6 +33,9 @@ nmlorg.Spreadsheet = function() {
           e.preventDefault();
           break;
         case 13:  // Enter
+          sheet.mouseRow = sheet.endRow = sheet.row;
+          sheet.mouseCol = sheet.endCol = sheet.col;
+          sheet.setHighlight();
           sheet.editing = true;
           e.preventDefault();
           break;
