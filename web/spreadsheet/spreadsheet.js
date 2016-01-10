@@ -314,6 +314,9 @@ nmlorg.Spreadsheet.prototype.getInput = function(row, col) {
           this.dataset.formula = this.value;
         }.bind(input, this, i, j));
         input.addEventListener('click', function(sheet, e) {
+          sheet.editing = false;
+        }.bind(input, this));
+        input.addEventListener('dblclick', function(sheet, e) {
           sheet.editing = true;
         }.bind(input, this));
         input.addEventListener('focus', function(sheet, row, col, e) {
