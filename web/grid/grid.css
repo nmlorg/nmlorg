@@ -12,19 +12,26 @@ div.grid {
   white-space: nowrap;
 }
 
-div.grid > div > button {
-  background-color: #fff;
+div.grid > div > span {
+  background: url('hyptosis_tile-art-batch-1.png') no-repeat;
+  display: inline-block;
+  height: 32px;
+  width: 32px;
+}
+
+div.grid > div > span > button {
+  background: rgba(0, 0, 0, 0);
   border: 0;
-  height: 20px;
+  height: 100%;
   outline: none;
-  width: 20px;
+  width: 100%;
 }
 
-div.grid > div > button.active {
-  background-color: #def !important;
+div.grid > div > span > button:focus {
+  background: rgba(128, 192, 255, .3) !important;
 }
 
-div.grid > div:nth-child(even) > button:nth-child(even),
-div.grid > div:nth-child(odd) > button:nth-child(odd) {
-  background-color: #eee;
+div.grid > div:nth-child(even) > span:nth-child(even) > button,
+div.grid > div:nth-child(odd) > span:nth-child(odd) > button {
+  background: rgba(0, 0, 0, .3);
 }

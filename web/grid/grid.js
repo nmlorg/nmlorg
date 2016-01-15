@@ -14,12 +14,6 @@ nmlorg.Grid = function() {
   this.getCell(20, 20);
   this.row = this.col = 0;
 
-  body.addEventListener('mousedown', function(grid, e) {
-    grid.row = Number(e.target.dataset.row);
-    grid.col = Number(e.target.dataset.col);
-    grid.focus();
-  }.bind(body, this));
-
   body.addEventListener('keydown', function(grid, e) {
     switch (e.keyCode) {
       case 37:  // Left
@@ -46,6 +40,15 @@ nmlorg.Grid = function() {
         break;
     }
   }.bind(body, this));
+
+  body.addEventListener('mousedown', function(grid, e) {
+    var row = Number(e.target.dataset.row);
+    var col = Number(e.target.dataset.col);
+
+    grid.row = row;
+    grid.col = col;
+    grid.focus();
+  }.bind(body, this));
 };
 
 
@@ -64,18 +67,7 @@ nmlorg.Grid.prototype.attach = function(parent) {
  * Focus on the currently selected cell.
  */
 nmlorg.Grid.prototype.focus = function() {
-  var body = this.body_;
-  var cell = this.getCell(this.row, this.col);
-
-  for (var i = 0; i < body.children.length; i++) {
-    var row = body.children[i];
-
-    for (var j = 0; j < row.children.length; j++)
-      row.children[j].className = '';
-  }
-
-  cell.className = 'active';
-  cell.focus();
+  this.getCell(this.row, this.col).firstElementChild.focus();
 };
 
 
@@ -99,10 +91,12 @@ nmlorg.Grid.prototype.getCell = function(row, col) {
     var tr = body.children[i];
 
     for (var j = tr.children.length; j < width; j++) {
-      var cell = document.createElement('button');
+      var cell = document.createElement('span');
       tr.appendChild(cell);
-      cell.dataset.row = i;
-      cell.dataset.col = j;
+      var button = document.createElement('button');
+      cell.appendChild(button);
+      button.dataset.row = i;
+      button.dataset.col = j;
     }
   }
 
