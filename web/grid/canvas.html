@@ -4,6 +4,7 @@
 
 <link rel="stylesheet" href="canvasgrid.css"></script>
 <script src="canvasgrid.js"></script>
+<script src="tile.js"></script>
 
 <body>
 
@@ -11,6 +12,13 @@
 var grid = new nmlorg.CanvasGrid().attach(document.body);
 var img = document.createElement('img');
 img.addEventListener('load', function(e) {
+  var grass = new nmlorg.Tile(img, 10 * 32, 20 * 32, 32, 32);
+  var trash = new nmlorg.Tile(img, 26 * 32, 27 * 32, 32, 32);
+
+  grid.setBackground(grass);
+  grid.setForeground(1, 1, trash);
+  grid.setForeground(2, 4, trash);
+  grid.setForeground(8, 8, trash);
   grid.draw();
 });
 img.src = 'hyptosis_tile-art-batch-1.png';
