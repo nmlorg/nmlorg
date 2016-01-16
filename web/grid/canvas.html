@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="canvasgrid.css"></script>
+<script src="canvasgrid.js"></script>
+
+<body>
+
+<script>
+var grid = new nmlorg.CanvasGrid().attach(document.body);
+var img = document.createElement('img');
+img.addEventListener('load', function(e) {
+  grid.draw();
+});
+img.src = 'hyptosis_tile-art-batch-1.png';
+</script>
