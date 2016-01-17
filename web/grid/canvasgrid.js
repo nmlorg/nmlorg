@@ -16,7 +16,7 @@ nmlorg.CanvasGrid = function(width, height) {
   this.bgCanvas_ = this.makeCanvas();
   this.bgCtx_ = this.bgCanvas_.getContext('2d');
   this.gridCanvas_ = this.makeCanvas();
-  this.gridCanvas_.className = 'on-hover';
+  this.gridCanvas_.className = 'while-editing';
   this.gridCtx_ = this.gridCanvas_.getContext('2d');
   this.setGrid();
   this.fgCanvas_ = this.makeCanvas();
@@ -43,12 +43,14 @@ nmlorg.CanvasGrid = function(width, height) {
   }.bind(body, this);
 
   body.addEventListener('mousedown', function(e) {
+    this.classList.add('editing');
     lastCol = lastRow = -1;
     this.addEventListener('mousemove', onMouseMove);
   });
 
   body.addEventListener('mouseup', function(e) {
     this.removeEventListener('mousemove', onMouseMove);
+    this.classList.remove('editing');
   });
 };
 

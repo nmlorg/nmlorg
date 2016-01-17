@@ -12,10 +12,10 @@ div.canvas > canvas {
   position: absolute;
 }
 
-div.canvas > canvas.on-hover {
+div.canvas > canvas.while-editing {
   display: none;
 }
 
-div.canvas:hover > canvas.on-hover {
+div.canvas.editing > canvas.while-editing {
   display: unset;
 }
