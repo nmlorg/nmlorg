@@ -8,8 +8,8 @@ var nmlorg = window.nmlorg = window.nmlorg || {};
  * @constructor
  */
 nmlorg.CanvasGrid = function(width, height) {
-  this.body_ = document.createElement('div');
-  this.body_.className = 'canvas';
+  var body = this.body_ = document.createElement('div');
+  body.className = 'canvas';
   this.cellWidth = this.cellHeight = 32;
   this.width = width;
   this.height = height;
@@ -25,12 +25,40 @@ nmlorg.CanvasGrid = function(width, height) {
   this.uiCtx_ = this.uiCanvas_.getContext('2d');
   this.cells_ = {};
 
-  this.body_.addEventListener('mousemove', function(grid, e) {
+  var lastCol = -1, lastRow = -1;
+
+  var onMouseMove = function(grid, e) {
     var x = e.offsetX, y = e.offsetY;
     var rect = e.target.getBoundingClientRect();
-    var i = Math.floor(grid.width * x / rect.width), j = Math.floor(grid.height * y / rect.height);
-    console.log(i, j);
-  }.bind(this.body_, this));
+    var col = Math.floor(grid.width * x / rect.width);
+    var row = Math.floor(grid.height * y / rect.height);
+    if ((col != lastCol) || (row != lastRow)) {
+      var cell = grid.getForeground(lastCol, lastRow);
+      if (cell && cell.length)
+        grid.addForeground(col, row, cell.pop());
+      lastCol = col;
+      lastRow = row;
+      grid.draw();
+    }
+  }.bind(body, this);
+
+  body.addEventListener('mousedown', function(e) {
+    lastCol = lastRow = -1;
+    this.addEventListener('mousemove', onMouseMove);
+  });
+
+  body.addEventListener('mouseup', function(e) {
+    this.removeEventListener('mousemove', onMouseMove);
+  });
+};
+
+
+nmlorg.CanvasGrid.prototype.addForeground = function(col, row, tile) {
+  var offset = row * this.width + col;
+
+  if (!this.cells_[offset])
+    this.cells_[offset] = [];
+  this.cells_[offset].push(...[...arguments].slice(2));
 };
 
 
@@ -51,14 +79,23 @@ nmlorg.CanvasGrid.prototype.attach = function(parent) {
 nmlorg.CanvasGrid.prototype.draw = function() {
   var ctx = this.fgCtx_;
 
-  for (var i = 0; i < this.width; i++) {
-    for (var j = 0; j < this.height; j++) {
-      var tiles = this.cells_[j * this.width + i];
+  ctx.clearRect(0, 0, this.fgCanvas_.width, this.fgCanvas_.height);
+  for (var col = 0; col < this.width; col++) {
+    for (var row = 0; row < this.height; row++) {
+      var tiles = this.getForeground(col, row);
       if (tiles)
         for (var tile of tiles)
-          tile.draw(ctx, i * this.cellWidth, j * this.cellHeight, this.cellWidth, this.cellHeight);
+          tile.draw(ctx, col * this.cellWidth, row * this.cellHeight, this.cellWidth,
+                    this.cellHeight);
     }
   }
+};
+
+
+nmlorg.CanvasGrid.prototype.getForeground = function(col, row) {
+  var offset = row * this.width + col;
+
+  return this.cells_[offset];
 };
 
 
@@ -77,29 +114,29 @@ nmlorg.CanvasGrid.prototype.makeCanvas = function() {
 nmlorg.CanvasGrid.prototype.setBackground = function(tile) {
   var ctx = this.bgCtx_;
 
-  for (var i = 0; i < this.width; i++)
-    for (var j = 0; j < this.height; j++)
-      tile.draw(ctx, i * this.cellWidth, j * this.cellHeight, this.cellWidth, this.cellHeight);
+  for (var col = 0; col < this.width; col++)
+    for (var row = 0; row < this.height; row++)
+      tile.draw(ctx, col * this.cellWidth, row * this.cellHeight, this.cellWidth, this.cellHeight);
 };
 
 
 nmlorg.CanvasGrid.prototype.setGrid = function() {
   var ctx = this.gridCtx_;
 
-  for (var i = 0; i < this.width; i++) {
-    for (var j = 0; j < this.height; j++) {
-      if ((i + j) % 2)
+  for (var col = 0; col < this.width; col++) {
+    for (var row = 0; row < this.height; row++) {
+      if ((col + row) % 2)
         ctx.fillStyle = 'rgba(0, 0, 0, .1)';
       else
         ctx.fillStyle = 'rgba(255, 255, 255, .1)';
-      ctx.fillRect(i * this.cellWidth, j * this.cellHeight, this.cellWidth, this.cellHeight);
+      ctx.fillRect(col * this.cellWidth, row * this.cellHeight, this.cellWidth, this.cellHeight);
     }
   }
 };
 
 
-nmlorg.CanvasGrid.prototype.setForeground = function(x, y, tile) {
-  var offset = y * this.width + x;
+nmlorg.CanvasGrid.prototype.setForeground = function(col, row, tile) {
+  var offset = row * this.width + col;
 
   this.cells_[offset] = [...arguments].slice(2);
 };
