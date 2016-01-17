@@ -12,7 +12,7 @@ nmlorg.CanvasGrid = function() {
   var ctx = this.ctx_ = canvas.getContext('2d');
 
   this.cellWidth = this.cellHeight = 32;
-  this.width = this.height = 10;
+  this.width = this.height = 20;
   canvas.width = this.width * this.cellWidth;
   canvas.height = this.height * this.cellHeight;
   this.cells_ = {};
@@ -36,15 +36,21 @@ nmlorg.CanvasGrid.prototype.attach = function(parent) {
 nmlorg.CanvasGrid.prototype.draw = function() {
   var ctx = this.ctx_;
 
-  for (var x = 0; x < this.width; x++) {
-    for (var y = 0; y < this.height; y++) {
+  ctx.fillStyle = 'rgba(0, 0, 0, .2)';
+  for (var i = 0; i < this.width; i++) {
+    var x = i * this.cellWidth;
+
+    for (var j = 0; j < this.height; j++) {
+      var y = j * this.cellHeight;
+
       if (this.bg_)
-        this.bg_.draw(ctx, x * this.cellWidth, y * this.cellHeight, this.cellWidth,
-                      this.cellHeight);
-      var tiles = this.cells_[y * this.width + x];
+        this.bg_.draw(ctx, x, y, this.cellWidth, this.cellHeight);
+      if ((i + j) % 2)
+        ctx.fillRect(x, y, this.cellWidth, this.cellHeight);
+      var tiles = this.cells_[j * this.width + i];
       if (tiles)
         for (var tile of tiles)
-          tile.draw(ctx, x * this.cellWidth, y * this.cellHeight, this.cellWidth, this.cellHeight);
+          tile.draw(ctx, x, y, this.cellWidth, this.cellHeight);
     }
   }
 };
