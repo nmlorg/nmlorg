@@ -1,3 +1,19 @@
 body {
   margin: 0;
 }
+
+div.canvas {
+  position: relative;
+}
+
+div.canvas > canvas {
+  position: absolute;
+}
+
+div.canvas > canvas.on-hover {
+  display: none;
+}
+
+div.canvas:hover > canvas.on-hover {
+  display: unset;
+}
