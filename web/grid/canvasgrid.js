@@ -24,6 +24,13 @@ nmlorg.CanvasGrid = function(width, height) {
   this.uiCanvas_ = this.makeCanvas();
   this.uiCtx_ = this.uiCanvas_.getContext('2d');
   this.cells_ = {};
+
+  this.body_.addEventListener('mousemove', function(grid, e) {
+    var x = e.offsetX, y = e.offsetY;
+    var rect = e.target.getBoundingClientRect();
+    var i = Math.floor(grid.width * x / rect.width), j = Math.floor(grid.height * y / rect.height);
+    console.log(i, j);
+  }.bind(this.body_, this));
 };
 
 
