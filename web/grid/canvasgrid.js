@@ -7,11 +7,12 @@ var nmlorg = window.nmlorg = window.nmlorg || {};
 /**
  * @constructor
  */
-nmlorg.CanvasGrid = function() {
+nmlorg.CanvasGrid = function(width, height) {
   this.body_ = document.createElement('div');
   this.body_.className = 'canvas';
   this.cellWidth = this.cellHeight = 32;
-  this.width = this.height = 20;
+  this.width = width;
+  this.height = height;
   this.bgCanvas_ = this.makeCanvas();
   this.bgCtx_ = this.bgCanvas_.getContext('2d');
   this.gridCanvas_ = this.makeCanvas();

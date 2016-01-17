@@ -9,7 +9,7 @@
 <body>
 
 <script>
-var grid = new nmlorg.CanvasGrid().attach(document.body);
+var grid = new nmlorg.CanvasGrid(20, 10).attach(document.body);
 var img = document.createElement('img');
 img.addEventListener('load', function(e) {
   var grass = new nmlorg.Tile(img, 10 * 32, 20 * 32, 32, 32);
