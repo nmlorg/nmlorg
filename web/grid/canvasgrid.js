@@ -26,7 +26,10 @@ nmlorg.CanvasGrid = function(width, height) {
   var lastCol = -1, lastRow = -1;
 
   var onMouseMove = function(grid, e) {
-    var x = e.offsetX, y = e.offsetY;
+    if (e.touches)
+      var x = e.touches[0].clientX, y = e.touches[0].clientY;
+    else
+      var x = e.offsetX, y = e.offsetY;
     var rect = e.target.getBoundingClientRect();
     var col = Math.floor(grid.width * x / rect.width);
     var row = Math.floor(grid.height * y / rect.height);
@@ -48,6 +51,20 @@ nmlorg.CanvasGrid = function(width, height) {
 
   body.addEventListener('mouseup', function(e) {
     this.removeEventListener('mousemove', onMouseMove);
+    this.classList.remove('editing');
+  });
+
+  body.addEventListener('touchstart', function(e) {
+    if (e.touches.length == 1) {
+      this.classList.add('editing');
+      lastCol = lastRow = -1;
+      this.addEventListener('touchmove', onMouseMove);
+      e.preventDefault();
+    }
+  });
+
+  body.addEventListener('touchend', function(e) {
+    this.removeEventListener('touchmove', onMouseMove);
     this.classList.remove('editing');
   });
 };
