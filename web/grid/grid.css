@@ -1,37 +1,21 @@
-* {
-  box-sizing: border-box;
-}
-
 body {
   margin: 0;
 }
 
 div.grid {
-  display: inline-block;
-  font-size: 0;
-  white-space: nowrap;
+  position: relative;
 }
 
-div.grid > div > span {
-  background: url('hyptosis_tile-art-batch-1.png') no-repeat;
-  display: inline-block;
-  height: 32px;
-  width: 32px;
+div.grid > canvas {
+  min-height: 100%;
+  min-width: 100%;
+  position: absolute;
 }
 
-div.grid > div > span > button {
-  background: rgba(0, 0, 0, 0);
-  border: 0;
-  height: 100%;
-  outline: none;
-  width: 100%;
+div.grid > canvas.while-editing {
+  display: none;
 }
 
-div.grid > div > span > button:focus {
-  background: rgba(128, 192, 255, .3) !important;
-}
-
-div.grid > div:nth-child(even) > span:nth-child(even) > button,
-div.grid > div:nth-child(odd) > span:nth-child(odd) > button {
-  background: rgba(0, 0, 0, .3);
+div.grid.editing > canvas.while-editing {
+  display: unset;
 }
