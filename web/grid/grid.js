@@ -134,7 +134,7 @@ nmlorg.Grid.prototype.getForeground = function(col, row) {
 
 /**
  * Create a canvas and add it to the rendering stack.
- * @returns {CanvasRenderingContext2D}
+ * @returns {!CanvasRenderingContext2D}
  */
 nmlorg.Grid.prototype.makeCanvasContext = function() {
   var canvas = document.createElement('canvas');
