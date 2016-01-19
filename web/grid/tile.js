@@ -7,17 +7,17 @@ var nmlorg = window['nmlorg'] = window['nmlorg'] || {};
 /**
  * @constructor
  * @param {HTMLImageElement} img An <img> or new Image() containing the tile.
- * @param {number} x The x coordinate of the upper-left corner of the tile within the image.
- * @param {number} y The y coordinate of the upper-left corner of the tile within the image.
- * @param {number} width The width of the tile.
- * @param {number} height The height of the tile.
+ * @param {number} [x=0] The x coordinate of the upper-left corner of the tile within the image.
+ * @param {number} [y=0] The y coordinate of the upper-left corner of the tile within the image.
+ * @param {number} [width] The width of the tile.
+ * @param {number} [height] The height of the tile.
  */
 nmlorg.Tile = function(img, x, y, width, height) {
   this.img_ = img;
-  this.x_ = x;
-  this.y_ = y;
-  this.w_ = width;
-  this.h_ = height;
+  this.x_ = x || 0;
+  this.y_ = y || 0;
+  this.w_ = width || (img.naturalWidth - this.x_);
+  this.h_ = height || (img.naturalHeight - this.y);
 };
 nmlorg['Tile'] = nmlorg.Tile;
 
