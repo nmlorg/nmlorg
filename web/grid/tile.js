@@ -17,7 +17,7 @@ nmlorg.Tile = function(img, x, y, width, height) {
   this.x_ = x || 0;
   this.y_ = y || 0;
   this.w_ = width || (img.naturalWidth - this.x_);
-  this.h_ = height || (img.naturalHeight - this.y);
+  this.h_ = height || (img.naturalHeight - this.y_);
 };
 nmlorg['Tile'] = nmlorg.Tile;
 
