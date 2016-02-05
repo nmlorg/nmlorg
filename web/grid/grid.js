@@ -122,9 +122,11 @@ nmlorg.Grid.prototype.draw = function() {
     for (var row = 0; row < this.height; row++) {
       var tiles = this.getForeground(col, row);
       if (tiles)
-        for (var tile of tiles)
-          tile.draw(ctx, col * this.cellWidth, row * this.cellHeight, this.cellWidth,
+        for (var i = 0; i < tiles.length; i++) {
+          var tile = tiles[i];
+          tile.draw(ctx, col * this.cellWidth + i * 2, row * this.cellHeight + i * 2, this.cellWidth,
                     this.cellHeight);
+        }
     }
   }
 };
