@@ -50,9 +50,11 @@ nmlorg.Grid.prototype.addMouseHandler_ = function() {
     var pos = this.getPositionFromEvent_(e);
     var col = Math.floor(this.width * pos[0]), row = Math.floor(this.height * pos[1]);
     if ((col != lastCol) || (row != lastRow)) {
-      var cell = this.getForeground(lastCol, lastRow);
-      if (cell && cell.length)
-        this.addForeground(col, row, cell.pop());
+      if (layer == 'fg') {
+        var cell = this.getForeground(lastCol, lastRow);
+        if (cell && cell.length)
+          this.addForeground(col, row, cell.pop());
+      }
       lastCol = col;
       lastRow = row;
       this.draw();

@@ -10,8 +10,8 @@ window.addEventListener('load', function(e) {
 
     grid.setBackground(grass);
     grid.setForeground(1, 1, trash);
-    grid.setForeground(2, 1, trash);
-    grid.setForeground(3, 1, trash);
+    grid.setForeground(2, 1, trash, trash);
+    grid.setForeground(3, 1, trash, trash, trash);
     grid.setForeground(2, 2, trash);
     grid.setForeground(2, 3, trash);
     grid.draw();
