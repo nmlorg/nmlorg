@@ -1,7 +1,10 @@
-window.addEventListener('load', function(e) {
-  /** @namespace */
-  var nmlorg = window['nmlorg'] = window['nmlorg'] || {};
+(function() {
 
+/** @namespace */
+var nmlorg = window['nmlorg'] = window['nmlorg'] || {};
+
+
+window.addEventListener('load', function(e) {
   var grid = new nmlorg.Grid(20, 10).attach(document.body);
   var img = document.createElement('img');
   img.addEventListener('load', function(e) {
@@ -19,3 +22,5 @@ window.addEventListener('load', function(e) {
   });
   img.src = 'hyptosis_tile-art-batch-1.png';
 });
+
+})();
