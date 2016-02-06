@@ -23,6 +23,9 @@ nmlorg.Grid = function(width, height) {
   this.uiCtx_ = this.makeCanvasContext();
   this.cells_ = {};
   this.addMouseHandler_();
+  this.imageLoaded_ = function() {
+    this.dirty_ = true;
+  }.bind(this);
 };
 nmlorg['Grid'] = nmlorg.Grid;
 
@@ -36,9 +39,17 @@ nmlorg['Grid'] = nmlorg.Grid;
 nmlorg.Grid.prototype.addForeground = function(col, row, tile) {
   var offset = row * this.width + col;
 
-  if (!this.cells_[offset])
-    this.cells_[offset] = [];
-  this.cells_[offset].push(...[...arguments].slice(2));
+  var cell = this.cells_[offset];
+  if (!cell)
+    cell = this.cells_[offset] = [];
+  for (var i = 2; i < arguments.length; i++) {
+    var tile = arguments[i];
+    cell.push(tile);
+    if (tile.img_.complete)
+      this.dirty_ = true;
+    else
+      tile.img_.addEventListener('load', this.imageLoaded_);
+  }
 };
 
 
@@ -72,7 +83,6 @@ nmlorg.Grid.prototype.addMouseHandler_ = function() {
       layer = 'fg';
     else
       layer = 'bg';
-    console.log('click layer', layer);
   }.bind(this);
 
   body.addEventListener('mousedown', function(e) {
@@ -114,9 +124,42 @@ nmlorg.Grid.prototype['attach'] = nmlorg.Grid.prototype.attach;
 
 
 /**
- * Redraw the foreground canvas.
+ * Redraw any dirty canvases.
  */
 nmlorg.Grid.prototype.draw = function() {
+  if (this.bgTile_ && (this.bgTile_ !== this.bgTileLoaded_) && this.bgTile_.img_.complete) {
+    this.drawBackground();
+    this.bgTileLoaded_ = this.bgTile_;
+  }
+
+  if (this.dirty_) {
+    this.drawForeground();
+    this.dirty_ = false;
+  }
+};
+nmlorg.Grid.prototype['draw'] = nmlorg.Grid.prototype.draw;
+
+
+/**
+ * Redraw the background canvas.
+ */
+nmlorg.Grid.prototype.drawBackground = function() {
+  console.log('Drawing background.');
+  var ctx = this.bgCtx_;
+  var tile = this.bgTile_;
+
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  for (var col = 0; col < this.width; col++)
+    for (var row = 0; row < this.height; row++)
+      tile.draw(ctx, col * this.cellWidth, row * this.cellHeight, this.cellWidth, this.cellHeight);
+};
+
+
+/**
+ * Redraw the foreground canvas.
+ */
+nmlorg.Grid.prototype.drawForeground = function() {
+  console.log('Drawing foreground.');
   var ctx = this.fgCtx_;
 
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -135,7 +178,6 @@ nmlorg.Grid.prototype.draw = function() {
     }
   }
 };
-nmlorg.Grid.prototype['draw'] = nmlorg.Grid.prototype.draw;
 
 
 /**
@@ -179,12 +221,7 @@ nmlorg.Grid.prototype.makeCanvasContext = function() {
  * @param {nmlorg.Tile} tile The tile to draw.
  */
 nmlorg.Grid.prototype.setBackground = function(tile) {
-  var ctx = this.bgCtx_;
-
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  for (var col = 0; col < this.width; col++)
-    for (var row = 0; row < this.height; row++)
-      tile.draw(ctx, col * this.cellWidth, row * this.cellHeight, this.cellWidth, this.cellHeight);
+  this.bgTile_ = tile;
 };
 nmlorg.Grid.prototype['setBackground'] = nmlorg.Grid.prototype.setBackground;
 
@@ -217,7 +254,8 @@ nmlorg.Grid.prototype.setGrid = function() {
 nmlorg.Grid.prototype.setForeground = function(col, row, tile) {
   var offset = row * this.width + col;
 
-  this.cells_[offset] = [...arguments].slice(2);
+  this.cells_[offset] = [];
+  this.addForeground(...arguments);
 };
 nmlorg.Grid.prototype['setForeground'] = nmlorg.Grid.prototype.setForeground;
 
