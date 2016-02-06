@@ -15,17 +15,13 @@ nmlorg.Grid = function(width, height) {
   this.cellWidth = this.cellHeight = 32;
   this.width = width;
   this.height = height;
-  this.bgCtx_ = this.makeCanvasContext();
-  this.gridCtx_ = this.makeCanvasContext();
-  this.gridCtx_.canvas.classList.add('while-editing');
-  this.setGrid();
-  this.fgCtx_ = this.makeCanvasContext();
-  this.uiCtx_ = this.makeCanvasContext();
-  this.cells_ = {};
+  this.bg_ = new nmlorg.Layer(this);
+  this.grid_ = new nmlorg.Layer(this);
+  this.grid_.ctx_.canvas.classList.add('while-editing');
+  this.grid_.setGrid();
+  this.fg_ = new nmlorg.Layer(this);
+  this.ui_ = new nmlorg.Layer(this);
   this.addMouseHandler_();
-  this.imageLoaded_ = function() {
-    this.dirty_ = true;
-  }.bind(this);
 };
 nmlorg['Grid'] = nmlorg.Grid;
 
@@ -37,19 +33,7 @@ nmlorg['Grid'] = nmlorg.Grid;
  * @param {...nmlorg.Tile} tile The tile or tiles to add.
  */
 nmlorg.Grid.prototype.addForeground = function(col, row, tile) {
-  var offset = row * this.width + col;
-
-  var cell = this.cells_[offset];
-  if (!cell)
-    cell = this.cells_[offset] = [];
-  for (var i = 2; i < arguments.length; i++) {
-    var tile = arguments[i];
-    cell.push(tile);
-    if (tile.img_.complete)
-      this.dirty_ = true;
-    else
-      tile.img_.addEventListener('load', this.imageLoaded_);
-  }
+  return this.fg_.addForeground(...arguments);
 };
 
 
@@ -76,10 +60,10 @@ nmlorg.Grid.prototype.addMouseHandler_ = function() {
     body.classList.add('editing');
     lastCol = lastRow = -1;
     var pos = this.getPositionFromEvent_(e);
-    var x = pos[0] * this.uiCtx_.canvas.width, y = pos[1] * this.uiCtx_.canvas.height;
-    if (this.uiCtx_.getImageData(x, y, 1, 1).data[3] > 10)
+    var x = pos[0] * this.ui_.ctx_.canvas.width, y = pos[1] * this.ui_.ctx_.canvas.height;
+    if (this.ui_.ctx_.getImageData(x, y, 1, 1).data[3] > 10)
       layer = 'ui';
-    else if (this.fgCtx_.getImageData(x, y, 1, 1).data[3] > 10)
+    else if (this.fg_.ctx_.getImageData(x, y, 1, 1).data[3] > 10)
       layer = 'fg';
     else
       layer = 'bg';
@@ -127,57 +111,12 @@ nmlorg.Grid.prototype['attach'] = nmlorg.Grid.prototype.attach;
  * Redraw any dirty canvases.
  */
 nmlorg.Grid.prototype.draw = function() {
-  if (this.bgTile_ && (this.bgTile_ !== this.bgTileLoaded_) && this.bgTile_.img_.complete) {
-    this.drawBackground();
-    this.bgTileLoaded_ = this.bgTile_;
-  }
-
-  if (this.dirty_) {
-    this.drawForeground();
-    this.dirty_ = false;
-  }
+  this.bg_.draw();
+  this.grid_.draw();
+  this.fg_.draw();
+  this.ui_.draw();
 };
 nmlorg.Grid.prototype['draw'] = nmlorg.Grid.prototype.draw;
-
-
-/**
- * Redraw the background canvas.
- */
-nmlorg.Grid.prototype.drawBackground = function() {
-  console.log('Drawing background.');
-  var ctx = this.bgCtx_;
-  var tile = this.bgTile_;
-
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  for (var col = 0; col < this.width; col++)
-    for (var row = 0; row < this.height; row++)
-      tile.draw(ctx, col * this.cellWidth, row * this.cellHeight, this.cellWidth, this.cellHeight);
-};
-
-
-/**
- * Redraw the foreground canvas.
- */
-nmlorg.Grid.prototype.drawForeground = function() {
-  console.log('Drawing foreground.');
-  var ctx = this.fgCtx_;
-
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  for (var col = 0; col < this.width; col++) {
-    for (var row = 0; row < this.height; row++) {
-      var tiles = this.getForeground(col, row);
-      if (tiles) {
-        var subCells = tiles.length + 3;
-        for (var i = 0; i < tiles.length; i++) {
-          var tile = tiles[i];
-          tile.draw(
-              ctx, (col + i / subCells) * this.cellWidth, (row + i / subCells) * this.cellHeight,
-              this.cellWidth * 4 / subCells, this.cellHeight * 4 / subCells);
-        }
-      }
-    }
-  }
-};
 
 
 /**
@@ -187,9 +126,7 @@ nmlorg.Grid.prototype.drawForeground = function() {
  * @returns {?Array.<nmlorg.Tile>}
  */
 nmlorg.Grid.prototype.getForeground = function(col, row) {
-  var offset = row * this.width + col;
-
-  return this.cells_[offset];
+  return this.fg_.getForeground(col, row);
 };
 
 
@@ -221,28 +158,11 @@ nmlorg.Grid.prototype.makeCanvasContext = function() {
  * @param {nmlorg.Tile} tile The tile to draw.
  */
 nmlorg.Grid.prototype.setBackground = function(tile) {
-  this.bgTile_ = tile;
+  for (var col = 0; col < this.width; col++)
+    for (var row = 0; row < this.height; row++)
+      this.bg_.setForeground(col, row, tile);
 };
 nmlorg.Grid.prototype['setBackground'] = nmlorg.Grid.prototype.setBackground;
-
-
-/**
- * Redraw the editing grid layer.
- */
-nmlorg.Grid.prototype.setGrid = function() {
-  var ctx = this.gridCtx_;
-
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  for (var col = 0; col < this.width; col++) {
-    for (var row = 0; row < this.height; row++) {
-      if ((col + row) % 2)
-        ctx.fillStyle = 'rgba(0, 0, 0, .1)';
-      else
-        ctx.fillStyle = 'rgba(255, 255, 255, .1)';
-      ctx.fillRect(col * this.cellWidth, row * this.cellHeight, this.cellWidth, this.cellHeight);
-    }
-  }
-};
 
 
 /**
@@ -252,10 +172,7 @@ nmlorg.Grid.prototype.setGrid = function() {
  * @param {...nmlorg.Tile} tile The tile or tiles to add.
  */
 nmlorg.Grid.prototype.setForeground = function(col, row, tile) {
-  var offset = row * this.width + col;
-
-  this.cells_[offset] = [];
-  this.addForeground(...arguments);
+  return this.fg_.setForeground(...arguments);
 };
 nmlorg.Grid.prototype['setForeground'] = nmlorg.Grid.prototype.setForeground;
 
