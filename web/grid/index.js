@@ -5,8 +5,9 @@ window.addEventListener('load', function(e) {
   var grid = new nmlorg.Grid(20, 10).attach(document.body);
   var img = document.createElement('img');
   img.addEventListener('load', function(e) {
-    var grass = new nmlorg.Tile(img, 10 * 32, 20 * 32, 32, 32);
-    var trash = new nmlorg.Tile(img, 26 * 32, 27 * 32, 32, 32);
+    var sheet = new nmlorg.Sheet(img, 32, 32);
+    var grass = sheet.getTile(10, 20);
+    var trash = sheet.getTile(26, 27);
 
     grid.setBackground(grass);
     grid.setForeground(1, 1, trash);
