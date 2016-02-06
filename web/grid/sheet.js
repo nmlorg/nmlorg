@@ -12,8 +12,8 @@ var nmlorg = window['nmlorg'] = window['nmlorg'] || {};
  */
 nmlorg.Sheet = function(img, width, height) {
   this.img_ = img;
-  this.w_ = width || (img.naturalWidth - this.x_);
-  this.h_ = height || (img.naturalHeight - this.y_);
+  this.w_ = width || img.naturalWidth;
+  this.h_ = height || img.naturalHeight;
 };
 nmlorg['Sheet'] = nmlorg.Sheet;
 

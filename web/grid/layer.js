@@ -31,7 +31,7 @@ nmlorg.Layer.prototype.addForeground = function(col, row, tile) {
   if (!cell)
     cell = this.cells_[offset] = [];
   for (var i = 2; i < arguments.length; i++) {
-    var tile = arguments[i];
+    tile = arguments[i];
     cell.push(tile);
     if (tile.img_.complete)
       this.dirty_ = true;
