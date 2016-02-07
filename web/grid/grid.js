@@ -158,9 +158,7 @@ nmlorg.Grid.prototype.makeCanvasContext = function() {
  * @param {nmlorg.Tile} tile The tile to draw.
  */
 nmlorg.Grid.prototype.setBackground = function(tile) {
-  for (var col = 0; col < this.width; col++)
-    for (var row = 0; row < this.height; row++)
-      this.bg_.setForeground(col, row, tile);
+  this.bg_.setBackground(tile);
 };
 nmlorg.Grid.prototype['setBackground'] = nmlorg.Grid.prototype.setBackground;
 

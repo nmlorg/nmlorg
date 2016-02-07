@@ -33,10 +33,7 @@ nmlorg.Layer.prototype.addForeground = function(col, row, tile) {
   for (var i = 2; i < arguments.length; i++) {
     tile = arguments[i];
     cell.push(tile);
-    if (tile.img_.complete)
-      this.dirty_ = true;
-    else
-      tile.img_.addEventListener('load', this.imageLoaded_);
+    this.watchNewTile(tile);
   }
 };
 
@@ -59,10 +56,14 @@ nmlorg.Layer.prototype.draw = function() {
 nmlorg.Layer.prototype.draw_ = function() {
   console.log('Drawing layer.');
   var ctx = this.ctx_;
+  var bgTile = (this.bgTile_ && this.bgTile_.img_.complete) ? this.bgTile_ : null;
 
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   for (var col = 0; col < this.grid_.width; col++) {
     for (var row = 0; row < this.grid_.height; row++) {
+      if (bgTile)
+        bgTile.draw(ctx, col * this.grid_.cellWidth, row * this.grid_.cellHeight,
+                    this.grid_.cellWidth, this.grid_.cellHeight);
       var tiles = this.getForeground(col, row);
       if (tiles) {
         var subCells = tiles.length + 3;
@@ -89,6 +90,16 @@ nmlorg.Layer.prototype.getForeground = function(col, row) {
   var offset = row * this.grid_.width + col;
 
   return this.cells_[offset];
+};
+
+
+/**
+ * Redraw the background layer with the given tile in all cells.
+ * @param {nmlorg.Tile} tile The tile to draw.
+ */
+nmlorg.Layer.prototype.setBackground = function(tile) {
+  this.bgTile_ = tile;
+  this.watchNewTile(tile);
 };
 
 
@@ -123,6 +134,19 @@ nmlorg.Layer.prototype.setForeground = function(col, row, tile) {
 
   this.cells_[offset] = [];
   this.addForeground(...arguments);
+};
+
+
+/**
+ * Mark the layer as dirty (needing to be redrawn) immediately if the given tile is loaded, or
+ * asynchronously as soon as the tile loads.
+ * @param {nmlorg.Tile} tile The tile to watch.
+ */
+nmlorg.Layer.prototype.watchNewTile = function(tile) {
+  if (tile.img_.complete)
+    this.dirty_ = true;
+  else
+    tile.img_.addEventListener('load', this.imageLoaded_);
 };
 
 })();
