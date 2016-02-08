@@ -31,7 +31,8 @@ nmlorg['Tile'] = nmlorg.Tile;
  * @param {number=} h The height of the area in which to draw the tile.
  */
 nmlorg.Tile.prototype.draw = function(ctx, x, y, w, h) {
-  ctx.drawImage(this.img_, this.x_, this.y_, this.w_, this.h_, x, y, w || this.w_, h || this.h_);
+  ctx.drawImage(this.img_, this.x_, this.y_, this.w_, this.h_, Math.round(x), Math.round(y),
+                Math.round(w || this.w_), Math.round(h || this.h_));
 };
 nmlorg.Tile.prototype['draw'] = nmlorg.Tile.prototype.draw;
 
