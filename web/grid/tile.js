@@ -22,6 +22,18 @@ nmlorg.Tile = function(img, x, y, width, height) {
 nmlorg['Tile'] = nmlorg.Tile;
 
 
+nmlorg.Tile.prototype.addEventListener = function() {
+  return this.img_.addEventListener(...arguments);
+};
+
+
+Object.defineProperty(nmlorg.Tile.prototype, 'complete', {
+    'get': function() {
+      return this.img_.complete;
+    },
+});
+
+
 /**
  * Draw the tile on the given canvas context, optionally resizing it.
  * @param {CanvasRenderingContext2D} ctx The canvas context (canvas.getContext('2d')).

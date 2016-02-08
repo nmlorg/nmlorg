@@ -14,6 +14,8 @@ window.addEventListener('load', function(e) {
   var ladder = sheet.getTile(6, 4);
   var plant = sheet.getTile(14, 15);
   var trash = sheet.getTile(26, 27);
+  var silly = new nmlorg.AnimatedTile(3000, gremlin, trash);
+  var sillier = new nmlorg.AnimatedTile(2000, trash, plant, gremlin, ladder);
 
   grid.setBackground(grass);
   grid.setForeground(1, 1, trash);
@@ -26,6 +28,8 @@ window.addEventListener('load', function(e) {
   grid.setForeground(4, 2, ladder, trash);
   grid.setForeground(1, 3, gremlin);
   grid.setForeground(2, 3, plant);
+  grid.setForeground(3, 3, silly);
+  grid.setForeground(4, 3, sillier);
 
   window.requestAnimationFrame(function anim() {
     grid.draw();

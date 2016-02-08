@@ -11,6 +11,7 @@ nmlorg.Layer = function(grid) {
   this.grid_ = grid;
   this.ctx_ = grid.makeCanvasContext();
   this.dirty_ = false;
+  this.nextAnim_ = 0;
   this.cells_ = {};
   this.imageLoaded_ = function() {
     this.dirty_ = true;
@@ -42,9 +43,10 @@ nmlorg.Layer.prototype.addForeground = function(col, row, tile) {
  * Redraw any dirty canvases.
  */
 nmlorg.Layer.prototype.draw = function() {
-  if (this.dirty_) {
-    this.draw_();
+  if (this.dirty_ || (this.nextAnim_ && (this.nextAnim_ <= Date.now()))) {
     this.dirty_ = false;
+    this.nextAnim_ = 0;
+    this.draw_();
   }
 };
 
@@ -56,7 +58,8 @@ nmlorg.Layer.prototype.draw = function() {
 nmlorg.Layer.prototype.draw_ = function() {
   console.log('Drawing layer.');
   var ctx = this.ctx_;
-  var bgTile = (this.bgTile_ && this.bgTile_.img_.complete) ? this.bgTile_ : null;
+  var bgTile = (this.bgTile_ && this.bgTile_.complete) ? this.bgTile_ : null;
+  var now = Date.now();
 
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   for (var col = 0; col < this.grid_.width; col++) {
@@ -73,6 +76,11 @@ nmlorg.Layer.prototype.draw_ = function() {
               ctx, (col + i / subCells) * this.grid_.cellWidth,
               (row + i / subCells) * this.grid_.cellHeight, this.grid_.cellWidth * 4 / subCells,
               this.grid_.cellHeight * 4 / subCells);
+          if (tile.animRate) {
+            var nextAnim = now + tile.animRate - (now % tile.animRate);
+            if ((this.nextAnim_ < now) || (nextAnim < this.nextAnim_))
+              this.nextAnim_ = nextAnim;
+          }
         }
       }
     }
@@ -143,10 +151,10 @@ nmlorg.Layer.prototype.setForeground = function(col, row, tile) {
  * @param {nmlorg.Tile} tile The tile to watch.
  */
 nmlorg.Layer.prototype.watchNewTile = function(tile) {
-  if (tile.img_.complete)
+  if (tile.complete)
     this.dirty_ = true;
   else
-    tile.img_.addEventListener('load', this.imageLoaded_);
+    tile.addEventListener('load', this.imageLoaded_);
 };
 
 })();
