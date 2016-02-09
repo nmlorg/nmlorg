@@ -43,6 +43,17 @@ Object.defineProperty(nmlorg.Tile.prototype, 'complete', {
  * @param {number=} h The height of the area in which to draw the tile.
  */
 nmlorg.Tile.prototype.draw = function(ctx, x, y, w, h) {
+  var w1 = this.w_ * h / this.h_;
+
+  if (w1 <= w) {
+    x += (w - w1) / 2;
+    w = w1;
+  } else {
+    var h1 = this.h_ * w / this.w_;
+    y += (h - h1) / 2;
+    h = h1;
+  }
+
   ctx.drawImage(this.img_, this.x_, this.y_, this.w_, this.h_, Math.round(x), Math.round(y),
                 Math.round(w || this.w_), Math.round(h || this.h_));
 };
