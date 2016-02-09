@@ -6,18 +6,14 @@ var nmlorg = window['nmlorg'] = window['nmlorg'] || {};
 
 window.addEventListener('load', function(e) {
   var grid = new nmlorg.Grid(20, 10).attach(document.body);
-  var img = document.createElement('img');
-  img.src = 'tmp/hyptosis_tile-art-batch-1.png';
-  var sheet = new nmlorg.Sheet(img, 32, 32);
+  var sheet = new nmlorg.Sheet('tmp/hyptosis_tile-art-batch-1.png', 32, 32);
   var grass = sheet.getTile(10, 20);
   var gremlin = sheet.getTile(1, 26);
   var ladder = sheet.getTile(6, 4);
   var plant = sheet.getTile(14, 15);
   var trash = sheet.getTile(26, 27);
   var silly = new nmlorg.AnimatedTile(1000, trash, ladder, gremlin, plant);
-  img = document.createElement('img');
-  img.src = 'tmp/BombExploding.png';
-  sheet = new nmlorg.Sheet(img, 32, 64);
+  sheet = new nmlorg.Sheet('tmp/BombExploding.png', 32, 64);
   var explosion = new nmlorg.AnimatedTile(
       1000 / 10, sheet.getTile(0, 0), sheet.getTile(1, 0), sheet.getTile(2, 0), sheet.getTile(3, 0),
       sheet.getTile(4, 0), sheet.getTile(5, 0), sheet.getTile(6, 0), sheet.getTile(7, 0),

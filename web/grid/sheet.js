@@ -6,14 +6,18 @@ var nmlorg = window['nmlorg'] = window['nmlorg'] || {};
 
 /**
  * @constructor
- * @param {HTMLImageElement} img An <img> or new Image() containing the tile.
- * @param {number} [width] The width of each tile.
- * @param {number} [height] The height of each tile.
+ * @param {HTMLImageElement|string} img An <img> or new Image() containing the tile.
+ * @param {number} width The width of each tile.
+ * @param {number} height The height of each tile.
  */
 nmlorg.Sheet = function(img, width, height) {
-  this.img_ = img;
-  this.w_ = width || img.naturalWidth;
-  this.h_ = height || img.naturalHeight;
+  if ((img instanceof String) || (typeof img == 'string')) {
+    this.img_ = document.createElement('img');
+    this.img_.src = img;
+  } else
+    this.img_ = img;
+  this.w_ = width;
+  this.h_ = height;
 };
 nmlorg['Sheet'] = nmlorg.Sheet;
 
