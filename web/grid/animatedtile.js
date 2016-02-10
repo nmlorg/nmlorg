@@ -33,8 +33,8 @@ nmlorg.AnimatedTile.prototype.addEventListener = function(type, listener) {
 
 Object.defineProperty(nmlorg.AnimatedTile.prototype, 'complete', {
     'get': function() {
-      for (var tile of this.tiles_)
-        if (!tile.img_.complete)
+      for (var img of this.imgs_)
+        if (!img.complete)
           return false;
       return true;
     },

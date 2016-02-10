@@ -57,25 +57,24 @@ nmlorg.Layer.prototype.draw = function() {
  */
 nmlorg.Layer.prototype.draw_ = function() {
   console.log('Drawing layer.');
-  var ctx = this.ctx_;
+  var grid = this.grid_, ctx = this.ctx_;
   var bgTile = (this.bgTile_ && this.bgTile_.complete) ? this.bgTile_ : null;
   var now = Date.now();
 
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  for (var col = 0; col < this.grid_.width; col++) {
-    for (var row = 0; row < this.grid_.height; row++) {
+  for (var col = 0; col < grid.width; col++) {
+    for (var row = 0; row < grid.height; row++) {
       if (bgTile)
-        bgTile.draw(ctx, col * this.grid_.cellWidth, row * this.grid_.cellHeight,
-                    this.grid_.cellWidth, this.grid_.cellHeight);
+        bgTile.draw(ctx, col * grid.cellWidth, row * grid.cellHeight, grid.cellWidth,
+                    grid.cellHeight);
       var tiles = this.getForeground(col, row);
       if (tiles) {
         var subCells = tiles.length + 3;
         for (var i = 0; i < tiles.length; i++) {
           var tile = tiles[i];
           tile.draw(
-              ctx, (col + i / subCells) * this.grid_.cellWidth,
-              (row + i / subCells) * this.grid_.cellHeight, this.grid_.cellWidth * 4 / subCells,
-              this.grid_.cellHeight * 4 / subCells);
+              ctx, (col + i / subCells) * grid.cellWidth, (row + i / subCells) * grid.cellHeight,
+              grid.cellWidth * 4 / subCells, grid.cellHeight * 4 / subCells);
           if (tile.animRate) {
             var nextAnim = now + tile.animRate - (now % tile.animRate);
             if ((this.nextAnim_ < now) || (nextAnim < this.nextAnim_))
