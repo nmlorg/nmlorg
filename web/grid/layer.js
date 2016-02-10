@@ -20,21 +20,21 @@ nmlorg.Layer = function(grid) {
 
 
 /**
- * Add one or more tiles to the given cell.
+ * Add one or more items to the given cell.
  * @param {number} col The column (in cells).
  * @param {number} row The row (in cells).
- * @param {...nmlorg.Tile} tile The tile or tiles to add.
+ * @param {...nmlorg.Item} item The item or items to add.
  */
-nmlorg.Layer.prototype.addForeground = function(col, row, tile) {
+nmlorg.Layer.prototype.addForeground = function(col, row, item) {
   var offset = row * this.grid_.width + col;
 
   var cell = this.cells_[offset];
   if (!cell)
     cell = this.cells_[offset] = [];
   for (var i = 2; i < arguments.length; i++) {
-    tile = arguments[i];
-    cell.push(tile);
-    this.watchNewTile(tile);
+    item = arguments[i];
+    cell.push(item);
+    this.watchNewTile(item.tile);
   }
 };
 
@@ -56,7 +56,6 @@ nmlorg.Layer.prototype.draw = function() {
  * Redraw the foreground canvas.
  */
 nmlorg.Layer.prototype.draw_ = function() {
-  console.log('Drawing layer.');
   var grid = this.grid_, ctx = this.ctx_;
   var bgTile = (this.bgTile_ && this.bgTile_.complete) ? this.bgTile_ : null;
   var now = Date.now();
@@ -67,11 +66,11 @@ nmlorg.Layer.prototype.draw_ = function() {
       if (bgTile)
         bgTile.draw(ctx, col * grid.cellWidth, row * grid.cellHeight, grid.cellWidth,
                     grid.cellHeight);
-      var tiles = this.getForeground(col, row);
-      if (tiles) {
-        var subCells = tiles.length + 3;
-        for (var i = 0; i < tiles.length; i++) {
-          var tile = tiles[i];
+      var items = this.getForeground(col, row);
+      if (items) {
+        var subCells = items.length + 3;
+        for (var i = 0; i < items.length; i++) {
+          var tile = items[i].tile;
           tile.draw(
               ctx, (col + i / subCells) * grid.cellWidth, (row + i / subCells) * grid.cellHeight,
               grid.cellWidth * 4 / subCells, grid.cellHeight * 4 / subCells);
@@ -88,10 +87,10 @@ nmlorg.Layer.prototype.draw_ = function() {
 
 
 /**
- * Get the given foreground cell's tile stack.
+ * Get the given foreground cell's item stack.
  * @param {number} col The column (in cells).
  * @param {number} row The row (in cells).
- * @returns {?Array.<nmlorg.Tile>}
+ * @returns {?Array.<nmlorg.Item>}
  */
 nmlorg.Layer.prototype.getForeground = function(col, row) {
   var offset = row * this.grid_.width + col;
@@ -127,20 +126,6 @@ nmlorg.Layer.prototype.setGrid = function() {
                    this.grid_.cellHeight);
     }
   }
-};
-
-
-/**
- * Replace the given foreground cell with zero or more tiles.
- * @param {number} col The column (in cells).
- * @param {number} row The row (in cells).
- * @param {...nmlorg.Tile} tile The tile or tiles to add.
- */
-nmlorg.Layer.prototype.setForeground = function(col, row, tile) {
-  var offset = row * this.grid_.width + col;
-
-  this.cells_[offset] = [];
-  this.addForeground(...arguments);
 };
 
 

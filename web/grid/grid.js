@@ -27,12 +27,12 @@ nmlorg['Grid'] = nmlorg.Grid;
 
 
 /**
- * Add one or more tiles to the given foreground cell.
+ * Add one or more items to the given foreground cell.
  * @param {number} col The column (in cells).
  * @param {number} row The row (in cells).
- * @param {...nmlorg.Tile} tile The tile or tiles to add.
+ * @param {...nmlorg.Item} item The tile or tiles to add.
  */
-nmlorg.Grid.prototype.addForeground = function(col, row, tile) {
+nmlorg.Grid.prototype.addForeground = function(col, row, item) {
   return this.fg_.addForeground(...arguments);
 };
 
@@ -161,17 +161,5 @@ nmlorg.Grid.prototype.setBackground = function(tile) {
   this.bg_.setBackground(tile);
 };
 nmlorg.Grid.prototype['setBackground'] = nmlorg.Grid.prototype.setBackground;
-
-
-/**
- * Replace the given foreground cell with zero or more tiles.
- * @param {number} col The column (in cells).
- * @param {number} row The row (in cells).
- * @param {...nmlorg.Tile} tile The tile or tiles to add.
- */
-nmlorg.Grid.prototype.setForeground = function(col, row, tile) {
-  return this.fg_.setForeground(...arguments);
-};
-nmlorg.Grid.prototype['setForeground'] = nmlorg.Grid.prototype.setForeground;
 
 })();
