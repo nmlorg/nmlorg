@@ -44,15 +44,21 @@ nmlorg.Grid.prototype.addMouseHandler_ = function() {
   var onMouseMove = function(e) {
     var pos = this.getPositionFromEvent_(e);
     var col = Math.floor(this.width * pos[0]), row = Math.floor(this.height * pos[1]);
-    if ((col != lastCol) || (row != lastRow)) {
-      if (layer == 'fg') {
-        var cell = this.getForeground(lastCol, lastRow);
-        if (cell && cell.length)
-          this.addForeground(col, row, cell.pop());
-      }
+    if ((lastCol == -1) || (lastRow == -1)) {
       lastCol = col;
       lastRow = row;
-      this.draw();
+    } else if ((col != lastCol) || (row != lastRow)) {
+      if (layer == 'fg') {
+        var cell = this.getForeground(lastCol, lastRow);
+        if (cell && cell.length) {
+          var targetCell = this.getForeground(col, row);
+          if (!targetCell || !targetCell.length || (cell[0].stackable && targetCell[0].stackable)) {
+            this.addForeground(col, row, cell.pop());
+            lastCol = col;
+            lastRow = row;
+          }
+        }
+      }
     }
   }.bind(this);
 

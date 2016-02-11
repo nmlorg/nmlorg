@@ -10,6 +10,7 @@ var nmlorg = window['nmlorg'] = window['nmlorg'] || {};
  */
 nmlorg.Item = function(tile, opts) {
   this.tile = tile;
+  this.stackable = true;
   for (var k in opts)
     this[k] = opts[k];
 };

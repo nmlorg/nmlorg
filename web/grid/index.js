@@ -15,7 +15,7 @@ window.addEventListener('load', function(e) {
   var plantTile = sheet.getTile(14, 15);
   var plantItem = new nmlorg.Item(plantTile, {});
   var trashTile = sheet.getTile(26, 27);
-  var trashItem = new nmlorg.Item(trashTile, {});
+  var trashItem = new nmlorg.Item(trashTile, {stackable: false});
   var sillyTile = new nmlorg.AnimatedTile(1000, trashTile, ladderTile, gremlinTile, plantTile);
   var sillyItem = new nmlorg.Item(sillyTile, {});
   sheet = new nmlorg.Sheet('tmp/BombExploding.png', 32, 64);
@@ -27,14 +27,10 @@ window.addEventListener('load', function(e) {
   var explosionItem = new nmlorg.Item(explosionTile, {});
 
   grid.setBackground(grassTile);
-  grid.addForeground(1, 1, trashItem);
-  grid.addForeground(2, 1, trashItem, trashItem);
-  grid.addForeground(3, 1, trashItem, trashItem, trashItem);
-  grid.addForeground(4, 1, trashItem, ladderItem);
-  grid.addForeground(1, 2, ladderItem);
-  grid.addForeground(2, 2, ladderItem, ladderItem);
-  grid.addForeground(3, 2, ladderItem, ladderItem, ladderItem);
-  grid.addForeground(4, 2, ladderItem, trashItem);
+  grid.addForeground(1, 2, trashItem);
+  grid.addForeground(2, 2, ladderItem);
+  grid.addForeground(3, 2, ladderItem, ladderItem);
+  grid.addForeground(4, 2, ladderItem, ladderItem, ladderItem);
   grid.addForeground(1, 3, gremlinItem);
   grid.addForeground(2, 3, plantItem);
   grid.addForeground(3, 3, sillyItem);
