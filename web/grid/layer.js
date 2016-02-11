@@ -67,17 +67,26 @@ nmlorg.Layer.prototype.draw_ = function() {
         bgTile.draw(ctx, col * grid.cellWidth, row * grid.cellHeight, grid.cellWidth,
                     grid.cellHeight);
       var items = this.getForeground(col, row);
-      if (items) {
-        var subCells = items.length + 3;
-        for (var i = 0; i < items.length; i++) {
-          var tile = items[i].tile;
-          tile.draw(
-              ctx, (col + i / subCells) * grid.cellWidth, (row + i / subCells) * grid.cellHeight,
-              grid.cellWidth * 4 / subCells, grid.cellHeight * 4 / subCells);
-          if (tile.animRate) {
-            var nextAnim = now + tile.animRate - (now % tile.animRate);
-            if ((this.nextAnim_ < now) || (nextAnim < this.nextAnim_))
-              this.nextAnim_ = nextAnim;
+      if (items && items.length) {
+        for (var i = 1; i < items.length; i++)
+          if (items[i] !== items[0])
+            break;
+        if ((i > 1) && (i == items.length)) {
+          items[0].tile.draw(
+              ctx, col * grid.cellWidth, row * grid.cellHeight, grid.cellWidth, grid.cellHeight);
+          ctx.fillText(i, col * grid.cellWidth, (row + .25) * grid.cellHeight);
+        } else {
+          var subCells = items.length + 3;
+          for (var i = 0; i < items.length; i++) {
+            var tile = items[i].tile;
+            tile.draw(
+                ctx, (col + i / subCells) * grid.cellWidth, (row + i / subCells) * grid.cellHeight,
+                grid.cellWidth * 4 / subCells, grid.cellHeight * 4 / subCells);
+            if (tile.animRate) {
+              var nextAnim = now + tile.animRate - (now % tile.animRate);
+              if ((this.nextAnim_ < now) || (nextAnim < this.nextAnim_))
+                this.nextAnim_ = nextAnim;
+            }
           }
         }
       }
