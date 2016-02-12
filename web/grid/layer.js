@@ -74,7 +74,7 @@ nmlorg.Layer.prototype.draw_ = function() {
         if ((i > 1) && (i == items.length)) {
           items[0].tile.draw(
               ctx, col * grid.cellWidth, row * grid.cellHeight, grid.cellWidth, grid.cellHeight);
-          ctx.fillText(i, col * grid.cellWidth, (row + .25) * grid.cellHeight);
+          ctx.fillText(i, col * grid.cellWidth, (row + 1) * grid.cellHeight);
         } else {
           var subCells = items.length + 3;
           for (var i = 0; i < items.length; i++) {
