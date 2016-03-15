@@ -22,7 +22,10 @@ div.viewport > div.canvas {
 }
 
 div.viewport > div.escaped {
+  align-items: center;
   background-color: lightgrey;
+  display: flex;
+  justify-content: center;
   opacity: .8;
 }
 
@@ -35,8 +38,6 @@ div.viewport > div.escaped > div.box {
   border: 2vmin solid black;
   box-sizing: border-box;
   height: 100vmin;
-  margin-left: auto;
-  margin-right: auto;
   padding: 5vmin;
   width: 100vmin;
 }
