@@ -1,0 +1,42 @@
+html, body {
+  height: 100%;
+  font-size: 10vmin;
+  margin: 0;
+}
+
+div.viewport {
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+
+div.viewport > div.canvas,
+div.viewport > div.escaped {
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+
+div.viewport > div.canvas {
+  background-color: lightblue;
+}
+
+div.viewport > div.escaped {
+  background-color: lightgrey;
+  opacity: .8;
+}
+
+div.viewport > div.escaped.hidden {
+  display: none;
+}
+
+div.viewport > div.escaped > div.box {
+  background-color: grey;
+  border: 2vmin solid black;
+  box-sizing: border-box;
+  height: 100vmin;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 5vmin;
+  width: 100vmin;
+}
