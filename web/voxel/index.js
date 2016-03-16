@@ -14,9 +14,12 @@ window.addEventListener('load', function(e) {
   var viewportDiv = document.createElement('div');
   document.body.appendChild(viewportDiv);
   viewportDiv.classList.add('viewport');
+  var canvas = document.createElement('canvas');
+  viewportDiv.appendChild(canvas);
+  var gl = new nmlorg.GL(canvas);
   var canvasDiv = document.createElement('div');
   viewportDiv.appendChild(canvasDiv);
-  canvasDiv.classList.add('canvas');
+  canvasDiv.classList.add('canvas-overlay');
   var escapedDiv = document.createElement('div');
   viewportDiv.appendChild(escapedDiv);
   escapedDiv.classList.add('escaped');
@@ -61,7 +64,8 @@ window.addEventListener('load', function(e) {
     if (keyboard.has(e.keyCode))
       return;
     keyboard.add(e.keyCode);
-    console.log('keydown', e.keyCode, e.keyCode & 0x7f, String.fromCharCode(e.keyCode & 0x7f));
+    console.log('keydown', e.keyCode, e.keyCode & 0x7f,
+                JSON.stringify(String.fromCharCode(e.keyCode & 0x7f)));
     switch (e.keyCode) {
       case 32:  // space
         jumpSpeed = jumpPower;
@@ -132,6 +136,9 @@ window.addEventListener('load', function(e) {
         'Pitch: ' + round(rad2deg(pitch)) + '&deg;<br>' +
         'Roll: ' + round(rad2deg(roll)) + '&deg;<br>' +
         'Jump: ' + round(jumpSpeed, 1);
+
+    gl.clear();
+
     window.requestAnimationFrame(anim);
   });
 });

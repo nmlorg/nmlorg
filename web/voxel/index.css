@@ -10,16 +10,17 @@ div.viewport {
   width: 100%;
 }
 
-div.viewport > div.canvas,
+div.viewport > canvas,
+div.viewport > div.canvas-overlay,
 div.viewport > div.escaped {
   height: 100%;
   position: absolute;
   width: 100%;
 }
 
-div.viewport > div.canvas {
-  background-color: lightblue;
+div.viewport > div.canvas-overlay {
   font-size: 2vmin;
+  opacity: .5;
 }
 
 div.viewport > div.escaped {
