@@ -16,7 +16,7 @@ window.addEventListener('load', function(e) {
   viewportDiv.classList.add('viewport');
   var canvas = document.createElement('canvas');
   viewportDiv.appendChild(canvas);
-  var gl = new nmlorg.GL(canvas);
+  var context = new nmlorg.gl.Context(canvas);
   var canvasDiv = document.createElement('div');
   viewportDiv.appendChild(canvasDiv);
   canvasDiv.classList.add('canvas-overlay');
@@ -84,6 +84,19 @@ window.addEventListener('load', function(e) {
     keyboard.delete(e.keyCode);
   });
 
+  context.setCamera([1, 0, 0, 0,
+                     0, 1, 0, 0,
+                     0, 0, 1, 0,
+                     0, 0, 0, 1]);
+
+  var triangle = context.makeShape(
+      [-5, -5, 0,
+       5, -5, 0,
+       0, 5, 0],
+      [1, 0, 0, 1,
+       0, 1, 0, 1,
+       0, 0, 1, 1]);
+
   var prev = 0;
   window.requestAnimationFrame(function anim(now) {
     var dt = prev && (now - prev) / 1000;
@@ -137,7 +150,11 @@ window.addEventListener('load', function(e) {
         'Roll: ' + round(rad2deg(roll)) + '&deg;<br>' +
         'Jump: ' + round(jumpSpeed, 1);
 
-    gl.clear();
+    context.clear();
+    triangle.draw([1, 0, 0, 0,
+                   0, 1, 0, 0,
+                   0, 0, 1, 0,
+                   0, 0, 0, 1]);
 
     window.requestAnimationFrame(anim);
   });
