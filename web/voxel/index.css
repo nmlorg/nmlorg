@@ -1,6 +1,6 @@
 html, body {
   height: 100%;
-  font-size: 10vmin;
+  font-size: 0;
   margin: 0;
 }
 
@@ -19,12 +19,14 @@ div.viewport > div.escaped {
 
 div.viewport > div.canvas {
   background-color: lightblue;
+  font-size: 2vmin;
 }
 
 div.viewport > div.escaped {
   align-items: center;
   background-color: lightgrey;
   display: flex;
+  font-size: 10vmin;
   justify-content: center;
   opacity: .8;
 }
