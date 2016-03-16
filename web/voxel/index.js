@@ -4,12 +4,10 @@
 var nmlorg = window['nmlorg'] = window['nmlorg'] || {};
 
 
-var backPerSec = 2;
 var fallRate = 25;
 var forwardPerSec = 5;
 var jumpPower = 10;
 var mouseSensitivity = .25;
-var strafePerSec = 3;
 
 
 window.addEventListener('load', function(e) {
@@ -87,20 +85,38 @@ window.addEventListener('load', function(e) {
     var dt = prev && (now - prev) / 1000;
     prev = now;
 
-    if (keyboard.has(65) && !keyboard.has(68)) {  // A
-      pos[0] += Math.sin(yaw - Math.PI / 2) * strafePerSec * dt;
-      pos[2] -= Math.cos(yaw - Math.PI / 2) * strafePerSec * dt;
-    } else if (keyboard.has(68) && !keyboard.has(65)) {  // D
-      pos[0] += Math.sin(yaw + Math.PI / 2) * strafePerSec * dt;
-      pos[2] -= Math.cos(yaw + Math.PI / 2) * strafePerSec * dt;
-    }
+    var kA = keyboard.has(65);
+    var kD = keyboard.has(68);
+    var kS = keyboard.has(83);
+    var kW = keyboard.has(87);
 
-    if (keyboard.has(83) && !keyboard.has(87)) {  // S
-      pos[0] -= Math.sin(yaw) * backPerSec * dt;
-      pos[2] += Math.cos(yaw) * backPerSec * dt;
-    } else if (keyboard.has(87) && !keyboard.has(83)) {  // W
-      pos[0] += Math.sin(yaw) * forwardPerSec * dt;
-      pos[2] -= Math.cos(yaw) * forwardPerSec * dt;
+    if (kA && kD)
+      kA = kD = false;
+    if (kS && kW)
+      kS = kW = false;
+
+    if (kA || kD || kS || kW) {
+      var moveDir = yaw;
+
+      if (kW) {
+        if (kA)
+          moveDir -= deg2rad(45);
+        else if (kD)
+          moveDir += deg2rad(45);
+      } else if (kS) {
+        if (kA)
+          moveDir -= deg2rad(90 + 45);
+        else if (kD)
+          moveDir += deg2rad(90 + 45);
+        else
+          moveDir += deg2rad(180);
+      } else if (kA)
+        moveDir -= deg2rad(90);
+      else if (kD)
+        moveDir += deg2rad(90);
+
+      pos[0] += Math.sin(moveDir) * forwardPerSec * dt;
+      pos[2] -= Math.cos(moveDir) * forwardPerSec * dt;
     }
 
     pos[1] += jumpSpeed * dt;
