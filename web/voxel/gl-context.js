@@ -16,8 +16,10 @@ nmlorg.gl.Context = function(canvas) {
   gl.depthFunc(gl.LEQUAL);
 
   var shader = gl.createProgram();
-  gl.attachShader(shader, this.compileShader(gl.VERTEX_SHADER, VERTEX_SHADER_SOURCE));
-  gl.attachShader(shader, this.compileShader(gl.FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE));
+  gl.attachShader(
+      shader, nmlorg.gl.compileShader(gl, gl.VERTEX_SHADER, nmlorg.gl.VERTEX_SHADER_SOURCE));
+  gl.attachShader(
+      shader, nmlorg.gl.compileShader(gl, gl.FRAGMENT_SHADER, nmlorg.gl.FRAGMENT_SHADER_SOURCE));
   gl.linkProgram(shader);
   if (!gl.getProgramParameter(shader, gl.LINK_STATUS))
     throw 'Error linking shader program.';
@@ -37,17 +39,6 @@ nmlorg.gl.Context.prototype.clear = function() {
   var gl = this.gl;
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-};
-
-
-nmlorg.gl.Context.prototype.compileShader = function(type, source) {
-  var gl = this.gl;
-  var shader = gl.createShader(type);
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
-    throw gl.getShaderInfoLog(shader);
-  return shader;
 };
 
 
@@ -79,27 +70,5 @@ nmlorg.gl.Context.prototype.setCamera = function(matrix) {
 
   gl.uniformMatrix4fv(this.cameraProjection, false, matrix);
 };
-
-
-var FRAGMENT_SHADER_SOURCE = '\
-varying lowp vec4 vColor;\
-\
-void main(void) {\
-  gl_FragColor = vColor;\
-}\
-';
-
-var VERTEX_SHADER_SOURCE = '\
-attribute vec3 vertexPosition;\
-attribute vec4 vertexColor;\
-uniform mat4 bufferPosition;\
-uniform mat4 cameraProjection;\
-varying lowp vec4 vColor;\
-\
-void main(void) {\
-  gl_Position = cameraProjection * bufferPosition * vec4(vertexPosition, 1.0);\
-  vColor = vertexColor;\
-}\
-';
 
 })();
