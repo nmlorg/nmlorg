@@ -4,9 +4,11 @@
 var nmlorg = window['nmlorg'] = window['nmlorg'] || {};
 
 
-var mouseSensitivity = .25;
-var forwardPerSec = 5;
 var backPerSec = 2;
+var fallRate = 25;
+var forwardPerSec = 5;
+var jumpPower = 10;
+var mouseSensitivity = .25;
 var strafePerSec = 3;
 
 
@@ -27,6 +29,7 @@ window.addEventListener('load', function(e) {
 
   var pos = [0, 0, 0];
   var yaw = 0, pitch = 0, roll = 0;
+  var jumpSpeed = 0;
 
   function mouseMove(e) {
     yaw += deg2rad(e.movementX * mouseSensitivity);
@@ -57,7 +60,15 @@ window.addEventListener('load', function(e) {
   var keyboard = new Set();
 
   document.addEventListener('keydown', function(e) {
+    if (keyboard.has(e.keyCode))
+      return;
     keyboard.add(e.keyCode);
+    console.log('keydown', e.keyCode, e.keyCode & 0x7f, String.fromCharCode(e.keyCode & 0x7f));
+    switch (e.keyCode) {
+      case 32:  // space
+        jumpSpeed = jumpPower;
+        break;
+    }
   });
 
   document.addEventListener('keyup', function(e) {
@@ -92,11 +103,19 @@ window.addEventListener('load', function(e) {
       pos[2] -= Math.cos(yaw) * forwardPerSec * dt;
     }
 
+    pos[1] += jumpSpeed * dt;
+    if (pos[1] <= 0) {
+      pos[1] = 0;
+      jumpSpeed = 0;
+    } else
+      jumpSpeed -= fallRate * dt;
+
     canvasDiv.innerHTML = 'Position: ' +
         JSON.stringify([round(pos[0], 1), round(pos[1], 1), round(pos[2], 1)]) + '<br>' +
         'Yaw: ' + round(rad2deg(yaw)) + '&deg;<br>' +
         'Pitch: ' + round(rad2deg(pitch)) + '&deg;<br>' +
-        'Roll: ' + round(rad2deg(roll)) + '&deg;';
+        'Roll: ' + round(rad2deg(roll)) + '&deg;<br>' +
+        'Jump: ' + round(jumpSpeed, 1);
     window.requestAnimationFrame(anim);
   });
 });
