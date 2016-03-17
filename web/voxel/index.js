@@ -84,15 +84,15 @@ window.addEventListener('load', function(e) {
     keyboard.delete(e.keyCode);
   });
 
-  context.setCameraProjection([.2, 0, 0, 0,
-                               0, .2, 0, 0,
-                               0, 0, -.0002, -1,
-                               0, 0, 0, 1]);
+  context.setCameraProjection([.72, 0, 0, 0,
+                               0, 2.4, 0, 0,
+                               0, 0, -1, -.2,
+                               0, 0, -1, 0]);
 
   var triangle = context.makeShape(
-      [-5, -5, 0,
-       5, -5, 0,
-       0, 5, 0],
+      [-5, 0, 0,
+       5, 0, 0,
+       0, 10, 0],
       [1, 0, 0, 1,
        0, 1, 0, 1,
        0, 0, 1, 1]);
@@ -158,7 +158,7 @@ window.addEventListener('load', function(e) {
     context.clear();
     triangle.draw([1, 0, 0, 0,
                    0, 1, 0, 0,
-                   0, 0, 1, 0,
+                   0, 0, 1, -10,
                    0, 0, 0, 1]);
 
     window.requestAnimationFrame(anim);
