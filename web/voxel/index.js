@@ -84,10 +84,7 @@ window.addEventListener('load', function(e) {
     keyboard.delete(e.keyCode);
   });
 
-  context.setCameraProjection([.72, 0, 0, 0,
-                               0, 2.4, 0, 0,
-                               0, 0, -1, -.2,
-                               0, 0, -1, 0]);
+  context.setCameraProjection(nmlorg.gl.makeFrustum(-1, 1, -1, 1, 1, 10000));
 
   var triangle = context.makeShape(
       [-5, 0, 0,
