@@ -31,6 +31,7 @@ nmlorg.gl.Context = function(canvas) {
   if (this.vertexColor != -1)
     gl.enableVertexAttribArray(this.vertexColor);
   this.bufferPosition = gl.getUniformLocation(shader, 'bufferPosition');
+  this.cameraPosition = gl.getUniformLocation(shader, 'cameraPosition');
   this.cameraProjection = gl.getUniformLocation(shader, 'cameraProjection');
 };
 
@@ -65,7 +66,14 @@ nmlorg.gl.Context.prototype.makeShape = function(positions, colors) {
 };
 
 
-nmlorg.gl.Context.prototype.setCamera = function(matrix) {
+nmlorg.gl.Context.prototype.setCameraPosition = function(matrix) {
+  var gl = this.gl;
+
+  gl.uniformMatrix4fv(this.cameraPosition, false, matrix);
+};
+
+
+nmlorg.gl.Context.prototype.setCameraProjection = function(matrix) {
   var gl = this.gl;
 
   gl.uniformMatrix4fv(this.cameraProjection, false, matrix);

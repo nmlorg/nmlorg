@@ -84,10 +84,10 @@ window.addEventListener('load', function(e) {
     keyboard.delete(e.keyCode);
   });
 
-  context.setCamera([1, 0, 0, 0,
-                     0, 1, 0, 0,
-                     0, 0, 1, 0,
-                     0, 0, 0, 1]);
+  context.setCameraProjection([.2, 0, 0, 0,
+                               0, .2, 0, 0,
+                               0, 0, -.0002, -1,
+                               0, 0, 0, 1]);
 
   var triangle = context.makeShape(
       [-5, -5, 0,
@@ -150,6 +150,10 @@ window.addEventListener('load', function(e) {
         'Roll: ' + round(rad2deg(roll)) + '&deg;<br>' +
         'Jump: ' + round(jumpSpeed, 1);
 
+    context.setCameraPosition([1, 0, 0, -pos[0],
+                               0, 1, 0, -pos[1],
+                               0, 0, 1, -pos[2],
+                               0, 0, 0, 1]);
     context.clear();
     triangle.draw([1, 0, 0, 0,
                    0, 1, 0, 0,
