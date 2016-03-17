@@ -43,8 +43,7 @@ nmlorg.Camera.prototype.push = function() {
 };
 
 
-nmlorg.Camera.prototype.rotateX = function(angle) {
-  var a = angle * Math.PI / 180;
+nmlorg.Camera.prototype.rotateX = function(a) {
   var ca = Math.cos(a), sa = Math.sin(a);
 
   this.multiplySet([1, 0, 0, 0,
@@ -54,8 +53,7 @@ nmlorg.Camera.prototype.rotateX = function(angle) {
 };
 
 
-nmlorg.Camera.prototype.rotateY = function(angle) {
-  var a = angle * Math.PI / 180;
+nmlorg.Camera.prototype.rotateY = function(a) {
   var ca = Math.cos(a), sa = Math.sin(a);
 
   this.multiplySet([ca, 0, sa, 0,
@@ -65,8 +63,7 @@ nmlorg.Camera.prototype.rotateY = function(angle) {
 };
 
 
-nmlorg.Camera.prototype.rotateZ = function(angle) {
-  var a = angle * Math.PI / 180;
+nmlorg.Camera.prototype.rotateZ = function(a) {
   var ca = Math.cos(a), sa = Math.sin(a);
 
   this.multiplySet([ca, -sa, 0, 0,

@@ -150,10 +150,11 @@ window.addEventListener('load', function(e) {
         'Roll: ' + round(rad2deg(roll)) + '&deg;<br>' +
         'Jump: ' + round(jumpSpeed, 1);
 
-    context.setCameraPosition([1, 0, 0, -pos[0],
-                               0, 1, 0, -pos[1],
-                               0, 0, 1, -pos[2],
-                               0, 0, 0, 1]);
+    var camera = new nmlorg.Camera()
+    camera.rotateX(-pitch);
+    camera.rotateY(yaw);
+    camera.translate(-pos[0], -pos[1], -pos[2]);
+    context.setCameraPosition(camera.getM_().m_);
     context.clear();
     triangle.draw([1, 0, 0, 0,
                    0, 1, 0, 0,
