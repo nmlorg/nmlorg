@@ -4,6 +4,7 @@
 var nmlorg = window['nmlorg'] = window['nmlorg'] || {};
 
 
+var cameraHeight = 2;
 var fallRate = 25;
 var forwardPerSec = 5;
 var jumpPower = 10;
@@ -86,13 +87,71 @@ window.addEventListener('load', function(e) {
 
   context.setCameraProjection(nmlorg.gl.makeFrustum(-1, 1, -1, 1, 1, 10000));
 
-  var triangle = context.makeShape(
-      [-5, 0, 0,
-       5, 0, 0,
-       0, 10, 0],
+  var block = context.makeShape(
+      [-.45, .95, -.45,
+       -.45, .95, .45,
+       0, .95, 0,
+
+       -.45, .95, .45,
+       .45, .95, .45,
+       0, .95, 0,
+
+       .45, .95, .45,
+       .45, .95, -.45,
+       0, .95, 0,
+
+       .45, .95, -.45,
+       -.45, .95, -.45,
+       0, .95, 0,
+
+       -.45, .05, -.45,
+       -.45, .05, .45,
+       0, .05, 0,
+
+       -.45, .05, .45,
+       .45, .05, .45,
+       0, .05, 0,
+
+       .45, .05, .45,
+       .45, .05, -.45,
+       0, .05, 0,
+
+       .45, .05, -.45,
+       -.45, .05, -.45,
+       0, .05, 0,
+      ],
       [1, 0, 0, 1,
-       0, 1, 0, 1,
-       0, 0, 1, 1]);
+       1, 0, 0, 1,
+       1, 0, 0, .3,
+
+       1, 0, 0, 1,
+       1, 0, 0, 1,
+       1, 0, 0, .3,
+
+       1, 0, 0, 1,
+       1, 0, 0, 1,
+       1, 0, 0, .3,
+
+       1, 0, 0, 1,
+       1, 0, 0, 1,
+       1, 0, 0, .3,
+
+       0, 0, 1, 1,
+       0, 0, 1, 1,
+       0, 0, 1, .3,
+
+       0, 0, 1, 1,
+       0, 0, 1, 1,
+       0, 0, 1, .3,
+
+       0, 0, 1, 1,
+       0, 0, 1, 1,
+       0, 0, 1, .3,
+
+       0, 0, 1, 1,
+       0, 0, 1, 1,
+       0, 0, 1, .3,
+      ]);
 
   var prev = 0;
   window.requestAnimationFrame(function anim(now) {
@@ -150,13 +209,16 @@ window.addEventListener('load', function(e) {
     var camera = new nmlorg.Camera()
     camera.rotateX(-pitch);
     camera.rotateY(yaw);
-    camera.translate(-pos[0], -pos[1], -pos[2]);
+    camera.translate(-pos[0], -pos[1] - cameraHeight, -pos[2]);
     context.setCameraPosition(camera.getM_().m_);
     context.clear();
-    triangle.draw([1, 0, 0, 0,
-                   0, 1, 0, 0,
-                   0, 0, 1, -10,
-                   0, 0, 0, 1]);
+    for (var y of [-1, 5])
+      for (var x = -20; x < 20; x++)
+        for (var z = -20; z < 20; z++)
+          block.draw([1, 0, 0, x,
+                      0, 1, 0, y,
+                      0, 0, 1, z,
+                      0, 0, 0, 1]);
 
     window.requestAnimationFrame(anim);
   });
