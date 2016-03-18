@@ -8,7 +8,36 @@ var nmlorg = window['nmlorg'] = window['nmlorg'] || {};
 nmlorg.gl = nmlorg.gl || {};
 
 
-nmlorg.gl.compileShader = function(gl, type, source) {
+nmlorg.gl.Shader = function(context, vertexShaderSource, fragmentShaderSource) {
+  this.context = context;
+  var gl = context.gl;
+  var program = this.program = gl.createProgram();
+  gl.attachShader(program, this.compile(gl.VERTEX_SHADER, vertexShaderSource));
+  gl.attachShader(program, this.compile(gl.FRAGMENT_SHADER, fragmentShaderSource));
+  gl.linkProgram(program);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS))
+    throw 'Error linking shader program.';
+  this.bind();
+  this.vertexPosition = gl.getAttribLocation(program, 'vertexPosition');
+  if (this.vertexPosition != -1)
+    gl.enableVertexAttribArray(this.vertexPosition);
+  this.vertexColor = gl.getAttribLocation(program, 'vertexColor');
+  if (this.vertexColor != -1)
+    gl.enableVertexAttribArray(this.vertexColor);
+  this.bufferPosition = gl.getUniformLocation(program, 'bufferPosition');
+  this.cameraPosition = gl.getUniformLocation(program, 'cameraPosition');
+  this.cameraProjection = gl.getUniformLocation(program, 'cameraProjection');
+};
+
+
+nmlorg.gl.Shader.prototype.bind = function() {
+  var gl = this.context.gl;
+  gl.useProgram(this.program);
+};
+
+
+nmlorg.gl.Shader.prototype.compile = function(type, source) {
+  var gl = this.context.gl;
   var shader = gl.createShader(type);
   gl.shaderSource(shader, source);
   gl.compileShader(shader);

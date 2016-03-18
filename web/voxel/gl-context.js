@@ -14,25 +14,8 @@ nmlorg.gl.Context = function(canvas) {
   gl.clearColor(1.0, 1.0, 1.0, 1.0);
   gl.enable(gl.DEPTH_TEST);
   gl.depthFunc(gl.LEQUAL);
-
-  var shader = gl.createProgram();
-  gl.attachShader(
-      shader, nmlorg.gl.compileShader(gl, gl.VERTEX_SHADER, nmlorg.gl.VERTEX_SHADER_SOURCE));
-  gl.attachShader(
-      shader, nmlorg.gl.compileShader(gl, gl.FRAGMENT_SHADER, nmlorg.gl.FRAGMENT_SHADER_SOURCE));
-  gl.linkProgram(shader);
-  if (!gl.getProgramParameter(shader, gl.LINK_STATUS))
-    throw 'Error linking shader program.';
-  gl.useProgram(shader);
-  this.vertexPosition = gl.getAttribLocation(shader, 'vertexPosition');
-  if (this.vertexPosition != -1)
-    gl.enableVertexAttribArray(this.vertexPosition);
-  this.vertexColor = gl.getAttribLocation(shader, 'vertexColor');
-  if (this.vertexColor != -1)
-    gl.enableVertexAttribArray(this.vertexColor);
-  this.bufferPosition = gl.getUniformLocation(shader, 'bufferPosition');
-  this.cameraPosition = gl.getUniformLocation(shader, 'cameraPosition');
-  this.cameraProjection = gl.getUniformLocation(shader, 'cameraProjection');
+  this.colorShader = new nmlorg.gl.Shader(
+      this, nmlorg.gl.VERTEX_SHADER_SOURCE, nmlorg.gl.FRAGMENT_SHADER_SOURCE);
 };
 
 
@@ -46,13 +29,13 @@ nmlorg.gl.Context.prototype.clear = function() {
 nmlorg.gl.Context.prototype.drawTriangles = function(position, numItems) {
   var gl = this.gl;
 
-  gl.uniformMatrix4fv(this.bufferPosition, false, position);
+  gl.uniformMatrix4fv(this.colorShader.bufferPosition, false, position);
   gl.drawArrays(gl.TRIANGLES, 0, numItems);
 };
 
 
 nmlorg.gl.Context.prototype.makeColorBuffer = function(vertices) {
-  return new nmlorg.gl.Buffer(this.gl, this.vertexColor, vertices, 4);
+  return new nmlorg.gl.Buffer(this.gl, this.colorShader.vertexColor, vertices, 4);
 };
 
 
@@ -62,7 +45,7 @@ nmlorg.gl.Context.prototype.makeFramebuffer = function() {
 
 
 nmlorg.gl.Context.prototype.makePositionBuffer = function(vertices) {
-  return new nmlorg.gl.Buffer(this.gl, this.vertexPosition, vertices, 3);
+  return new nmlorg.gl.Buffer(this.gl, this.colorShader.vertexPosition, vertices, 3);
 };
 
 
@@ -74,14 +57,14 @@ nmlorg.gl.Context.prototype.makeShape = function(positions, colors) {
 nmlorg.gl.Context.prototype.setCameraPosition = function(matrix) {
   var gl = this.gl;
 
-  gl.uniformMatrix4fv(this.cameraPosition, false, matrix);
+  gl.uniformMatrix4fv(this.colorShader.cameraPosition, false, matrix);
 };
 
 
 nmlorg.gl.Context.prototype.setCameraProjection = function(matrix) {
   var gl = this.gl;
 
-  gl.uniformMatrix4fv(this.cameraProjection, false, matrix);
+  gl.uniformMatrix4fv(this.colorShader.cameraProjection, false, matrix);
 };
 
 })();
