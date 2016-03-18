@@ -48,6 +48,7 @@ nmlorg.gl.Shader.prototype.compile = function(type, source) {
 
 nmlorg.gl.Shader.prototype.drawTriangles = function(position, numItems) {
   var gl = this.gl;
+  this.bind();
   gl.uniformMatrix4fv(this.bufferPosition, false, position);
   gl.drawArrays(gl.TRIANGLES, 0, numItems);
 };
@@ -75,17 +76,19 @@ nmlorg.gl.Shader.prototype.makeShape = function(positions, colors) {
 
 nmlorg.gl.Shader.prototype.setCameraPosition = function(matrix) {
   var gl = this.gl;
+  this.bind();
   gl.uniformMatrix4fv(this.cameraPosition, false, matrix);
 };
 
 
 nmlorg.gl.Shader.prototype.setCameraProjection = function(matrix) {
   var gl = this.gl;
+  this.bind();
   gl.uniformMatrix4fv(this.cameraProjection, false, matrix);
 };
 
 
-nmlorg.gl.FRAGMENT_SHADER_SOURCE = '\
+nmlorg.gl.COLOR_FRAGMENT_SHADER_SOURCE = '\
 varying lowp vec4 vColor;\
 \
 void main(void) {\
@@ -94,7 +97,7 @@ void main(void) {\
 ';
 
 
-nmlorg.gl.VERTEX_SHADER_SOURCE = '\
+nmlorg.gl.COLOR_VERTEX_SHADER_SOURCE = '\
 attribute vec3 vertexPosition;\
 attribute vec4 vertexColor;\
 uniform mat4 bufferPosition;\
@@ -105,6 +108,31 @@ varying lowp vec4 vColor;\
 void main(void) {\
   gl_Position = vec4(vertexPosition, 1.0) * bufferPosition * cameraPosition * cameraProjection;\
   vColor = vertexColor;\
+}\
+';
+
+
+nmlorg.gl.TEXTURE_FRAGMENT_SHADER_SOURCE = '\
+varying mediump vec2 vTextureCoord;\
+uniform sampler2D textureSampler;\
+\
+void main(void) {\
+  gl_FragColor = texture2D(textureSampler, vec2(vTextureCoord.s, vTextureCoord.t));\
+}\
+';
+
+
+nmlorg.gl.TEXTURE_VERTEX_SHADER_SOURCE = '\
+attribute vec3 vertexPosition;\
+attribute vec2 textureCoord;\
+uniform mat4 bufferPosition;\
+uniform mat4 cameraPosition;\
+uniform mat4 cameraProjection;\
+varying mediump vec2 vTextureCoord;\
+\
+void main(void) {\
+  gl_Position = vec4(vertexPosition, 1.0) * bufferPosition * cameraPosition * cameraProjection;\
+  vTextureCoord = textureCoord;\
 }\
 ';
 

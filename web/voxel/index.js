@@ -86,9 +86,13 @@ window.addEventListener('load', function(e) {
     keyboard.delete(e.keyCode);
   });
 
+  var perspectiveProjection = nmlorg.gl.makeFrustum(-1, 1, -1, 1);
   var colorShader = context.makeShader(
-      nmlorg.gl.VERTEX_SHADER_SOURCE, nmlorg.gl.FRAGMENT_SHADER_SOURCE);
-  colorShader.setCameraProjection(nmlorg.gl.makeFrustum(-1, 1, -1, 1, 1, 10000));
+      nmlorg.gl.COLOR_VERTEX_SHADER_SOURCE, nmlorg.gl.COLOR_FRAGMENT_SHADER_SOURCE);
+  var textureShader = context.makeShader(
+      nmlorg.gl.TEXTURE_VERTEX_SHADER_SOURCE, nmlorg.gl.TEXTURE_FRAGMENT_SHADER_SOURCE);
+  colorShader.setCameraProjection(perspectiveProjection);
+  textureShader.setCameraProjection(perspectiveProjection);
 
   var block = colorShader.makeShape(
       [-.45, .95, -.45,
