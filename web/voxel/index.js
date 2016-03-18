@@ -89,76 +89,104 @@ window.addEventListener('load', function(e) {
   var perspectiveProjection = nmlorg.gl.makeFrustum(-1, 1, -1, 1);
   var colorShader = context.makeShader(
       nmlorg.gl.COLOR_VERTEX_SHADER_SOURCE, nmlorg.gl.COLOR_FRAGMENT_SHADER_SOURCE);
+  colorShader.setCameraProjection(perspectiveProjection);
+
+  var orthoProjection = nmlorg.gl.makeOrtho(0, 2, 0, 1);
   var textureShader = context.makeShader(
       nmlorg.gl.TEXTURE_VERTEX_SHADER_SOURCE, nmlorg.gl.TEXTURE_FRAGMENT_SHADER_SOURCE);
-  colorShader.setCameraProjection(perspectiveProjection);
-  textureShader.setCameraProjection(perspectiveProjection);
+  textureShader.setCameraProjection(orthoProjection);
+  textureShader.setCameraPosition([1, 0, 0, 0,
+                                   0, 1, 0, 0,
+                                   0, 0, 1, 0,
+                                   0, 0, 0, 1]);
+
+  var square = textureShader.makeShape(
+      [
+          0, 1, 0,
+          0, 0, 0,
+          1, 1, 0,
+
+          0, 0, 0,
+          1, 1, 0,
+          1, 0, 0,
+      ], [
+          0, 1,
+          0, 0,
+          1, 1,
+
+          0, 0,
+          1, 1,
+          1, 0,
+      ]);
 
   var block = colorShader.makeShape(
-      [-.45, .95, -.45,
-       -.45, .95, .45,
-       0, .95, 0,
+      [
+          -.45, .95, -.45,
+          -.45, .95, .45,
+          0, .95, 0,
 
-       -.45, .95, .45,
-       .45, .95, .45,
-       0, .95, 0,
+          -.45, .95, .45,
+          .45, .95, .45,
+          0, .95, 0,
 
-       .45, .95, .45,
-       .45, .95, -.45,
-       0, .95, 0,
+          .45, .95, .45,
+          .45, .95, -.45,
+          0, .95, 0,
 
-       .45, .95, -.45,
-       -.45, .95, -.45,
-       0, .95, 0,
+          .45, .95, -.45,
+          -.45, .95, -.45,
+          0, .95, 0,
 
-       -.45, .05, -.45,
-       -.45, .05, .45,
-       0, .05, 0,
+          -.45, .05, -.45,
+          -.45, .05, .45,
+          0, .05, 0,
 
-       -.45, .05, .45,
-       .45, .05, .45,
-       0, .05, 0,
+          -.45, .05, .45,
+          .45, .05, .45,
+          0, .05, 0,
 
-       .45, .05, .45,
-       .45, .05, -.45,
-       0, .05, 0,
+          .45, .05, .45,
+          .45, .05, -.45,
+          0, .05, 0,
 
-       .45, .05, -.45,
-       -.45, .05, -.45,
-       0, .05, 0,
-      ],
-      [1, 0, 0, 1,
-       1, 0, 0, 1,
-       1, 0, 0, .3,
+          .45, .05, -.45,
+          -.45, .05, -.45,
+          0, .05, 0,
+      ], [
+          1, 0, 0, 1,
+          1, 0, 0, 1,
+          1, 0, 0, .3,
 
-       1, 0, 0, 1,
-       1, 0, 0, 1,
-       1, 0, 0, .3,
+          1, 0, 0, 1,
+          1, 0, 0, 1,
+          1, 0, 0, .3,
 
-       1, 0, 0, 1,
-       1, 0, 0, 1,
-       1, 0, 0, .3,
+          1, 0, 0, 1,
+          1, 0, 0, 1,
+          1, 0, 0, .3,
 
-       1, 0, 0, 1,
-       1, 0, 0, 1,
-       1, 0, 0, .3,
+          1, 0, 0, 1,
+          1, 0, 0, 1,
+          1, 0, 0, .3,
 
-       0, 0, 1, 1,
-       0, 0, 1, 1,
-       0, 0, 1, .3,
+          0, 0, 1, 1,
+          0, 0, 1, 1,
+          0, 0, 1, .3,
 
-       0, 0, 1, 1,
-       0, 0, 1, 1,
-       0, 0, 1, .3,
+          0, 0, 1, 1,
+          0, 0, 1, 1,
+          0, 0, 1, .3,
 
-       0, 0, 1, 1,
-       0, 0, 1, 1,
-       0, 0, 1, .3,
+          0, 0, 1, 1,
+          0, 0, 1, 1,
+          0, 0, 1, .3,
 
-       0, 0, 1, 1,
-       0, 0, 1, 1,
-       0, 0, 1, .3,
+          0, 0, 1, 1,
+          0, 0, 1, 1,
+          0, 0, 1, .3,
       ]);
+
+  var fb = context.makeFramebuffer();
 
   var prev = 0;
   window.requestAnimationFrame(function anim(now) {
@@ -218,6 +246,7 @@ window.addEventListener('load', function(e) {
     camera.rotateY(yaw);
     camera.translate(-pos[0], -pos[1] - cameraHeight, -pos[2]);
     colorShader.setCameraPosition(camera.getM_().m_);
+    fb.bind();
     context.clear();
     for (var y of [-1, 5])
       for (var x = -20; x < 20; x++)
@@ -226,6 +255,19 @@ window.addEventListener('load', function(e) {
                       0, 1, 0, y,
                       0, 0, 1, z,
                       0, 0, 0, 1]);
+    fb.unbind();
+
+    textureShader.bindTexture(fb.colorTexture);
+    square.draw([1, 0, 0, 0,
+                 0, 1, 0, 0,
+                 0, 0, 1, -1,
+                 0, 0, 0, 1]);
+
+    textureShader.bindTexture(fb.depthTexture);
+    square.draw([1, 0, 0, 1,
+                 0, 1, 0, 0,
+                 0, 0, 1, -1,
+                 0, 0, 0, 1]);
 
     window.requestAnimationFrame(anim);
   });

@@ -23,15 +23,28 @@ nmlorg.gl.Shader = function(gl, vertexShaderSource, fragmentShaderSource) {
   this.vertexColor = gl.getAttribLocation(program, 'vertexColor');
   if (this.vertexColor != -1)
     gl.enableVertexAttribArray(this.vertexColor);
+  this.textureCoord = gl.getAttribLocation(program, 'textureCoord');
+  if (this.textureCoord != -1)
+    gl.enableVertexAttribArray(this.textureCoord);
   this.bufferPosition = gl.getUniformLocation(program, 'bufferPosition');
   this.cameraPosition = gl.getUniformLocation(program, 'cameraPosition');
   this.cameraProjection = gl.getUniformLocation(program, 'cameraProjection');
+  this.textureSampler = gl.getUniformLocation(program, 'textureSampler');
 };
 
 
 nmlorg.gl.Shader.prototype.bind = function() {
   var gl = this.gl;
   gl.useProgram(this.program);
+};
+
+
+nmlorg.gl.Shader.prototype.bindTexture = function(texture) {
+  var gl = this.gl;
+  this.bind();
+  gl.activeTexture(gl.TEXTURE0);
+  texture.bind();
+  gl.uniform1i(this.textureSampler, 0);
 };
 
 
@@ -59,18 +72,28 @@ nmlorg.gl.Shader.prototype.makeColorBuffer = function(vertices) {
 };
 
 
-nmlorg.gl.Shader.prototype.makeFramebuffer = function() {
-  return new nmlorg.gl.Framebuffer(this.gl);
-};
-
-
 nmlorg.gl.Shader.prototype.makePositionBuffer = function(vertices) {
   return new nmlorg.gl.Buffer(this.gl, this.vertexPosition, vertices, 3);
 };
 
 
-nmlorg.gl.Shader.prototype.makeShape = function(positions, colors) {
-  return new nmlorg.gl.Shape(this, positions, colors);
+nmlorg.gl.Shader.prototype.makeShape = function() {
+  var args = [...arguments];
+  var buffers = [];
+
+  if (this.vertexPosition != -1)
+    buffers.push(this.makePositionBuffer(args.shift()));
+  if (this.vertexColor != -1)
+    buffers.push(this.makeColorBuffer(args.shift()));
+  if (this.textureCoord != -1)
+    buffers.push(this.makeTextureBuffer(args.shift()));
+
+  return new nmlorg.gl.Shape(this, buffers);
+};
+
+
+nmlorg.gl.Shader.prototype.makeTextureBuffer = function(vertices) {
+  return new nmlorg.gl.Buffer(this.gl, this.textureCoord, vertices, 2);
 };
 
 

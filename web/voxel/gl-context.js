@@ -22,6 +22,11 @@ nmlorg.gl.Context.prototype.clear = function() {
 };
 
 
+nmlorg.gl.Context.prototype.makeFramebuffer = function() {
+  return new nmlorg.gl.Framebuffer(this.gl);
+};
+
+
 nmlorg.gl.Context.prototype.makeShader = function(vertexShaderSource, fragmentShaderSource) {
   return new nmlorg.gl.Shader(this.gl, vertexShaderSource, fragmentShaderSource);
 };
