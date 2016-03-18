@@ -86,7 +86,8 @@ window.addEventListener('load', function(e) {
     keyboard.delete(e.keyCode);
   });
 
-  var colorShader = context.colorShader;
+  var colorShader = context.makeShader(
+      nmlorg.gl.VERTEX_SHADER_SOURCE, nmlorg.gl.FRAGMENT_SHADER_SOURCE);
   colorShader.setCameraProjection(nmlorg.gl.makeFrustum(-1, 1, -1, 1, 1, 10000));
 
   var block = colorShader.makeShape(
