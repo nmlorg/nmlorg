@@ -16,7 +16,7 @@ nmlorg.gl.Shader = function(gl, vertexShaderSource, fragmentShaderSource) {
   gl.linkProgram(program);
   if (!gl.getProgramParameter(program, gl.LINK_STATUS))
     throw 'Error linking shader program.';
-  this.bind();
+  this.activate();
   this.vertexPosition = gl.getAttribLocation(program, 'vertexPosition');
   if (this.vertexPosition != -1)
     gl.enableVertexAttribArray(this.vertexPosition);
@@ -33,18 +33,18 @@ nmlorg.gl.Shader = function(gl, vertexShaderSource, fragmentShaderSource) {
 };
 
 
-nmlorg.gl.Shader.prototype.bind = function() {
+nmlorg.gl.Shader.prototype.activate = function() {
   var gl = this.gl;
   gl.useProgram(this.program);
 };
 
 
-nmlorg.gl.Shader.prototype.bindTexture = function(texture) {
+nmlorg.gl.Shader.prototype.bindTexture = function(texture, slot) {
   var gl = this.gl;
-  this.bind();
-  gl.activeTexture(gl.TEXTURE0);
-  texture.bind();
-  gl.uniform1i(this.textureSampler, 0);
+  this.activate();
+  gl.activeTexture(gl['TEXTURE' + slot]);
+  texture.load();
+  gl.uniform1i(this.textureSampler, slot);
 };
 
 
@@ -61,7 +61,7 @@ nmlorg.gl.Shader.prototype.compile = function(type, source) {
 
 nmlorg.gl.Shader.prototype.drawTriangles = function(position, numItems) {
   var gl = this.gl;
-  this.bind();
+  this.activate();
   gl.uniformMatrix4fv(this.bufferPosition, false, position);
   gl.drawArrays(gl.TRIANGLES, 0, numItems);
 };
@@ -99,14 +99,14 @@ nmlorg.gl.Shader.prototype.makeTextureBuffer = function(vertices) {
 
 nmlorg.gl.Shader.prototype.setCameraPosition = function(matrix) {
   var gl = this.gl;
-  this.bind();
+  this.activate();
   gl.uniformMatrix4fv(this.cameraPosition, false, matrix);
 };
 
 
 nmlorg.gl.Shader.prototype.setCameraProjection = function(matrix) {
   var gl = this.gl;
-  this.bind();
+  this.activate();
   gl.uniformMatrix4fv(this.cameraProjection, false, matrix);
 };
 

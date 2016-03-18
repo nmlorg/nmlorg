@@ -246,7 +246,7 @@ window.addEventListener('load', function(e) {
     camera.rotateY(yaw);
     camera.translate(-pos[0], -pos[1] - cameraHeight, -pos[2]);
     colorShader.setCameraPosition(camera.getM_().m_);
-    fb.bind();
+    fb.activate();
     context.clear();
     for (var y of [-1, 5])
       for (var x = -20; x < 20; x++)
@@ -255,15 +255,15 @@ window.addEventListener('load', function(e) {
                       0, 1, 0, y,
                       0, 0, 1, z,
                       0, 0, 0, 1]);
-    fb.unbind();
+    fb.deactivate();
 
-    textureShader.bindTexture(fb.colorTexture);
+    textureShader.bindTexture(fb.colorTexture, 0);
     square.draw([1, 0, 0, 0,
                  0, 1, 0, 0,
                  0, 0, 1, -1,
                  0, 0, 0, 1]);
 
-    textureShader.bindTexture(fb.depthTexture);
+    textureShader.bindTexture(fb.depthTexture, 0);
     square.draw([1, 0, 0, 1,
                  0, 1, 0, 0,
                  0, 0, 1, -1,
