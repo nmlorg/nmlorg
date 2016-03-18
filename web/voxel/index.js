@@ -86,9 +86,10 @@ window.addEventListener('load', function(e) {
     keyboard.delete(e.keyCode);
   });
 
-  context.setCameraProjection(nmlorg.gl.makeFrustum(-1, 1, -1, 1, 1, 10000));
+  var colorShader = context.colorShader;
+  colorShader.setCameraProjection(nmlorg.gl.makeFrustum(-1, 1, -1, 1, 1, 10000));
 
-  var block = context.makeShape(
+  var block = colorShader.makeShape(
       [-.45, .95, -.45,
        -.45, .95, .45,
        0, .95, 0,
@@ -211,7 +212,7 @@ window.addEventListener('load', function(e) {
     camera.rotateX(-pitch);
     camera.rotateY(yaw);
     camera.translate(-pos[0], -pos[1] - cameraHeight, -pos[2]);
-    context.setCameraPosition(camera.getM_().m_);
+    colorShader.setCameraPosition(camera.getM_().m_);
     context.clear();
     for (var y of [-1, 5])
       for (var x = -20; x < 20; x++)

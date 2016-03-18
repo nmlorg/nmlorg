@@ -8,10 +8,10 @@ var nmlorg = window['nmlorg'] = window['nmlorg'] || {};
 nmlorg.gl = nmlorg.gl || {};
 
 
-nmlorg.gl.Shape = function(context, positions, colors) {
-  this.context = context;
-  this.positionBuffer = context.makePositionBuffer(positions);
-  this.colorBuffer = context.makeColorBuffer(colors);
+nmlorg.gl.Shape = function(shader, positions, colors) {
+  this.shader = shader;
+  this.positionBuffer = shader.makePositionBuffer(positions);
+  this.colorBuffer = shader.makeColorBuffer(colors);
   if (this.positionBuffer.numItems != this.colorBuffer.numItems)
     throw 'There must be one color for every position.';
 };
@@ -20,7 +20,7 @@ nmlorg.gl.Shape = function(context, positions, colors) {
 nmlorg.gl.Shape.prototype.draw = function(position) {
   this.positionBuffer.load();
   this.colorBuffer.load();
-  this.context.drawTriangles(position, this.positionBuffer.numItems);
+  this.shader.drawTriangles(position, this.positionBuffer.numItems);
 };
 
 })();

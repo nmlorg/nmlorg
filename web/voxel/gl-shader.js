@@ -8,9 +8,8 @@ var nmlorg = window['nmlorg'] = window['nmlorg'] || {};
 nmlorg.gl = nmlorg.gl || {};
 
 
-nmlorg.gl.Shader = function(context, vertexShaderSource, fragmentShaderSource) {
-  this.context = context;
-  var gl = context.gl;
+nmlorg.gl.Shader = function(gl, vertexShaderSource, fragmentShaderSource) {
+  this.gl = gl;
   var program = this.program = gl.createProgram();
   gl.attachShader(program, this.compile(gl.VERTEX_SHADER, vertexShaderSource));
   gl.attachShader(program, this.compile(gl.FRAGMENT_SHADER, fragmentShaderSource));
@@ -31,19 +30,58 @@ nmlorg.gl.Shader = function(context, vertexShaderSource, fragmentShaderSource) {
 
 
 nmlorg.gl.Shader.prototype.bind = function() {
-  var gl = this.context.gl;
+  var gl = this.gl;
   gl.useProgram(this.program);
 };
 
 
 nmlorg.gl.Shader.prototype.compile = function(type, source) {
-  var gl = this.context.gl;
+  var gl = this.gl;
   var shader = gl.createShader(type);
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
     throw gl.getShaderInfoLog(shader);
   return shader;
+};
+
+
+nmlorg.gl.Shader.prototype.drawTriangles = function(position, numItems) {
+  var gl = this.gl;
+  gl.uniformMatrix4fv(this.bufferPosition, false, position);
+  gl.drawArrays(gl.TRIANGLES, 0, numItems);
+};
+
+
+nmlorg.gl.Shader.prototype.makeColorBuffer = function(vertices) {
+  return new nmlorg.gl.Buffer(this.gl, this.vertexColor, vertices, 4);
+};
+
+
+nmlorg.gl.Shader.prototype.makeFramebuffer = function() {
+  return new nmlorg.gl.Framebuffer(this.gl);
+};
+
+
+nmlorg.gl.Shader.prototype.makePositionBuffer = function(vertices) {
+  return new nmlorg.gl.Buffer(this.gl, this.vertexPosition, vertices, 3);
+};
+
+
+nmlorg.gl.Shader.prototype.makeShape = function(positions, colors) {
+  return new nmlorg.gl.Shape(this, positions, colors);
+};
+
+
+nmlorg.gl.Shader.prototype.setCameraPosition = function(matrix) {
+  var gl = this.gl;
+  gl.uniformMatrix4fv(this.cameraPosition, false, matrix);
+};
+
+
+nmlorg.gl.Shader.prototype.setCameraProjection = function(matrix) {
+  var gl = this.gl;
+  gl.uniformMatrix4fv(this.cameraProjection, false, matrix);
 };
 
 
