@@ -52,4 +52,37 @@ nmlorg.gl.makeFrustum = function(left, right, bottom, top, nearPlane, farPlane, 
   ];
 };
 
+
+/**
+ * @param {number} left The x coordinate of the left edge of the near and far planes.
+ * @param {number} right The x coordinate of the right edge of the near and far planes.
+ * @param {number} bottom The y coordinate of the bottom edge of the near and far planes.
+ * @param {number} top The y coordinate of the top edge of the near and far planes.
+ * @param {number} [nearPlane] The z coordinate of the near plane relative to the top point.
+ * @param {number} [farPlane] The z coordinate of the far plane relative to the top point.
+ */
+nmlorg.gl.makeOrtho = function(left, right, bottom, top, nearPlane, farPlane) {
+  if (nearPlane === undefined)
+    nearPlane = .1;
+  if (farPlane === undefined)
+    farPlane = 10000;
+
+  var width = right - left;
+  var height = top - bottom;
+  var depth = farPlane - nearPlane;
+  var a = -(right + left) / width;
+  var b = -(top + bottom) / height;
+  var c = -(farPlane + nearPlane) / depth;
+  var x = 2 / width;
+  var y = 2 / height;
+  var z = -2 / depth;
+
+  return [
+      x, 0, 0, a,
+      0, y, 0, b,
+      0, 0, z, c,
+      0, 0, 0, 1,
+  ];
+};
+
 })();

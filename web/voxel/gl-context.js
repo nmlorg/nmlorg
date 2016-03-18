@@ -56,6 +56,11 @@ nmlorg.gl.Context.prototype.makeColorBuffer = function(vertices) {
 };
 
 
+nmlorg.gl.Context.prototype.makeFramebuffer = function() {
+  return new nmlorg.gl.Framebuffer(this.gl);
+};
+
+
 nmlorg.gl.Context.prototype.makePositionBuffer = function(vertices) {
   return new nmlorg.gl.Buffer(this.gl, this.vertexPosition, vertices, 3);
 };
