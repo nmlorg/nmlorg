@@ -20,7 +20,7 @@ nmlorg.gl.Shape = function(shader, buffers) {
 nmlorg.gl.Shape.prototype.draw = function(position) {
   var shader = this.shader;
   var buffers = this.buffers;
-  for (var buffer of this.buffers)
+  for (var buffer of buffers)
     buffer.load();
   shader.drawTriangles(position, buffers[0].numItems);
 };

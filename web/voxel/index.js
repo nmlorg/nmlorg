@@ -17,7 +17,7 @@ window.addEventListener('load', function(e) {
   viewportDiv.classList.add('viewport');
   var canvas = document.createElement('canvas');
   viewportDiv.appendChild(canvas);
-  canvas.width = canvas.height = 1000;
+  canvas.width = canvas.height = 1024;
   var context = new nmlorg.gl.Context(canvas);
   var canvasDiv = document.createElement('div');
   viewportDiv.appendChild(canvasDiv);
