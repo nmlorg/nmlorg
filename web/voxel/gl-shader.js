@@ -78,7 +78,7 @@ nmlorg.gl.Shader.prototype.makePositionBuffer = function(vertices) {
 
 
 nmlorg.gl.Shader.prototype.makeShape = function() {
-  var args = [...arguments];
+  var args = Array.from(arguments);
   var buffers = [];
 
   if (this.vertexPosition != -1)
