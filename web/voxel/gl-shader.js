@@ -29,7 +29,7 @@ nmlorg.gl.Shader = function(gl, vertexShaderSource, fragmentShaderSource) {
   this.bufferPosition = gl.getUniformLocation(program, 'bufferPosition');
   this.cameraPosition = gl.getUniformLocation(program, 'cameraPosition');
   this.cameraProjection = gl.getUniformLocation(program, 'cameraProjection');
-  this.textureSampler = gl.getUniformLocation(program, 'textureSampler');
+  this.textureSamplers = gl.getUniformLocation(program, 'textureSamplers');
 };
 
 
@@ -39,12 +39,17 @@ nmlorg.gl.Shader.prototype.activate = function() {
 };
 
 
-nmlorg.gl.Shader.prototype.bindTexture = function(texture, slot) {
+nmlorg.gl.Shader.prototype.bindTextures = function() {
   var gl = this.gl;
+  var textures = Array.from(arguments);
+  var slots = [];
   this.activate();
-  gl.activeTexture(gl['TEXTURE' + slot]);
-  texture.load();
-  gl.uniform1i(this.textureSampler, slot);
+  for (var slot = 0; slot < textures.length; slot++) {
+    gl.activeTexture(gl['TEXTURE' + slot]);
+    textures[slot].load();
+    slots.push(slot);
+  }
+  gl.uniform1iv(this.textureSamplers, slots);
 };
 
 
@@ -135,12 +140,49 @@ void main(void) {\
 ';
 
 
-nmlorg.gl.TEXTURE_FRAGMENT_SHADER_SOURCE = '\
+nmlorg.gl.OUTLINE_FRAGMENT_SHADER_SOURCE = '\
 varying mediump vec2 vTextureCoord;\
-uniform sampler2D textureSampler;\
+uniform sampler2D textureSamplers[2];\
 \
 void main(void) {\
-  gl_FragColor = texture2D(textureSampler, vec2(vTextureCoord.s, vTextureCoord.t));\
+  lowp float depth = texture2D(textureSamplers[1], vTextureCoord.st).x;\
+  for (lowp float s = -3.; s <= 3.; s++) {\
+    for (lowp float t = -3.; t <= 3.; t++) {\
+      if ((s == 0.) && (t == 0.))\
+        continue;\
+      lowp float depth2 = texture2D(textureSamplers[1], vTextureCoord.st + vec2(s / 1024., t / 1024.)).x;\
+      if (abs(depth - depth2) > .01) {\
+        gl_FragColor = vec4(0, 0, 0, 1);\
+        return;\
+      }\
+    }\
+  }\
+  gl_FragColor = texture2D(textureSamplers[0], vTextureCoord.st);\
+}\
+';
+
+
+nmlorg.gl.OUTLINE_VERTEX_SHADER_SOURCE = '\
+attribute vec3 vertexPosition;\
+attribute vec2 textureCoord;\
+uniform mat4 bufferPosition;\
+uniform mat4 cameraPosition;\
+uniform mat4 cameraProjection;\
+varying mediump vec2 vTextureCoord;\
+\
+void main(void) {\
+  gl_Position = vec4(vertexPosition, 1.0) * bufferPosition * cameraPosition * cameraProjection;\
+  vTextureCoord = textureCoord;\
+}\
+';
+
+
+nmlorg.gl.TEXTURE_FRAGMENT_SHADER_SOURCE = '\
+varying mediump vec2 vTextureCoord;\
+uniform sampler2D textureSamplers[1];\
+\
+void main(void) {\
+  gl_FragColor = texture2D(textureSamplers[0], vTextureCoord.st);\
 }\
 ';
 
