@@ -17,19 +17,25 @@ nmlorg.gl.Shader = function(gl, vertexShaderSource, fragmentShaderSource) {
   if (!gl.getProgramParameter(program, gl.LINK_STATUS))
     throw 'Error linking shader program.';
   this.activate();
-  this.vertexPosition = gl.getAttribLocation(program, 'vertexPosition');
-  if (this.vertexPosition != -1)
-    gl.enableVertexAttribArray(this.vertexPosition);
-  this.vertexColor = gl.getAttribLocation(program, 'vertexColor');
-  if (this.vertexColor != -1)
-    gl.enableVertexAttribArray(this.vertexColor);
+
   this.textureCoord = gl.getAttribLocation(program, 'textureCoord');
   if (this.textureCoord != -1)
     gl.enableVertexAttribArray(this.textureCoord);
+  this.vertexColor = gl.getAttribLocation(program, 'vertexColor');
+  if (this.vertexColor != -1)
+    gl.enableVertexAttribArray(this.vertexColor);
+  this.vertexPosition = gl.getAttribLocation(program, 'vertexPosition');
+  if (this.vertexPosition != -1)
+    gl.enableVertexAttribArray(this.vertexPosition);
+
   this.bufferPosition = gl.getUniformLocation(program, 'bufferPosition');
   this.cameraPosition = gl.getUniformLocation(program, 'cameraPosition');
   this.cameraProjection = gl.getUniformLocation(program, 'cameraProjection');
   this.textureSamplers = gl.getUniformLocation(program, 'textureSamplers');
+
+  var resolution = gl.getUniformLocation(program, 'resolution');
+  if (resolution)
+    gl.uniform2f(resolution, gl.drawingBufferWidth, gl.drawingBufferHeight);
 };
 
 
@@ -143,14 +149,20 @@ void main(void) {\
 nmlorg.gl.OUTLINE_FRAGMENT_SHADER_SOURCE = '\
 varying mediump vec2 vTextureCoord;\
 uniform sampler2D textureSamplers[2];\
+uniform lowp vec2 resolution;\
+\
+lowp float GetDepth(lowp float s, lowp float t) {\
+  lowp float depth = texture2D(textureSamplers[1], vTextureCoord.st + vec2(s / resolution.s, t / resolution.t)).x;\
+  return depth;\
+}\
 \
 void main(void) {\
-  lowp float depth = texture2D(textureSamplers[1], vTextureCoord.st).x;\
+  lowp float depth = GetDepth(0., 0.);\
   for (lowp float s = -3.; s <= 3.; s++) {\
     for (lowp float t = -3.; t <= 3.; t++) {\
       if ((s == 0.) && (t == 0.))\
         continue;\
-      lowp float depth2 = texture2D(textureSamplers[1], vTextureCoord.st + vec2(s / 1024., t / 1024.)).x;\
+      lowp float depth2 = GetDepth(s, t);\
       if (abs(depth - depth2) > .01) {\
         gl_FragColor = vec4(0, 0, 0, 1);\
         return;\
