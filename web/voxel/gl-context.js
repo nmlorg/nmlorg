@@ -22,6 +22,17 @@ nmlorg.gl.Context.prototype.clear = function() {
 };
 
 
+nmlorg.gl.Context.prototype.drawTexture = function(texture) {
+  if (!this.textureShader_) {
+    this.textureShader_ = this.makeShader(
+        nmlorg.gl.TEXTURE_VERTEX_SHADER_SOURCE, nmlorg.gl.TEXTURE_FRAGMENT_SHADER_SOURCE);
+  }
+
+  this.textureShader_.bindTextures(texture);
+  this.textureShader_.drawSquare();
+};
+
+
 nmlorg.gl.Context.prototype.makeFramebuffer = function() {
   return new nmlorg.gl.Framebuffer(this.gl);
 };

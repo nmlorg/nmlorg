@@ -36,6 +36,12 @@ nmlorg.gl.Shader = function(gl, vertexShaderSource, fragmentShaderSource) {
   var resolution = gl.getUniformLocation(program, 'resolution');
   if (resolution)
     gl.uniform2f(resolution, gl.drawingBufferWidth, gl.drawingBufferHeight);
+
+  this.setCameraPosition([1, 0, 0, 0,
+                          0, 1, 0, 0,
+                          0, 0, 1, 0,
+                          0, 0, 0, 1]);
+  this.setCameraProjection(nmlorg.gl.makeOrtho(0, 1, 0, 1));
 };
 
 
@@ -70,23 +76,16 @@ nmlorg.gl.Shader.prototype.compile = function(type, source) {
 };
 
 
-nmlorg.gl.Shader.prototype.drawTextures = function() {
-  var cameraPosition = this.getCameraPosition();
-  var cameraProjection = this.getCameraProjection();
-  this.setCameraPosition([1, 0, 0, 0,
-                          0, 1, 0, 0,
-                          0, 0, 1, 0,
-                          0, 0, 0, 1]);
-  if (!nmlorg.gl.orthoProjection)
-    nmlorg.gl.orthoProjection = nmlorg.gl.makeOrtho(0, 1, 0, 1);
-  this.setCameraProjection(nmlorg.gl.orthoProjection);
-  this.bindTextures(...Array.from(arguments));
-  this.get1x1Square().draw([1, 0, 0, 0,
-                            0, 1, 0, 0,
-                            0, 0, 1, -1,
-                            0, 0, 0, 1]);
-  this.setCameraPosition(cameraPosition);
-  this.setCameraProjection(cameraProjection);
+nmlorg.gl.Shader.prototype.drawSquare = function() {
+  if (!this.square_) {
+    this.square_ = this.makeShape([0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0],
+                                  [0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0]);
+  }
+
+  this.square_.draw([1, 0, 0, 0,
+                     0, 1, 0, 0,
+                     0, 0, 1, -1,
+                     0, 0, 0, 1]);
 };
 
 
@@ -95,14 +94,6 @@ nmlorg.gl.Shader.prototype.drawTriangles = function(position, numItems) {
   this.activate();
   gl.uniformMatrix4fv(this.bufferPosition, false, position);
   gl.drawArrays(gl.TRIANGLES, 0, numItems);
-};
-
-
-nmlorg.gl.Shader.prototype.get1x1Square = function() {
-  if (!this.oneByOneSquare)
-    this.oneByOneSquare = this.makeShape([0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0],
-                                         [0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0]);
-  return this.oneByOneSquare;
 };
 
 

@@ -91,8 +91,6 @@ window.addEventListener('load', function(e) {
       nmlorg.gl.COLOR_VERTEX_SHADER_SOURCE, nmlorg.gl.COLOR_FRAGMENT_SHADER_SOURCE);
   colorShader.setCameraProjection(perspectiveProjection);
 
-  var textureShader = context.makeShader(
-      nmlorg.gl.TEXTURE_VERTEX_SHADER_SOURCE, nmlorg.gl.TEXTURE_FRAGMENT_SHADER_SOURCE);
   var outlineShader = context.makeShader(
       nmlorg.gl.OUTLINE_VERTEX_SHADER_SOURCE, nmlorg.gl.OUTLINE_FRAGMENT_SHADER_SOURCE);
 
@@ -234,15 +232,16 @@ window.addEventListener('load', function(e) {
                       0, 0, 0, 1]);
     fb.deactivate();
 
-    switch (Math.floor(Date.now() / 5000) % 3) {
+    switch (Math.floor(now / 5000) % 3) {
       case 0:
-        textureShader.drawTextures(fb.colorTexture);
+        context.drawTexture(fb.colorTexture);
         break;
       case 1:
-        textureShader.drawTextures(fb.depthTexture);
+        context.drawTexture(fb.depthTexture);
         break;
       case 2:
-        outlineShader.drawTextures(fb.colorTexture, fb.depthTexture);
+        outlineShader.bindTextures(fb.colorTexture, fb.depthTexture);
+        outlineShader.drawSquare();
         break;
     }
 
