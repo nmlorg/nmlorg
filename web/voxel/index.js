@@ -87,65 +87,14 @@ window.addEventListener('load', function(e) {
   });
 
   var perspectiveProjection = nmlorg.gl.makeFrustum(-1, 1, -1, 1);
-  var orthoProjection = nmlorg.gl.makeOrtho(0, 3, 0, 1);
-
   var colorShader = context.makeShader(
       nmlorg.gl.COLOR_VERTEX_SHADER_SOURCE, nmlorg.gl.COLOR_FRAGMENT_SHADER_SOURCE);
   colorShader.setCameraProjection(perspectiveProjection);
 
   var textureShader = context.makeShader(
       nmlorg.gl.TEXTURE_VERTEX_SHADER_SOURCE, nmlorg.gl.TEXTURE_FRAGMENT_SHADER_SOURCE);
-  textureShader.setCameraProjection(orthoProjection);
-  textureShader.setCameraPosition([1, 0, 0, 0,
-                                   0, 1, 0, 0,
-                                   0, 0, 1, 0,
-                                   0, 0, 0, 1]);
-
   var outlineShader = context.makeShader(
       nmlorg.gl.OUTLINE_VERTEX_SHADER_SOURCE, nmlorg.gl.OUTLINE_FRAGMENT_SHADER_SOURCE);
-  outlineShader.setCameraProjection(orthoProjection);
-  outlineShader.setCameraPosition([1, 0, 0, 0,
-                                   0, 1, 0, 0,
-                                   0, 0, 1, 0,
-                                   0, 0, 0, 1]);
-
-  var square = textureShader.makeShape(
-      [
-          0, 1, 0,
-          0, 0, 0,
-          1, 1, 0,
-
-          0, 0, 0,
-          1, 1, 0,
-          1, 0, 0,
-      ], [
-          0, 1,
-          0, 0,
-          1, 1,
-
-          0, 0,
-          1, 1,
-          1, 0,
-      ]);
-
-  var outlineSquare = outlineShader.makeShape(
-      [
-          0, 1, 0,
-          0, 0, 0,
-          1, 1, 0,
-
-          0, 0, 0,
-          1, 1, 0,
-          1, 0, 0,
-      ], [
-          0, 1,
-          0, 0,
-          1, 1,
-
-          0, 0,
-          1, 1,
-          1, 0,
-      ]);
 
   var block = colorShader.makeShape(
       [
@@ -285,23 +234,17 @@ window.addEventListener('load', function(e) {
                       0, 0, 0, 1]);
     fb.deactivate();
 
-    textureShader.bindTextures(fb.colorTexture);
-    square.draw([1, 0, 0, 0,
-                 0, 1, 0, 0,
-                 0, 0, 1, -1,
-                 0, 0, 0, 1]);
-
-    textureShader.bindTextures(fb.depthTexture);
-    square.draw([1, 0, 0, 1,
-                 0, 1, 0, 0,
-                 0, 0, 1, -1,
-                 0, 0, 0, 1]);
-
-    outlineShader.bindTextures(fb.colorTexture, fb.depthTexture);
-    outlineSquare.draw([1, 0, 0, 2,
-                        0, 1, 0, 0,
-                        0, 0, 1, -1,
-                        0, 0, 0, 1]);
+    switch (Math.floor(Date.now() / 5000) % 3) {
+      case 0:
+        textureShader.drawTextures(fb.colorTexture);
+        break;
+      case 1:
+        textureShader.drawTextures(fb.depthTexture);
+        break;
+      case 2:
+        outlineShader.drawTextures(fb.colorTexture, fb.depthTexture);
+        break;
+    }
 
     window.requestAnimationFrame(anim);
   });

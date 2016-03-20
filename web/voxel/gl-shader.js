@@ -70,11 +70,51 @@ nmlorg.gl.Shader.prototype.compile = function(type, source) {
 };
 
 
+nmlorg.gl.Shader.prototype.drawTextures = function() {
+  var cameraPosition = this.getCameraPosition();
+  var cameraProjection = this.getCameraProjection();
+  this.setCameraPosition([1, 0, 0, 0,
+                          0, 1, 0, 0,
+                          0, 0, 1, 0,
+                          0, 0, 0, 1]);
+  if (!nmlorg.gl.orthoProjection)
+    nmlorg.gl.orthoProjection = nmlorg.gl.makeOrtho(0, 1, 0, 1);
+  this.setCameraProjection(nmlorg.gl.orthoProjection);
+  this.bindTextures(...Array.from(arguments));
+  this.get1x1Square().draw([1, 0, 0, 0,
+                            0, 1, 0, 0,
+                            0, 0, 1, -1,
+                            0, 0, 0, 1]);
+  this.setCameraPosition(cameraPosition);
+  this.setCameraProjection(cameraProjection);
+};
+
+
 nmlorg.gl.Shader.prototype.drawTriangles = function(position, numItems) {
   var gl = this.gl;
   this.activate();
   gl.uniformMatrix4fv(this.bufferPosition, false, position);
   gl.drawArrays(gl.TRIANGLES, 0, numItems);
+};
+
+
+nmlorg.gl.Shader.prototype.get1x1Square = function() {
+  if (!this.oneByOneSquare)
+    this.oneByOneSquare = this.makeShape([0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0],
+                                         [0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0]);
+  return this.oneByOneSquare;
+};
+
+
+nmlorg.gl.Shader.prototype.getCameraPosition = function() {
+  var gl = this.gl;
+  return gl.getUniform(this.program, this.cameraPosition);
+};
+
+
+nmlorg.gl.Shader.prototype.getCameraProjection = function() {
+  var gl = this.gl;
+  return gl.getUniform(this.program, this.cameraProjection);
 };
 
 
