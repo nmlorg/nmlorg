@@ -74,10 +74,13 @@ window.addEventListener('load', function(e) {
         jumpSpeed = jumpPower;
         break;
       case 49:  // 1
-        filters ^= 0x1;
+        filters ^= (1 << 0);
         break;
       case 50:  // 2
-        filters ^= 0x2;
+        filters ^= (1 << 1);
+        break;
+      case 51:  // 3
+        filters ^= (1 << 2);
         break;
     }
   });
@@ -98,6 +101,8 @@ window.addEventListener('load', function(e) {
       nmlorg.gl.COLOR_VERTEX_SHADER_SOURCE, nmlorg.gl.COLOR_FRAGMENT_SHADER_SOURCE);
   colorShader.setCameraProjection(perspectiveProjection);
 
+  var blurShader = context.makeShader(
+      nmlorg.gl.BLUR_VERTEX_SHADER_SOURCE, nmlorg.gl.BLUR_FRAGMENT_SHADER_SOURCE);
   var outlineShader = context.makeShader(
       nmlorg.gl.OUTLINE_VERTEX_SHADER_SOURCE, nmlorg.gl.OUTLINE_FRAGMENT_SHADER_SOURCE);
 
@@ -225,7 +230,8 @@ window.addEventListener('load', function(e) {
         '<br>' +
         'Filters:<br>' +
         '&nbsp; [<code>1</code>] Show depth buffer instead of color buffer.<br>' +
-        '&nbsp; [<code>2</code>] Outline objects.<br>';
+        '&nbsp; [<code>2</code>] Blur objects.<br>' +
+        '&nbsp; [<code>3</code>] Outline objects.<br>';
 
     var camera = new nmlorg.Camera();
     camera.rotateX(-pitch);
@@ -243,10 +249,12 @@ window.addEventListener('load', function(e) {
                       0, 0, 0, 1]);
     fb.deactivate();
 
-    if (filters & 0x2)
+    if (filters & (1 << 1))
+      fb.applyFilterShader(blurShader);
+    if (filters & (1 << 2))
       fb.applyFilterShader(outlineShader);
 
-    if (filters & 0x1)
+    if (filters & (1 << 0))
       context.drawTexture(fb.buffers[0].depthTexture);
     else
       context.drawTexture(fb.buffers[0].colorTexture);

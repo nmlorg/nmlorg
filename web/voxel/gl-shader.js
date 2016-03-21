@@ -153,6 +153,38 @@ nmlorg.gl.Shader.prototype.setCameraProjection = function(matrix) {
 };
 
 
+nmlorg.gl.BLUR_FRAGMENT_SHADER_SOURCE = '\
+varying mediump vec2 vTextureCoord;\
+uniform sampler2D textureSamplers[1];\
+uniform lowp vec2 resolution;\
+\
+lowp vec4 T(mediump float s, mediump float t) {\
+  return texture2D(textureSamplers[0], vTextureCoord.st + vec2(s / resolution.s, t / resolution.t));\
+}\
+\
+void main(void) {\
+  gl_FragColor = (1. * T(-1.,  1.) + 2. * T(0.,  1.) + 1. * T(1.,  1.) +\
+                  2. * T(-1.,  0.) + 4. * T(0.,  0.) + 2. * T(1.,  0.) +\
+                  1. * T(-1., -1.) + 2. * T(0., -1.) + 1. * T(1., -1.)) / 16.;\
+}\
+';
+
+
+nmlorg.gl.BLUR_VERTEX_SHADER_SOURCE = '\
+attribute vec3 vertexPosition;\
+attribute vec2 textureCoord;\
+uniform mat4 bufferPosition;\
+uniform mat4 cameraPosition;\
+uniform mat4 cameraProjection;\
+varying mediump vec2 vTextureCoord;\
+\
+void main(void) {\
+  gl_Position = vec4(vertexPosition, 1.0) * bufferPosition * cameraPosition * cameraProjection;\
+  vTextureCoord = textureCoord;\
+}\
+';
+
+
 nmlorg.gl.COLOR_FRAGMENT_SHADER_SOURCE = '\
 varying lowp vec4 vColor;\
 \
