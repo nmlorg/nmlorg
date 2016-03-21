@@ -61,6 +61,7 @@ window.addEventListener('load', function(e) {
   });
 
   var keyboard = new Set();
+  var filters = 0;
 
   document.addEventListener('keydown', function(e) {
     if (keyboard.has(e.keyCode))
@@ -71,6 +72,12 @@ window.addEventListener('load', function(e) {
     switch (e.keyCode) {
       case 32:  // space
         jumpSpeed = jumpPower;
+        break;
+      case 49:  // 1
+        filters ^= 0x1;
+        break;
+      case 50:  // 2
+        filters ^= 0x2;
         break;
     }
   });
@@ -214,7 +221,11 @@ window.addEventListener('load', function(e) {
         'Yaw: ' + round(rad2deg(yaw)) + '&deg;<br>' +
         'Pitch: ' + round(rad2deg(pitch)) + '&deg;<br>' +
         'Roll: ' + round(rad2deg(roll)) + '&deg;<br>' +
-        'Jump: ' + round(jumpSpeed, 1);
+        'Jump: ' + round(jumpSpeed, 1) + '<br>' +
+        '<br>' +
+        'Filters:<br>' +
+        '&nbsp; [<code>1</code>] Show depth buffer instead of color buffer.<br>' +
+        '&nbsp; [<code>2</code>] Outline objects.<br>';
 
     var camera = new nmlorg.Camera();
     camera.rotateX(-pitch);
@@ -232,18 +243,13 @@ window.addEventListener('load', function(e) {
                       0, 0, 0, 1]);
     fb.deactivate();
 
-    switch (Math.floor(now / 5000) % 3) {
-      case 0:
-        context.drawTexture(fb.buffers[0].colorTexture);
-        break;
-      case 1:
-        context.drawTexture(fb.buffers[0].depthTexture);
-        break;
-      case 2:
-        fb.applyFilterShader(outlineShader);
-        context.drawTexture(fb.buffers[0].colorTexture);
-        break;
-    }
+    if (filters & 0x2)
+      fb.applyFilterShader(outlineShader);
+
+    if (filters & 0x1)
+      context.drawTexture(fb.buffers[0].depthTexture);
+    else
+      context.drawTexture(fb.buffers[0].colorTexture);
 
     window.requestAnimationFrame(anim);
   });
