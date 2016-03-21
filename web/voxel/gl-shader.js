@@ -151,7 +151,7 @@ uniform sampler2D textureSamplers[1];\
 uniform lowp vec2 resolution;\
 \
 lowp vec4 T(mediump float s, mediump float t) {\
-  return texture2D(textureSamplers[0], vTextureCoord.st + vec2(s / resolution.s, t / resolution.t));\
+  return texture2D(textureSamplers[0], vTextureCoord + vec2(s / resolution.s, t / resolution.t));\
 }\
 \
 void main(void) {\
@@ -204,7 +204,7 @@ uniform sampler2D textureSamplers[2];\
 uniform lowp vec2 resolution;\
 \
 lowp float GetDepth(lowp float s, lowp float t) {\
-  lowp float depth = texture2D(textureSamplers[1], vTextureCoord.st + vec2(s / resolution.s, t / resolution.t)).x;\
+  lowp float depth = texture2D(textureSamplers[1], vTextureCoord + vec2(s / resolution.s, t / resolution.t)).x;\
   return depth;\
 }\
 \
@@ -221,7 +221,7 @@ void main(void) {\
       }\
     }\
   }\
-  gl_FragColor = texture2D(textureSamplers[0], vTextureCoord.st);\
+  gl_FragColor = texture2D(textureSamplers[0], vTextureCoord);\
 }\
 ';
 
@@ -243,7 +243,7 @@ varying mediump vec2 vTextureCoord;\
 uniform sampler2D textureSamplers[1];\
 \
 void main(void) {\
-  gl_FragColor = texture2D(textureSamplers[0], vTextureCoord.st);\
+  gl_FragColor = texture2D(textureSamplers[0], vTextureCoord);\
 }\
 ';
 
