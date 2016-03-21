@@ -33,6 +33,11 @@ nmlorg.gl.Context.prototype.drawTexture = function(texture) {
 };
 
 
+nmlorg.gl.Context.prototype.makeDoubleFramebuffer = function() {
+  return new nmlorg.gl.DoubleFramebuffer(this.gl);
+};
+
+
 nmlorg.gl.Context.prototype.makeFramebuffer = function() {
   return new nmlorg.gl.Framebuffer(this.gl);
 };

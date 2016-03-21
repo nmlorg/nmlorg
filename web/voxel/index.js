@@ -161,7 +161,7 @@ window.addEventListener('load', function(e) {
           0, 0, 1, .3,
       ]);
 
-  var fb = context.makeFramebuffer();
+  var fb = context.makeDoubleFramebuffer();
 
   var prev = 0;
   window.requestAnimationFrame(function anim(now) {
@@ -216,7 +216,7 @@ window.addEventListener('load', function(e) {
         'Roll: ' + round(rad2deg(roll)) + '&deg;<br>' +
         'Jump: ' + round(jumpSpeed, 1);
 
-    var camera = new nmlorg.Camera()
+    var camera = new nmlorg.Camera();
     camera.rotateX(-pitch);
     camera.rotateY(yaw);
     camera.translate(-pos[0], -pos[1] - cameraHeight, -pos[2]);
@@ -234,14 +234,14 @@ window.addEventListener('load', function(e) {
 
     switch (Math.floor(now / 5000) % 3) {
       case 0:
-        context.drawTexture(fb.colorTexture);
+        context.drawTexture(fb.buffers[0].colorTexture);
         break;
       case 1:
-        context.drawTexture(fb.depthTexture);
+        context.drawTexture(fb.buffers[0].depthTexture);
         break;
       case 2:
-        outlineShader.bindTextures(fb.colorTexture, fb.depthTexture);
-        outlineShader.drawSquare();
+        fb.applyFilterShader(outlineShader);
+        context.drawTexture(fb.buffers[0].colorTexture);
         break;
     }
 
