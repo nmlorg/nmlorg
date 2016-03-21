@@ -37,10 +37,6 @@ nmlorg.gl.Shader = function(gl, vertexShaderSource, fragmentShaderSource) {
   if (resolution)
     gl.uniform2f(resolution, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
-  this.setCameraPosition([1, 0, 0, 0,
-                          0, 1, 0, 0,
-                          0, 0, 1, 0,
-                          0, 0, 0, 1]);
   this.setCameraProjection(nmlorg.gl.makeOrtho(-1, 1, -1, 1));
 };
 
@@ -174,12 +170,11 @@ nmlorg.gl.BLUR_VERTEX_SHADER_SOURCE = '\
 attribute vec3 vertexPosition;\
 attribute vec2 textureCoord;\
 uniform mat4 bufferPosition;\
-uniform mat4 cameraPosition;\
 uniform mat4 cameraProjection;\
 varying mediump vec2 vTextureCoord;\
 \
 void main(void) {\
-  gl_Position = vec4(vertexPosition, 1.0) * bufferPosition * cameraPosition * cameraProjection;\
+  gl_Position = vec4(vertexPosition, 1.0) * bufferPosition * cameraProjection;\
   vTextureCoord = textureCoord;\
 }\
 ';
@@ -241,12 +236,11 @@ nmlorg.gl.OUTLINE_VERTEX_SHADER_SOURCE = '\
 attribute vec3 vertexPosition;\
 attribute vec2 textureCoord;\
 uniform mat4 bufferPosition;\
-uniform mat4 cameraPosition;\
 uniform mat4 cameraProjection;\
 varying mediump vec2 vTextureCoord;\
 \
 void main(void) {\
-  gl_Position = vec4(vertexPosition, 1.0) * bufferPosition * cameraPosition * cameraProjection;\
+  gl_Position = vec4(vertexPosition, 1.0) * bufferPosition * cameraProjection;\
   vTextureCoord = textureCoord;\
 }\
 ';
@@ -266,12 +260,11 @@ nmlorg.gl.TEXTURE_VERTEX_SHADER_SOURCE = '\
 attribute vec3 vertexPosition;\
 attribute vec2 textureCoord;\
 uniform mat4 bufferPosition;\
-uniform mat4 cameraPosition;\
 uniform mat4 cameraProjection;\
 varying mediump vec2 vTextureCoord;\
 \
 void main(void) {\
-  gl_Position = vec4(vertexPosition, 1.0) * bufferPosition * cameraPosition * cameraProjection;\
+  gl_Position = vec4(vertexPosition, 1.0) * bufferPosition * cameraProjection;\
   vTextureCoord = textureCoord;\
 }\
 ';
