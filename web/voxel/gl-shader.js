@@ -78,17 +78,15 @@ nmlorg.gl.Shader.prototype.drawSquare = function() {
                                   [0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0]);
   }
 
-  this.square_.draw([1, 0, 0, 0,
-                     0, 1, 0, 0,
-                     0, 0, 1, -1,
-                     0, 0, 0, 1]);
+  this.square_.draw();
 };
 
 
 nmlorg.gl.Shader.prototype.drawTriangles = function(position, numItems) {
   var gl = this.gl;
   this.activate();
-  gl.uniformMatrix4fv(this.bufferPosition, false, position);
+  if (position)
+    gl.uniformMatrix4fv(this.bufferPosition, false, position);
   gl.drawArrays(gl.TRIANGLES, 0, numItems);
 };
 
@@ -169,12 +167,11 @@ void main(void) {\
 nmlorg.gl.BLUR_VERTEX_SHADER_SOURCE = '\
 attribute vec3 vertexPosition;\
 attribute vec2 textureCoord;\
-uniform mat4 bufferPosition;\
 uniform mat4 cameraProjection;\
 varying mediump vec2 vTextureCoord;\
 \
 void main(void) {\
-  gl_Position = vec4(vertexPosition, 1.0) * bufferPosition * cameraProjection;\
+  gl_Position = vec4(vertexPosition.xy, -1., 1.) * cameraProjection;\
   vTextureCoord = textureCoord;\
 }\
 ';
@@ -198,7 +195,7 @@ uniform mat4 cameraProjection;\
 varying lowp vec4 vColor;\
 \
 void main(void) {\
-  gl_Position = vec4(vertexPosition, 1.0) * bufferPosition * cameraPosition * cameraProjection;\
+  gl_Position = vec4(vertexPosition, 1.) * bufferPosition * cameraPosition * cameraProjection;\
   vColor = vertexColor;\
 }\
 ';
@@ -235,12 +232,11 @@ void main(void) {\
 nmlorg.gl.OUTLINE_VERTEX_SHADER_SOURCE = '\
 attribute vec3 vertexPosition;\
 attribute vec2 textureCoord;\
-uniform mat4 bufferPosition;\
 uniform mat4 cameraProjection;\
 varying mediump vec2 vTextureCoord;\
 \
 void main(void) {\
-  gl_Position = vec4(vertexPosition, 1.0) * bufferPosition * cameraProjection;\
+  gl_Position = vec4(vertexPosition.xy, -1., 1.) * cameraProjection;\
   vTextureCoord = textureCoord;\
 }\
 ';
@@ -259,12 +255,11 @@ void main(void) {\
 nmlorg.gl.TEXTURE_VERTEX_SHADER_SOURCE = '\
 attribute vec3 vertexPosition;\
 attribute vec2 textureCoord;\
-uniform mat4 bufferPosition;\
 uniform mat4 cameraProjection;\
 varying mediump vec2 vTextureCoord;\
 \
 void main(void) {\
-  gl_Position = vec4(vertexPosition, 1.0) * bufferPosition * cameraProjection;\
+  gl_Position = vec4(vertexPosition.xy, -1., 1.) * cameraProjection;\
   vTextureCoord = textureCoord;\
 }\
 ';
