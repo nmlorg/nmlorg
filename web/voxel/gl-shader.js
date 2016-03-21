@@ -41,7 +41,7 @@ nmlorg.gl.Shader = function(gl, vertexShaderSource, fragmentShaderSource) {
                           0, 1, 0, 0,
                           0, 0, 1, 0,
                           0, 0, 0, 1]);
-  this.setCameraProjection(nmlorg.gl.makeOrtho(0, 1, 0, 1));
+  this.setCameraProjection(nmlorg.gl.makeOrtho(-1, 1, -1, 1));
 };
 
 
@@ -78,7 +78,7 @@ nmlorg.gl.Shader.prototype.compile = function(type, source) {
 
 nmlorg.gl.Shader.prototype.drawSquare = function() {
   if (!this.square_) {
-    this.square_ = this.makeShape([0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0],
+    this.square_ = this.makeShape([-1, 1, 0, -1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, 1, -1, 0],
                                   [0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0]);
   }
 
