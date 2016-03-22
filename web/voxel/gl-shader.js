@@ -10,6 +10,7 @@ nmlorg.gl = nmlorg.gl || {};
 
 nmlorg.gl.Shader = function(gl, vertexShaderSource, fragmentShaderSource) {
   this.gl = gl;
+  var ext = gl.getExtension('EXT_frag_depth');
   var program = this.program = gl.createProgram();
   gl.attachShader(program, this.compile(gl.VERTEX_SHADER, vertexShaderSource));
   gl.attachShader(program, this.compile(gl.FRAGMENT_SHADER, fragmentShaderSource));
@@ -72,11 +73,13 @@ nmlorg.gl.Shader.prototype.compile = function(type, source) {
 
 
 nmlorg.gl.Shader.prototype.drawSquare = function() {
+  var gl = this.gl;
   if (!this.square_) {
     this.square_ = this.makeShape([-1, 1, 0, -1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, 1, -1, 0],
                                   [0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0]);
   }
 
+  gl.clear(gl.DEPTH_BUFFER_BIT);
   this.square_.draw();
 };
 
