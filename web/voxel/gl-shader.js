@@ -28,6 +28,7 @@ nmlorg.gl.Shader = function(gl, vertexShaderSource, fragmentShaderSource) {
   if (this.vertexPosition != -1)
     gl.enableVertexAttribArray(this.vertexPosition);
 
+  this.box = gl.getUniformLocation(program, 'box');
   this.bufferPosition = gl.getUniformLocation(program, 'bufferPosition');
   this.cameraPosition = gl.getUniformLocation(program, 'cameraPosition');
   this.cameraProjection = gl.getUniformLocation(program, 'cameraProjection');
@@ -128,6 +129,21 @@ nmlorg.gl.Shader.prototype.makeShape = function() {
 
 nmlorg.gl.Shader.prototype.makeTextureBuffer = function(vertices) {
   return new nmlorg.gl.Buffer(this.gl, this.textureCoord, vertices, 2);
+};
+
+
+nmlorg.gl.Shader.prototype.setBox = function(left, right, bottom, top) {
+  if (left === undefined)
+    left = -1;
+  if (right === undefined)
+    right = 1;
+  if (bottom === undefined)
+    bottom = -1;
+  if (top === undefined)
+    top = 1;
+  var gl = this.gl;
+  this.activate();
+  gl.uniform4f(this.box, left, right, bottom, top);
 };
 
 

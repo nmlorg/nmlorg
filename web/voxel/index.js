@@ -73,14 +73,35 @@ window.addEventListener('load', function(e) {
       case 32:  // space
         jumpSpeed = jumpPower;
         break;
-      case 49:  // 1
+      case 48:  // 0
         filters ^= (1 << 0);
         break;
-      case 50:  // 2
+      case 49:  // 1
         filters ^= (1 << 1);
         break;
-      case 51:  // 3
+      case 50:  // 2
         filters ^= (1 << 2);
+        break;
+      case 51:  // 3
+        filters ^= (1 << 3);
+        break;
+      case 52:  // 4
+        filters ^= (1 << 4);
+        break;
+      case 53:  // 5
+        filters ^= (1 << 5);
+        break;
+      case 54:  // 6
+        filters ^= (1 << 6);
+        break;
+      case 55:  // 7
+        filters ^= (1 << 7);
+        break;
+      case 56:  // 8
+        filters ^= (1 << 8);
+        break;
+      case 57:  // 9
+        filters ^= (1 << 9);
         break;
     }
   });
@@ -226,9 +247,8 @@ window.addEventListener('load', function(e) {
         'Jump: ' + round(jumpSpeed, 1) + '<br>' +
         '<br>' +
         'Filters:<br>' +
-        '&nbsp; [<code>1</code>] Show depth buffer instead of color buffer.<br>' +
-        '&nbsp; [<code>2</code>] Blur objects.<br>' +
-        '&nbsp; [<code>3</code>] Outline objects.<br>';
+        '&nbsp; [<code>1</code>] Blur objects.<br>' +
+        '&nbsp; [<code>2</code>] Outline objects.<br>';
 
     var camera = new nmlorg.Camera();
     camera.rotateX(-pitch);
@@ -251,10 +271,8 @@ window.addEventListener('load', function(e) {
     if (filters & (1 << 2))
       fb.applyFilterShader(outlineShader);
 
-    if (filters & (1 << 0))
-      context.drawTexture(fb.buffers[0].depthTexture);
-    else
-      context.drawTexture(fb.buffers[0].colorTexture);
+    context.drawTexture(fb.buffers[0].colorTexture);
+    context.drawTexture(fb.buffers[0].depthTexture, .5, .9, .5, .9);
 
     window.requestAnimationFrame(anim);
   });

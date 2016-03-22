@@ -22,10 +22,11 @@ nmlorg.gl.Context.prototype.clear = function() {
 };
 
 
-nmlorg.gl.Context.prototype.drawTexture = function(texture) {
+nmlorg.gl.Context.prototype.drawTexture = function(texture, left, right, bottom, top) {
   if (!this.textureShader_)
     this.textureShader_ = this.loadShader('texture');
 
+  this.textureShader_.setBox(left, right, bottom, top);
   this.textureShader_.bindTextures(texture);
   this.textureShader_.drawSquare();
 };
