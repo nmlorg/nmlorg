@@ -23,13 +23,27 @@ nmlorg.gl.Context.prototype.clear = function() {
 
 
 nmlorg.gl.Context.prototype.drawTexture = function(texture) {
-  if (!this.textureShader_) {
-    this.textureShader_ = this.makeShader(
-        nmlorg.gl.TEXTURE_VERTEX_SHADER_SOURCE, nmlorg.gl.TEXTURE_FRAGMENT_SHADER_SOURCE);
-  }
+  if (!this.textureShader_)
+    this.textureShader_ = this.loadShader('texture');
 
   this.textureShader_.bindTextures(texture);
   this.textureShader_.drawSquare();
+};
+
+
+nmlorg.gl.Context.prototype.loadShader = function(name) {
+  if (!this.shaders_)
+    this.shaders_ = {};
+  if (!this.shaders_[name]) {
+    var fragmentReq = new XMLHttpRequest();
+    fragmentReq.open('GET', 'shaders/' + name + '.fragment.glsl', false);
+    fragmentReq.send();
+    var vertexReq = new XMLHttpRequest();
+    vertexReq.open('GET', 'shaders/' + name + '.vertex.glsl', false);
+    vertexReq.send();
+    this.shaders_[name] = this.makeShader(vertexReq.responseText, fragmentReq.responseText);
+  }
+  return this.shaders_[name];
 };
 
 

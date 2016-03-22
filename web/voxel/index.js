@@ -97,14 +97,11 @@ window.addEventListener('load', function(e) {
   });
 
   var perspectiveProjection = nmlorg.gl.makeFrustum(-1, 1, -1, 1);
-  var colorShader = context.makeShader(
-      nmlorg.gl.COLOR_VERTEX_SHADER_SOURCE, nmlorg.gl.COLOR_FRAGMENT_SHADER_SOURCE);
+  var colorShader = context.loadShader('color');
   colorShader.setCameraProjection(perspectiveProjection);
 
-  var blurShader = context.makeShader(
-      nmlorg.gl.BLUR_VERTEX_SHADER_SOURCE, nmlorg.gl.BLUR_FRAGMENT_SHADER_SOURCE);
-  var outlineShader = context.makeShader(
-      nmlorg.gl.OUTLINE_VERTEX_SHADER_SOURCE, nmlorg.gl.OUTLINE_FRAGMENT_SHADER_SOURCE);
+  var blurShader = context.loadShader('blur');
+  var outlineShader = context.loadShader('outline');
 
   var block = colorShader.makeShape(
       [
