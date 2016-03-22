@@ -247,8 +247,8 @@ window.addEventListener('load', function(e) {
         'Jump: ' + round(jumpSpeed, 1) + '<br>' +
         '<br>' +
         'Filters:<br>' +
-        '&nbsp; [<code>1</code>] Blur objects.<br>' +
-        '&nbsp; [<code>2</code>] Outline objects.<br>';
+        '&nbsp; [<code>1</code>] Outline objects.<br>' +
+        '&nbsp; [<code>2</code>] Blur objects.<br>';
 
     var camera = new nmlorg.Camera();
     camera.rotateX(-pitch);
@@ -267,9 +267,9 @@ window.addEventListener('load', function(e) {
     fb.deactivate();
 
     if (filters & (1 << 1))
-      fb.applyFilterShader(blurShader);
-    if (filters & (1 << 2))
       fb.applyFilterShader(outlineShader);
+    if (filters & (1 << 2))
+      fb.applyFilterShader(blurShader);
 
     context.drawTexture(fb.buffers[0].colorTexture);
     context.drawTexture(fb.buffers[0].depthTexture, .5, .9, .5, .9);
