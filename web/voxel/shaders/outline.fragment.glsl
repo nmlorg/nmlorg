@@ -1,9 +1,10 @@
 uniform lowp vec2 resolution;
 uniform sampler2D textureSamplers[2];
-varying mediump vec2 vTextureCoord;
+varying mediump vec2 var_textureCoord;
 
 lowp float GetDepth(lowp float s, lowp float t) {
-  lowp float depth = texture2D(textureSamplers[1], vTextureCoord + vec2(s / resolution.s, t / resolution.t)).x;
+  lowp float depth = texture2D(
+      textureSamplers[1], var_textureCoord + vec2(s / resolution.s, t / resolution.t)).x;
   return depth;
 }
 
@@ -20,5 +21,5 @@ void main(void) {
       }
     }
   }
-  gl_FragColor = texture2D(textureSamplers[0], vTextureCoord);
+  gl_FragColor = texture2D(textureSamplers[0], var_textureCoord);
 }
