@@ -17,6 +17,8 @@ void main(void) {
         continue;
       highp float depth2 = GetDepth(s, t);
       if (abs(gl_FragDepthEXT - depth2) > .01) {
+        if (gl_FragDepthEXT > depth2)
+          gl_FragDepthEXT = depth2;
         gl_FragColor = vec4(0, 0, 0, 1);
         return;
       }

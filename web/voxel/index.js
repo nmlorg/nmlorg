@@ -122,6 +122,8 @@ window.addEventListener('load', function(e) {
   colorShader.setCameraProjection(perspectiveProjection);
 
   var blurShader = context.loadShader('blur');
+  var fogShader = context.loadShader('fog');
+  var noopShader = context.loadShader('noop');
   var outlineShader = context.loadShader('outline');
 
   var block = colorShader.makeShape(
@@ -247,8 +249,10 @@ window.addEventListener('load', function(e) {
         'Jump: ' + round(jumpSpeed, 1) + '<br>' +
         '<br>' +
         'Filters:<br>' +
-        '&nbsp; [<code>1</code>] Outline objects.<br>' +
-        '&nbsp; [<code>2</code>] Blur objects.<br>';
+        '&nbsp; [<code>1</code>] ' + (filters & (1 << 1) ? '<b>' : '') + 'Outline objects</b><br>' +
+        '&nbsp; [<code>2</code>] ' + (filters & (1 << 2) ? '<b>' : '') + 'Depth-based fog filter</b><br>' +
+        '&nbsp; [<code>8</code>] ' + (filters & (1 << 8) ? '<b>' : '') + 'Blur filter</b><br>' +
+        '&nbsp; [<code>9</code>] ' + (filters & (1 << 9) ? '<b>' : '') + 'Noop filter</b>';
 
     var camera = new nmlorg.Camera();
     camera.rotateX(-pitch);
@@ -269,7 +273,11 @@ window.addEventListener('load', function(e) {
     if (filters & (1 << 1))
       fb.applyFilterShader(outlineShader);
     if (filters & (1 << 2))
+      fb.applyFilterShader(fogShader);
+    if (filters & (1 << 8))
       fb.applyFilterShader(blurShader);
+    if (filters & (1 << 9))
+      fb.applyFilterShader(noopShader);
 
     context.drawTexture(fb.buffers[0].colorTexture);
     context.drawTexture(fb.buffers[0].depthTexture, .5, .9, .5, .9);
