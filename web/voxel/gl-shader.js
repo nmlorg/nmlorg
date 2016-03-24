@@ -10,7 +10,8 @@ nmlorg.gl = nmlorg.gl || {};
 
 nmlorg.gl.Shader = function(gl, vertexShaderSource, fragmentShaderSource) {
   this.gl = gl;
-  var ext = gl.getExtension('EXT_frag_depth');
+  gl.getExtension('EXT_frag_depth');
+  gl.getExtension('WEBGL_draw_buffers');
   var program = this.program = gl.createProgram();
   gl.attachShader(program, this.compile(gl.VERTEX_SHADER, vertexShaderSource));
   gl.attachShader(program, this.compile(gl.FRAGMENT_SHADER, fragmentShaderSource));

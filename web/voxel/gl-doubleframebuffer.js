@@ -39,4 +39,9 @@ nmlorg.gl.DoubleFramebuffer.prototype.deactivate = function() {
   return this.buffers[0].deactivate();
 };
 
+
+nmlorg.gl.DoubleFramebuffer.prototype.get3dCoord = function(x, y) {
+  return this.buffers[0].get3dCoord(x, y);
+};
+
 })();

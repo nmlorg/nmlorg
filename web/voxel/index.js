@@ -31,7 +31,7 @@ window.addEventListener('load', function(e) {
   escapedBoxDiv.textContent = 'Press Esc to toggle between navigation and menu mode.';
 
   var pos = [0, 0, 0];
-  var yaw = 0, pitch = 0, roll = 0;
+  var yaw = deg2rad(135), pitch = 0, roll = 0;
   var jumpSpeed = 0;
 
   function mouseMove(e) {
@@ -281,19 +281,6 @@ window.addEventListener('load', function(e) {
     } else
       jumpSpeed -= fallRate * dt;
 
-    canvasDiv.innerHTML = 'Position: ' +
-        JSON.stringify([round(pos[0], 1), round(pos[1], 1), round(pos[2], 1)]) + '<br>' +
-        'Yaw: ' + round(rad2deg(yaw)) + '&deg;<br>' +
-        'Pitch: ' + round(rad2deg(pitch)) + '&deg;<br>' +
-        'Roll: ' + round(rad2deg(roll)) + '&deg;<br>' +
-        'Jump: ' + round(jumpSpeed, 1) + '<br>' +
-        '<br>' +
-        'Filters:<br>' +
-        '&nbsp; [<code>1</code>] ' + (filters & (1 << 1) ? '<b>' : '') + 'Outline objects</b><br>' +
-        '&nbsp; [<code>2</code>] ' + (filters & (1 << 2) ? '<b>' : '') + 'Depth-based fog filter</b><br>' +
-        '&nbsp; [<code>8</code>] ' + (filters & (1 << 8) ? '<b>' : '') + 'Blur filter</b><br>' +
-        '&nbsp; [<code>9</code>] ' + (filters & (1 << 9) ? '<b>' : '') + 'Noop filter</b>';
-
     var camera = new nmlorg.Camera();
     camera.rotateX(-pitch);
     camera.rotateY(yaw);
@@ -302,13 +289,15 @@ window.addEventListener('load', function(e) {
     fb.activate();
     context.clear();
     for (var y of [-1, 5])
-      for (var x = -20; x < 20; x++)
-        for (var z = -20; z < 20; z++)
+      for (var x = 0; x < 40; x++)
+        for (var z = 0; z < 40; z++)
           block.draw([1, 0, 0, x,
                       0, 1, 0, y,
                       0, 0, 1, z,
                       0, 0, 0, 1]);
     fb.deactivate();
+
+    var coord3d = fb.get3dCoord(0, 0);
 
     if (filters & (1 << 1))
       fb.applyFilterShader(outlineShader);
@@ -321,6 +310,21 @@ window.addEventListener('load', function(e) {
 
     context.drawTexture(fb.buffers[0].colorTexture);
     context.drawTexture(fb.buffers[0].depthTexture, .5, .9, .5, .9);
+
+    canvasDiv.innerHTML = 'Position: ' +
+        JSON.stringify([round(pos[0], 1), round(pos[1], 1), round(pos[2], 1)]) + '<br>' +
+        'Yaw: ' + round(rad2deg(yaw)) + '&deg;<br>' +
+        'Pitch: ' + round(rad2deg(pitch)) + '&deg;<br>' +
+        'Roll: ' + round(rad2deg(roll)) + '&deg;<br>' +
+        'Jump: ' + round(jumpSpeed, 1) + '<br>' +
+        '<br>' +
+        'Object at center of the screen: ' + JSON.stringify(coord3d) + '<br>' +
+        '<br>' +
+        'Filters:<br>' +
+        '&nbsp; [<code>1</code>] ' + (filters & (1 << 1) ? '<b>' : '') + 'Outline objects</b><br>' +
+        '&nbsp; [<code>2</code>] ' + (filters & (1 << 2) ? '<b>' : '') + 'Depth-based fog filter</b><br>' +
+        '&nbsp; [<code>8</code>] ' + (filters & (1 << 8) ? '<b>' : '') + 'Blur filter</b><br>' +
+        '&nbsp; [<code>9</code>] ' + (filters & (1 << 9) ? '<b>' : '') + 'Noop filter</b>';
 
     window.requestAnimationFrame(anim);
   });
