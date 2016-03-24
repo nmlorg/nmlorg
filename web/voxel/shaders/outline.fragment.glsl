@@ -1,4 +1,4 @@
-#extension GL_EXT_frag_depth : enable
+#extension GL_EXT_frag_depth : require
 
 uniform mediump vec2 resolution;
 uniform sampler2D textureSamplers[2];
