@@ -126,6 +126,8 @@ nmlorg.gl.Shader.prototype.makeShape = function() {
     buffers.push(this.makeColorBuffer(args.shift()));
   if (this.textureCoord != -1)
     buffers.push(this.makeTextureBuffer(args.shift()));
+  if (args.length)
+    throw 'Unhandled vertex array.';
 
   return new nmlorg.gl.Shape(this, buffers);
 };

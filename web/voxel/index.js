@@ -282,10 +282,12 @@ window.addEventListener('load', function(e) {
       jumpSpeed -= fallRate * dt;
 
     var camera = new nmlorg.Camera();
+    camera.translate(0, 0, -cameraHeight);
     camera.rotateX(-pitch);
     camera.rotateY(yaw);
     camera.translate(-pos[0], -pos[1] - cameraHeight, -pos[2]);
     colorShader.setCameraPosition(camera.getM_().m_);
+
     fb.activate();
     context.clear();
     for (var y of [-1, 5])
@@ -295,6 +297,10 @@ window.addEventListener('load', function(e) {
                       0, 1, 0, y,
                       0, 0, 1, z,
                       0, 0, 0, 1]);
+    block.draw([1, 0, 0, pos[0] - .5,
+                0, 1, 0, pos[1] + cameraHeight - .5,
+                0, 0, 1, pos[2] - .5,
+                0, 0, 0, 1]);
     fb.deactivate();
 
     var coord3d = fb.get3dCoord(0, 0);
@@ -310,6 +316,29 @@ window.addEventListener('load', function(e) {
 
     context.drawTexture(fb.buffers[0].colorTexture);
     context.drawTexture(fb.buffers[0].depthTexture, .5, .9, .5, .9);
+
+    var camera = new nmlorg.Camera();
+    camera.rotateX(deg2rad(90));
+    camera.rotateY(yaw);
+    camera.translate(-pos[0], -pos[1] - cameraHeight * 5, -pos[2]);
+    colorShader.setCameraPosition(camera.getM_().m_);
+
+    fb.activate();
+    context.clear();
+    for (var y of [-1, 5])
+      for (var x = 0; x < 40; x++)
+        for (var z = 0; z < 40; z++)
+          block.draw([1, 0, 0, x,
+                      0, 1, 0, y,
+                      0, 0, 1, z,
+                      0, 0, 0, 1]);
+    block.draw([1, 0, 0, pos[0] - .5,
+                0, 1, 0, pos[1] + cameraHeight / 2,
+                0, 0, 1, pos[2] - .5,
+                0, 0, 0, 1]);
+    fb.deactivate();
+
+    context.drawTexture(fb.buffers[0].colorTexture, .5, .9, -.9, -.5);
 
     canvasDiv.innerHTML = 'Position: ' +
         JSON.stringify([round(pos[0], 1), round(pos[1], 1), round(pos[2], 1)]) + '<br>' +
