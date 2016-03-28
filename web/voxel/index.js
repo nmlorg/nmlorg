@@ -41,7 +41,7 @@ window.addEventListener('load', function(e) {
     while (yaw >= 2 * Math.PI)
       yaw -= 2 * Math.PI;
 
-    pitch = Math.max(deg2rad(-85), Math.min(deg2rad(85),
+    pitch = Math.max(deg2rad(-75), Math.min(deg2rad(75),
                                             pitch + deg2rad(-e.movementY * mouseSensitivity)));
   }
 
@@ -235,6 +235,7 @@ window.addEventListener('load', function(e) {
 
   var fb = context.makeDoubleFramebuffer();
 
+  var frameTimes = [];
   var prev = 0;
   window.requestAnimationFrame(function anim(now) {
     var dt = prev && (now - prev) / 1000;
@@ -340,8 +341,8 @@ window.addEventListener('load', function(e) {
 
     context.drawTexture(fb.buffers[0].colorTexture, .5, .9, -.9, -.5);
 
-    canvasDiv.innerHTML = 'Position: ' +
-        JSON.stringify([round(pos[0], 1), round(pos[1], 1), round(pos[2], 1)]) + '<br>' +
+    canvasDiv.innerHTML = 'FPS: ' + round(1000 * frameTimes.length / (now - frameTimes[0])) + '<br>' +
+        'Position: ' + JSON.stringify([round(pos[0]), round(pos[1]), round(pos[2])]) + '<br>' +
         'Yaw: ' + round(rad2deg(yaw)) + '&deg;<br>' +
         'Pitch: ' + round(rad2deg(pitch)) + '&deg;<br>' +
         'Roll: ' + round(rad2deg(roll)) + '&deg;<br>' +
@@ -355,6 +356,9 @@ window.addEventListener('load', function(e) {
         '&nbsp; [<code>8</code>] ' + (filters & (1 << 8) ? '<b>' : '') + 'Blur filter</b><br>' +
         '&nbsp; [<code>9</code>] ' + (filters & (1 << 9) ? '<b>' : '') + 'Noop filter</b>';
 
+    frameTimes.push(now);
+    while (frameTimes.length > 10)
+      frameTimes.shift();
     window.requestAnimationFrame(anim);
   });
 });
