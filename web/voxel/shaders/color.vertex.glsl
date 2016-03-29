@@ -6,6 +6,6 @@ uniform mat4 cameraProjection;
 varying mediump vec4 var_vertexColor;
 
 void main(void) {
-  gl_Position = vec4(vertexPosition, 1.) * bufferPosition * cameraPosition * cameraProjection;
+  gl_Position = cameraProjection * cameraPosition * bufferPosition * vec4(vertexPosition, 1.);
   var_vertexColor = vertexColor;
 }

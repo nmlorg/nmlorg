@@ -89,7 +89,7 @@ nmlorg.gl.Shader.prototype.drawTriangles = function(position, numItems) {
   var gl = this.gl;
   this.activate();
   if (position)
-    gl.uniformMatrix4fv(this.bufferPosition, false, position);
+    gl.uniformMatrix4fv(this.bufferPosition, false, this.transpose_(position));
   gl.drawArrays(gl.TRIANGLES, 0, numItems);
 };
 
@@ -138,6 +138,36 @@ nmlorg.gl.Shader.prototype.makeTextureBuffer = function(vertices) {
 };
 
 
+/**
+ * Matrices of the form:
+ *
+ *   [A  B  C  D
+ *    E  F  G  H
+ *    I  J  K  L
+ *    M  N  O  P]
+ *
+ * are easiest to specify along the lines of:
+ *
+ *   var matrix = [A, B, C, D,
+ *                 E, F, G, H,
+ *                 I, J, K, L,
+ *                 M, N, O, P];
+ *
+ * but OpenGL expects them to be provided a column at a time:
+ *
+ *    gl.uniformMatrix4fv(position, false, [A, E, I, M,
+ *                                          B, F, J, N,
+ *                                          C, G, K, O,
+ *                                          D, H, L, P]);
+ */
+nmlorg.gl.Shader.prototype.transpose_ = function(m) {
+  return [m[0], m[4], m[8], m[12],
+          m[1], m[5], m[9], m[13],
+          m[2], m[6], m[10], m[14],
+          m[3], m[7], m[11], m[15]];
+};
+
+
 nmlorg.gl.Shader.prototype.setBox = function(left, right, bottom, top) {
   if (left === undefined)
     left = -1;
@@ -156,14 +186,14 @@ nmlorg.gl.Shader.prototype.setBox = function(left, right, bottom, top) {
 nmlorg.gl.Shader.prototype.setCameraPosition = function(matrix) {
   var gl = this.gl;
   this.activate();
-  gl.uniformMatrix4fv(this.cameraPosition, false, matrix);
+  gl.uniformMatrix4fv(this.cameraPosition, false, this.transpose_(matrix));
 };
 
 
 nmlorg.gl.Shader.prototype.setCameraProjection = function(matrix) {
   var gl = this.gl;
   this.activate();
-  gl.uniformMatrix4fv(this.cameraProjection, false, matrix);
+  gl.uniformMatrix4fv(this.cameraProjection, false, this.transpose_(matrix));
 };
 
 })();
