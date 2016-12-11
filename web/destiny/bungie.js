@@ -43,8 +43,9 @@ bungie.fetch = function(url, data) {
 
 
 
-bungie.init = function(apiKey) {
+bungie.init = function(apiKey, authUrl) {
   bungie.API_KEY = apiKey;
+  bungie.API_AUTH_URL = authUrl;
 
   return new Promise(function(resolve, reject) {resolve()});
 };
@@ -99,8 +100,7 @@ bungie.login = function() {
     var paramstr = window.location.search.substring(1);
     if (paramstr)
       paramstr = '?state=' + btoa(paramstr);
-    window.location = 'https://www.bungie.net/en/Application/Authorize/11060' + paramstr;
-
+    window.location = bungie.API_AUTH_URL + paramstr;
   }
 };
 
