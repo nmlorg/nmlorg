@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Destiny Dashboard</title>
+
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@15/dist/react.min.js"></script>
+<script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+<script src="bungie.js"></script>
+
+<script type="text/babel">
+const API_KEY = 'fc29e10e0d1349d3a74feaf53b11cbf6';
+
+
+class Welcome extends React.Component {
+  render() {
+    return <span>Welcome, {bungie.USER.displayName}!</span>;
+  }
+}
+
+
+bungie.init(API_KEY)
+    .then(bungie.login)
+    .then(bungie.getBungieNetUser)
+    .then(function() {
+      ReactDOM.render(<Welcome/>, document.getElementById('root'));
+    });
+
+</script>
