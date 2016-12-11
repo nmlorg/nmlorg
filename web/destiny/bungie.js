@@ -47,7 +47,7 @@ bungie.init = function(apiKey, authUrl) {
   bungie.API_KEY = apiKey;
   bungie.API_AUTH_URL = authUrl;
 
-  return new Promise(function(resolve, reject) {resolve()});
+  return Promise.resolve();
 };
 
 
@@ -91,7 +91,7 @@ bungie.login = function() {
     return bungie.fetch('App/GetAccessTokensFromCode/', {code: params.code})
         .then(handleAccessTokens);
   } else if (AUTH.access_expires && (AUTH.access_expires >= now)) {
-    return new Promise(function(resolve, reject) {resolve()});
+    return Promise.resolve();
   } else if (AUTH.refresh_token && (AUTH.refresh_ready <= now) && (AUTH.refresh_expires > now)) {
     return bungie.fetch('App/GetAccessTokensFromRefreshToken/', {refreshToken: AUTH.refresh_token})
         .then(handleAccessTokens);
@@ -101,6 +101,7 @@ bungie.login = function() {
     if (paramstr)
       paramstr = '?state=' + btoa(paramstr);
     window.location = bungie.API_AUTH_URL + paramstr;
+    return Promise.reject();
   }
 };
 
