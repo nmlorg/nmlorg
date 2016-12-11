@@ -76,10 +76,16 @@ bungie.login = function() {
       AUTH.refresh_expires = now + data.Response.refreshToken.expires;
       AUTH.scope = data.Response.scope;
       bungie.store('AUTH', AUTH);
-      if (params.state)
-        window.location.search = atob(params.state);
-      else
-        window.location.search = '';
+      const queryString = params.state ? atob(params.state) : '';
+      if (queryString)
+        window.location.search = queryString;
+      else {
+        const i = window.location.href.indexOf('?');
+        if (i == -1)
+          window.location.reload();
+        else
+          window.location = window.location.href.substring(0, i);
+      }
     }
 
     throw data;
