@@ -19,7 +19,7 @@ var AUTH = bungie.AUTH = bungie.load('AUTH') || {};
 var USER = bungie.USER = bungie.load('USER') || {};
 
 
-bungie.fetch = function(url, data) {
+bungie.fetch = function(url, data, auth) {
   return new Promise(function(resolve, reject) {
     const req = new XMLHttpRequest();
 
@@ -37,7 +37,7 @@ bungie.fetch = function(url, data) {
     });
     if (bungie.API_KEY)
       req.setRequestHeader('X-API-Key', bungie.API_KEY);
-    if (AUTH.access_token)
+    if (AUTH.access_token && (auth !== false))
       req.setRequestHeader('Authorization', 'Bearer ' + AUTH.access_token);
     console.log('bungie.fetch:', data ? 'POST' : 'GET', url, data);
     req.send(data ? JSON.stringify(data) : null);
