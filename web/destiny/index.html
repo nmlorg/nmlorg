@@ -10,6 +10,7 @@
 <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
 <script src="apikey.js"></script>
+<script src="auth.js"></script>
 <script src="bungie.js"></script>
 
 <script type="text/babel">
@@ -21,7 +22,7 @@ class Welcome extends React.Component {
 
 
 bungie.init(API_KEY, API_AUTH_URL)
-    .then(bungie.login)
+    .then(bungie.auth.login)
     .then(bungie.getBungieNetUser)
     .then(function() {
       ReactDOM.render(<Welcome/>, document.getElementById('root'));
