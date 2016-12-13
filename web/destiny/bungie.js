@@ -22,12 +22,12 @@ bungie.fetch = function(url, data, auth) {
   var tries = 50;
   var backoff = 100;
   var method = 'GET';
+  var sendData = null;
 
   if (data) {
     method = 'POST';
-    data = JSON.stringify(data);
-  } else
-    data = null;
+    sendData = JSON.stringify(data);
+  }
 
   url = 'https://www.bungie.net/Platform/' + url;
 
@@ -56,7 +56,7 @@ bungie.fetch = function(url, data, auth) {
     if (AUTH.access_token && (auth !== false))
       req.setRequestHeader('Authorization', 'Bearer ' + AUTH.access_token);
     console.log('bungie.fetch:', method, url, data, auth, tries, backoff);
-    req.send(data);
+    req.send(sendData);
   });
 };
 
