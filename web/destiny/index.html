@@ -9,28 +9,39 @@
 <script src="https://unpkg.com/react@15/dist/react.min.js"></script>
 <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+<script src="account.js"></script>
 <script src="apikey.js"></script>
 <script src="auth.js"></script>
 <script src="bungie.js"></script>
 <script src="user.js"></script>
 
 <script type="text/babel">
-const USER = {};
-
-
 class Welcome extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = bungie.load('welcome') || {};
+  }
+
   render() {
-    return <span>Welcome, {USER.displayName}!</span>;
+    if (!this.state.account) {
+      bungie.user.getCurrentBungieNetUser()
+          .then(data => {return bungie.Account.load(0, data.Response.membershipId)})
+          .then(account => {this.setState({account})});
+      return <span>Retrieving your accounts.</span>;
+    }
+    console.log('account:', this.state.account);
+    return <div>
+      Welcome, {this.state.account.bungieName}!
+      <ul>
+        {this.state.account.accounts.map(account => {return <li>{account.userInfo.membershipId}</li>})}
+      </ul>
+    </div>;
   }
 }
 
 
 bungie.init(API_KEY, API_AUTH_URL)
     .then(bungie.auth.login)
-    .then(bungie.user.getBungieNetUser)
-    .then(function(data) {
-      USER.displayName = data.Response.user.displayName;
-    })
     .then(function() {
       ReactDOM.render(<Welcome/>, document.getElementById('root'));
     });
