@@ -19,26 +19,43 @@ var AUTH = bungie.AUTH = bungie.load('AUTH') || {};
 
 
 bungie.fetch = function(url, data, auth) {
-  return new Promise(function(resolve, reject) {
+  var tries = 50;
+  var backoff = 100;
+  var method = 'GET';
+
+  if (data) {
+    method = 'POST';
+    data = JSON.stringify(data);
+  } else
+    data = null;
+
+  url = 'https://www.bungie.net/Platform/' + url;
+
+  return new Promise(function BungieFetch(resolve, reject) {
     const req = new XMLHttpRequest();
 
-    req.open(data ? 'POST' : 'GET', 'https://www.bungie.net/Platform/' + url);
-    req.addEventListener('load', function(e) {
+    req.open(method, url);
+    req.addEventListener('loadend', function(e) {
       if (this.status == 200) {
-        const data = JSON.parse(this.responseText);
-        console.log('bungie.fetch: `->', data);
-        if (data.ErrorCode == 1)
-          resolve(data);
-        else
-          reject(data);
-      } else
-        reject(this);
+        try {
+          const data = JSON.parse(this.responseText);
+          console.log('bungie.fetch: `->', data);
+          if (data.ErrorCode == 1)
+            return resolve(data);
+        } catch(e) {
+          console.log('bungie.fetch: `->', e);
+        }
+      }
+      if (!tries--)
+        return reject(this);
+      window.setTimeout(BungieFetch, backoff, resolve, reject);
+      backoff = Math.min(backoff * 2, 2000);
     });
     if (bungie.API_KEY)
       req.setRequestHeader('X-API-Key', bungie.API_KEY);
     if (AUTH.access_token && (auth !== false))
       req.setRequestHeader('Authorization', 'Bearer ' + AUTH.access_token);
-    console.log('bungie.fetch:', data ? 'POST' : 'GET', url, data);
+    console.log('bungie.fetch:', method, url, data, auth, tries, backoff);
     req.send(data ? JSON.stringify(data) : null);
   });
 };
