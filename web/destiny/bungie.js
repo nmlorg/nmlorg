@@ -56,7 +56,7 @@ bungie.fetch = function(url, data, auth) {
     if (AUTH.access_token && (auth !== false))
       req.setRequestHeader('Authorization', 'Bearer ' + AUTH.access_token);
     console.log('bungie.fetch:', method, url, data, auth, tries, backoff);
-    req.send(data ? JSON.stringify(data) : null);
+    req.send(data);
   });
 };
 
