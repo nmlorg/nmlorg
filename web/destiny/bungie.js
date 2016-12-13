@@ -16,7 +16,6 @@ bungie.store = function(key, data) {
 
 
 var AUTH = bungie.AUTH = bungie.load('AUTH') || {};
-var USER = bungie.USER = bungie.load('USER') || {};
 
 
 bungie.fetch = function(url, data, auth) {
@@ -51,15 +50,6 @@ bungie.init = function(apiKey, authUrl) {
   bungie.API_AUTH_URL = authUrl;
 
   return Promise.resolve();
-};
-
-
-bungie.getBungieNetUser = function() {
-  return bungie.fetch('User/GetBungieNetUser/')
-      .then(function(data) {
-        USER.displayName = data.Response.user.displayName;
-        bungie.store('USER', USER);
-      });
 };
 
 })();
