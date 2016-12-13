@@ -25,7 +25,7 @@ class Welcome extends React.Component {
   render() {
     if (!this.state.account) {
       bungie.user.getCurrentBungieNetUser()
-          .then(data => {return bungie.Account.load(0, data.Response.membershipId)})
+          .then(data => {return bungie.Account.load(254, data.Response.membershipId)})
           .then(account => {this.setState({account})});
       return <span>Retrieving your accounts.</span>;
     }
