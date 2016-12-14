@@ -16,24 +16,24 @@
 <script src="user.js"></script>
 
 <script type="text/babel">
-class Welcome extends React.Component {
+class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = bungie.load('welcome') || {};
+    this.state = {};
   }
 
   render() {
     if (!this.state.account) {
       bungie.user.getCurrentBungieNetUser()
-          .then(data => {return bungie.Account.load(254, data.Response.membershipId)})
-          .then(account => {this.setState({account})});
+          .then(data => bungie.Account.load(254, data.Response.membershipId))
+          .then(account => this.setState({account}));
       return <span>Retrieving your accounts.</span>;
     }
     console.log('account:', this.state.account);
     return <div>
       Welcome, {this.state.account.bungieName}!
       <ul>
-        {this.state.account.accounts.map(account => {return <li>{account.userInfo.membershipId}</li>})}
+        {this.state.account.accounts.map(account => <li>{account.userInfo.membershipId}</li>)}
       </ul>
     </div>;
   }
@@ -43,7 +43,7 @@ class Welcome extends React.Component {
 bungie.init(API_KEY, API_AUTH_URL)
     .then(bungie.auth.login)
     .then(function() {
-      ReactDOM.render(<Welcome/>, document.getElementById('root'));
+      ReactDOM.render(<App/>, document.getElementById('root'));
     });
 
 </script>
