@@ -13,6 +13,7 @@
 <script src="apikey.js"></script>
 <script src="auth.js"></script>
 <script src="bungie.js"></script>
+<script src="destiny.js"></script>
 <script src="user.js"></script>
 
 <script type="text/babel">
@@ -23,17 +24,74 @@ class App extends React.Component {
   }
 
   render() {
-    if (!this.state.account) {
-      bungie.user.getCurrentBungieNetUser()
-          .then(data => bungie.Account.load(254, data.Response.membershipId))
-          .then(account => this.setState({account}));
-      return <span>Retrieving your accounts.</span>;
+    if (!this.state.account)
+      return <ChooseAccount app={this}/>;
+    else
+      return <Account account={this.state.account}/>;
+  }
+}
+
+
+class ChooseAccount extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
+  render() {
+    if (!this.state.q) {
+      return <div>
+        Hi! Who would you like to look up?<br/>
+        <form onSubmit={e => {
+          e.preventDefault();
+          this.setState({q: e.target.children[0].value, r: null});
+        }}>
+          <input placeholder="PSN username/XBL gamertag"/>
+        </form>
+        <button onClick={e => {
+          e.preventDefault();
+          bungie.auth.login()
+            .then(bungie.user.getCurrentBungieNetUser)
+            .then(data => bungie.Account.load(254, data.Response.membershipId))
+            .then(account => this.props.app.setState({account}));
+        }}>Login</button>
+      </div>;
     }
-    console.log('account:', this.state.account);
+
+    if (!this.state.r) {
+      bungie.destiny.searchDestinyPlayer(this.state.q)
+          .then(data => this.setState({r: data.Response}));
+      return <span>Searching for <code>{this.state.q}</code>.</span>;
+    }
+
+    if (this.state.r.length == 1) {
+      bungie.Account.load(this.state.r[0].membershipType, this.state.r[0].membershipId)
+          .then(account => this.props.app.setState({account}));
+      return <span>Retrieving <code>{this.state.r[0].displayName}</code>.</span>;
+    }
+
+    return <ul>
+      {this.state.r.map(result => <li>
+        <img src={'https://www.bungie.net' + result.iconPath}/>
+        <button onClick={e => {
+          e.preventDefault();
+          bungie.Account.load(result.membershipType, result.membershipId)
+              .then(account => this.props.app.setState({account}));
+        }}>{result.displayName}</button>
+      </li>)}
+    </ul>;
+  }
+}
+
+
+class Account extends React.Component {
+  render() {
+    const account = this.props.account;
+    console.log('account:', account);
     return <div>
-      Welcome, {this.state.account.bungieName}!
+      Welcome, {account.bungieName}!
       <ul>
-        {this.state.account.accounts.map(account => <li>{account.userInfo.membershipId}</li>)}
+        {account.accounts.map(account => <li>{account.userInfo.membershipId}</li>)}
       </ul>
     </div>;
   }
@@ -41,7 +99,6 @@ class App extends React.Component {
 
 
 bungie.init(API_KEY, API_AUTH_URL)
-    .then(bungie.auth.login)
     .then(function() {
       ReactDOM.render(<App/>, document.getElementById('root'));
     });

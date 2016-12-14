@@ -66,6 +66,9 @@ bungie.init = function(apiKey, authUrl) {
   bungie.API_KEY = apiKey;
   bungie.API_AUTH_URL = authUrl;
 
+  if (bungie.auth)
+    return bungie.auth.init();
+
   return Promise.resolve();
 };
 

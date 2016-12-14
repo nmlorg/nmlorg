@@ -59,7 +59,7 @@ function scheduleTokenRefresh() {
 }
 
 
-bungie.auth.login = function() {
+bungie.auth.init = function() {
   const params = {};
 
   for (let s of window.location.search.substring(1).split('&')) {
@@ -72,9 +72,6 @@ bungie.auth.login = function() {
           s.substring(i + 1).replace(/[+]/g, ' '));
   }
 
-  const AUTH = bungie.AUTH;
-  const now = Date.now() / 1000;
-
   if (params.code) {
     let base = window.location.href;
     const i = base.indexOf('?');
@@ -84,7 +81,23 @@ bungie.auth.login = function() {
                                 base + (params.state ? '?' + atob(params.state) : ''));
 
     return getTokens(params.code);
-  } else if (AUTH.access_expires && (AUTH.access_expires >= now)) {
+  }
+
+  const AUTH = bungie.AUTH;
+  const now = Date.now() / 1000;
+
+  if (AUTH.access_expires && (AUTH.access_expires >= now))
+    scheduleTokenRefresh();
+
+  return Promise.resolve();
+};
+
+
+bungie.auth.login = function() {
+  const AUTH = bungie.AUTH;
+  const now = Date.now() / 1000;
+
+  if (AUTH.access_expires && (AUTH.access_expires >= now)) {
     scheduleTokenRefresh();
     return Promise.resolve();
   } else if (AUTH.refresh_token && (AUTH.refresh_ready <= now) && (AUTH.refresh_expires > now)) {
