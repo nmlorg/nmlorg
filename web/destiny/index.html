@@ -88,9 +88,9 @@ class Account extends React.Component {
     const account = this.props.account;
     console.log('account:', account);
     return <div>
-      Welcome, {account.bungieName}!
+      Welcome, {account.bungieNetUser.displayName}!
       <ul>
-        {account.accounts.map(account => <li>{account.userInfo.membershipId}</li>)}
+        {account.destinyAccounts.map(account => <li>{account.userInfo.membershipId}</li>)}
       </ul>
     </div>;
   }
