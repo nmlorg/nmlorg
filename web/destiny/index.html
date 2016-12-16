@@ -87,12 +87,19 @@ class Account extends React.Component {
   render() {
     const account = this.props.account;
     console.log('account:', account);
-    return <div>
-      Welcome, {account.bungieNetUser.displayName}!
-      <ul>
-        {account.destinyAccounts.map(account => <li>{account.userInfo.membershipId}</li>)}
-      </ul>
-    </div>;
+    return <ul>
+      <li>
+        Bungie user <code>{account.bungieNetUser.displayName}</code> (account <code>{account.bungieNetUser.membershipId}/254</code>):
+        <ul>
+          {account.destinyAccounts.map(account => <li>
+            Destiny user <code>{account.userInfo.displayName}</code> (account <code>{account.userInfo.membershipId}/{account.userInfo.membershipType}</code>):
+            <ul>
+              {account.characters.map(character => <li>Character <code>{character.characterId}</code></li>)}
+            </ul>
+          </li>)}
+        </ul>
+      </li>
+    </ul>;
   }
 }
 
