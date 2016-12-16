@@ -28,9 +28,9 @@ bungie.DestinyAccount = class DestinyAccount {
     this.characters = this.characters.map(character => new bungie.DestinyCharacter(character));
   }
 
-  GetAllItemsSummary() {
+  GetAllItemsSummary(p_={}) {
     return bungieNetPlatform.destinyService.GetAllItemsSummary(
-        this.userInfo.membershipType, this.userInfo.membershipId);
+        this.userInfo.membershipType, this.userInfo.membershipId, p_);
   }
 };
 
@@ -41,14 +41,14 @@ bungie.DestinyCharacter = class DestinyCharacter {
       this[k] = v;
   }
 
-  GetCharacterInventory() {
+  GetCharacterInventory(p_={}) {
     return bungieNetPlatform.destinyService.GetCharacterInventory(
-        this.membershipType, this.membershipId, this.characterId);
+        this.membershipType, this.membershipId, this.characterId, p_);
   }
 
-  GetCharacterInventorySummary() {
+  GetCharacterInventorySummary(p_={}) {
     return bungieNetPlatform.destinyService.GetCharacterInventorySummary(
-        this.membershipType, this.membershipId, this.characterId);
+        this.membershipType, this.membershipId, this.characterId, p_);
   }
 };
 
