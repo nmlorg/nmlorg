@@ -13,8 +13,7 @@
 <script src="apikey.js"></script>
 <script src="auth.js"></script>
 <script src="bungie.js"></script>
-<script src="destiny.js"></script>
-<script src="user.js"></script>
+<script src="bungieNetPlatform.js"></script>
 
 <script type="text/babel">
 class App extends React.Component {
@@ -51,7 +50,7 @@ class ChooseAccount extends React.Component {
         <button onClick={e => {
           e.preventDefault();
           bungie.auth.login()
-            .then(bungie.user.getCurrentBungieNetUser)
+            .then(bungieNetPlatform.UserService.GetCurrentBungieNetUser)
             .then(data => bungie.Account.load(254, data.Response.membershipId))
             .then(account => this.props.app.setState({account}));
         }}>Login</button>
@@ -59,7 +58,7 @@ class ChooseAccount extends React.Component {
     }
 
     if (!this.state.r) {
-      bungie.destiny.searchDestinyPlayer(this.state.q)
+      bungieNetPlatform.DestinyService.SearchDestinyPlayer('all', this.state.q)
           .then(data => this.setState({r: data.Response}));
       return <span>Searching for <code>{this.state.q}</code>.</span>;
     }
