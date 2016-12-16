@@ -9,7 +9,7 @@ bungie.Account = class BungieAccount {
   }
 
   load(membershipType, membershipId) {
-    return bungieNetPlatform.UserService.GetBungieAccount(membershipId, membershipType)
+    return bungieNetPlatform.userService.GetBungieAccount(membershipId, membershipType)
         .then(data => {
           this.bungieId = data.Response.bungieNetUser.membershipId;
           this.bungieName = data.Response.bungieNetUser.displayName;

@@ -18,7 +18,8 @@ bungie.store = function(key, data) {
 var AUTH = bungie.AUTH = bungie.load('AUTH') || {};
 
 
-bungie.fetch = function(url, data, auth) {
+bungie.fetch = function(url, data) {
+  const auth = !url.match(/^app[/]getaccesstokens/i);
   var tries = 50;
   var backoff = 100;
   var method = 'GET';

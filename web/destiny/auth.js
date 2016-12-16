@@ -6,7 +6,7 @@ bungie.auth = bungie.auth || {};
 
 
 function getTokens(code) {
-  return bungie.fetch('App/GetAccessTokensFromCode/', {code}, false)
+  return bungieNetPlatform.applicationService.GetAccessTokensFromCode({code})
       .then(handleAccessTokens)
       .then(scheduleTokenRefresh)
       .catch(navigateToLogin);
@@ -42,8 +42,8 @@ function navigateToLogin() {
 
 
 function refreshTokens() {
-  return bungie.fetch('App/GetAccessTokensFromRefreshToken/',
-                      {refreshToken: bungie.AUTH.refresh_token}, false)
+  return bungieNetPlatform.applicationService.GetAccessTokensFromRefreshToken(
+      {refreshToken: bungie.AUTH.refresh_token})
       .then(handleAccessTokens)
       .then(scheduleTokenRefresh)
       .catch(navigateToLogin);

@@ -11,12 +11,12 @@ function P(params) {
 }
 
 window.bungieNetPlatform = {
-  ActivityService: {
+  activityService: {
     FollowTag: function(p_={}) {
-      return F('Activity/Tag/Follow/' + P(p_));
+      return F('Activity/Tag/Follow/', p_);
     },
     FollowUser: function(param1, p_={}) {
-      return F(`Activity/User/${E(param1)}/Follow/` + P(p_));
+      return F(`Activity/User/${E(param1)}/Follow/`, p_);
     },
     GetApplicationActivityForUser: function(param1, param2, p_={}) {
       return F(`Activity/User/${E(param1)}/Activities/Application/${E(param2)}/` + P(p_));
@@ -79,33 +79,33 @@ window.bungieNetPlatform = {
       return F('Activity/Following/Users/' + P(p_));
     },
     UnfollowTag: function(p_={}) {
-      return F('Activity/Tag/Unfollow/' + P(p_));
+      return F('Activity/Tag/Unfollow/', p_);
     },
     UnfollowUser: function(param1, p_={}) {
-      return F(`Activity/User/${E(param1)}/Unfollow/` + P(p_));
+      return F(`Activity/User/${E(param1)}/Unfollow/`, p_);
     },
   },
-  AdminService: {
+  adminService: {
     AdminUserSearch: function(p_={}) {
       return F('Admin/Member/Search/' + P(p_));
     },
     BulkEditPost: function(p_={}) {
-      return F('Admin/BulkEditPost/' + P(p_));
+      return F('Admin/BulkEditPost/', p_);
     },
     GetAdminHistory: function(param1, param2, p_={}) {
       return F(`Admin/GlobalHistory/${E(param1)}/${E(param2)}/` + P(p_));
     },
     GetAssignedReports: function(p_={}) {
-      return F('Admin/Assigned/' + P(p_));
+      return F('Admin/Assigned/', p_);
     },
     GetDisciplinedReportsForMember: function(param1, p_={}) {
-      return F(`Admin/Member/${E(param1)}/Reports/` + P(p_));
+      return F(`Admin/Member/${E(param1)}/Reports/`, p_);
     },
     GetRecentDisciplineAndFlagHistoryForMember: function(param1, param2, p_={}) {
       return F(`Admin/Member/${E(param1)}/RecentIncludingFlags/${E(param2)}` + P(p_));
     },
     GetResolvedReports: function(p_={}) {
-      return F('Admin/Reports/' + P(p_));
+      return F('Admin/Reports/', p_);
     },
     GetUserBanState: function(param1, p_={}) {
       return F(`Admin/Member/${E(param1)}/GetBanState/` + P(p_));
@@ -117,48 +117,48 @@ window.bungieNetPlatform = {
       return F(`Admin/Member/${E(param1)}/GetWebClientIpHistory/` + P(p_));
     },
     GloballyIgnoreItem: function(p_={}) {
-      return F('Admin/Ignores/GloballyIgnore/' + P(p_));
+      return F('Admin/Ignores/GloballyIgnore/', p_);
     },
     OverrideBanOnUser: function(param1, p_={}) {
-      return F(`Admin/Member/${E(param1)}/SetBan/` + P(p_));
+      return F(`Admin/Member/${E(param1)}/SetBan/`, p_);
     },
     OverrideGlobalIgnore: function(p_={}) {
-      return F('Admin/Ignores/OverrideGlobalIgnore/' + P(p_));
+      return F('Admin/Ignores/OverrideGlobalIgnore/', p_);
     },
     OverrideGroupWallBanOnUser: function(param1, p_={}) {
-      return F(`Admin/Member/${E(param1)}/SetGroupWallBan/` + P(p_));
+      return F(`Admin/Member/${E(param1)}/SetGroupWallBan/`, p_);
     },
     OverrideMsgBanOnUser: function(param1, p_={}) {
-      return F(`Admin/Member/${E(param1)}/SetMsgBan/` + P(p_));
+      return F(`Admin/Member/${E(param1)}/SetMsgBan/`, p_);
     },
     OverturnReport: function(p_={}) {
-      return F('Admin/Reports/Overturn/' + P(p_));
+      return F('Admin/Reports/Overturn/', p_);
     },
     ResolveReport: function(p_={}) {
-      return F('Admin/Assigned/Resolve/' + P(p_));
+      return F('Admin/Assigned/Resolve/', p_);
     },
   },
-  ApplicationService: {
+  applicationService: {
     ApplicationSearch: function(p_={}) {
-      return F('App/Search/' + P(p_));
+      return F('App/Search/', p_);
     },
     ChangeApiKeyStatus: function(param1, param2, p_={}) {
-      return F(`App/ChangeApiKeyState/${E(param1)}/${E(param2)}/` + P(p_));
+      return F(`App/ChangeApiKeyState/${E(param1)}/${E(param2)}/`, p_);
     },
     CreateApiKey: function(param1, p_={}) {
-      return F(`App/CreateApiKey/${E(param1)}/` + P(p_));
+      return F(`App/CreateApiKey/${E(param1)}/`, p_);
     },
     CreateApplication: function(p_={}) {
-      return F('App/CreateApplication/' + P(p_));
+      return F('App/CreateApplication/', p_);
     },
     EditApplication: function(param1, p_={}) {
-      return F(`App/EditApplication/${E(param1)}/` + P(p_));
+      return F(`App/EditApplication/${E(param1)}/`, p_);
     },
     GetAccessTokensFromCode: function(p_={}) {
-      return F('App/GetAccessTokensFromCode/' + P(p_));
+      return F('App/GetAccessTokensFromCode/', p_);
     },
     GetAccessTokensFromRefreshToken: function(p_={}) {
-      return F('App/GetAccessTokensFromRefreshToken/' + P(p_));
+      return F('App/GetAccessTokensFromRefreshToken/', p_);
     },
     GetApplication: function(param1, p_={}) {
       return F(`App/Application/${E(param1)}/` + P(p_));
@@ -173,24 +173,24 @@ window.bungieNetPlatform = {
       return F(`App/Authorizations/${E(param1)}/` + P(p_));
     },
     PrivateApplicationSearch: function(p_={}) {
-      return F('App/PrivateSearch/' + P(p_));
+      return F('App/PrivateSearch/', p_);
     },
     RevokeAuthorization: function(param1, param2, p_={}) {
-      return F(`App/RevokeAuthorization/${E(param1)}/${E(param2)}/` + P(p_));
+      return F(`App/RevokeAuthorization/${E(param1)}/${E(param2)}/`, p_);
     },
   },
-  CommunitycontentService: {
+  communitycontentService: {
     AdminSetCommunityLiveMemberBanStatus: function(param1, param2, param3, p_={}) {
-      return F(`CommunityContent/Live/Partnerships/${E(param1)}/${E(param2)}/Ban/${E(param3)}/` + P(p_));
+      return F(`CommunityContent/Live/Partnerships/${E(param1)}/${E(param2)}/Ban/${E(param3)}/`, p_);
     },
     AdminSetCommunityLiveMemberFeatureStatus: function(param1, param2, param3, p_={}) {
-      return F(`CommunityContent/Live/Partnerships/${E(param1)}/${E(param2)}/Feature/${E(param3)}/` + P(p_));
+      return F(`CommunityContent/Live/Partnerships/${E(param1)}/${E(param2)}/Feature/${E(param3)}/`, p_);
     },
     AlterApprovalState: function(param1, p_={}) {
-      return F(`CommunityContent/AlterApprovalState/${E(param1)}/` + P(p_));
+      return F(`CommunityContent/AlterApprovalState/${E(param1)}/`, p_);
     },
     EditContent: function(param1, p_={}) {
-      return F(`CommunityContent/Edit/${E(param1)}/` + P(p_));
+      return F(`CommunityContent/Edit/${E(param1)}/`, p_);
     },
     GetAdminCommunityLiveStatuses: function(param1, param2, p_={}) {
       return F(`CommunityContent/Live/Admin/${E(param1)}/${E(param2)}/` + P(p_));
@@ -220,10 +220,10 @@ window.bungieNetPlatform = {
       return F(`CommunityContent/Live/Users/${E(partnershipType)}/${E(membershipType)}/${E(membershipId)}/` + P(p_));
     },
     SubmitContent: function(p_={}) {
-      return F('CommunityContent/Submit/' + P(p_));
+      return F('CommunityContent/Submit/', p_);
     },
   },
-  ContentService: {
+  contentService: {
     GetCareer: function(param1, p_={}) {
       return F(`Content/Careers/${E(param1)}/` + P(p_));
     },
@@ -273,13 +273,13 @@ window.bungieNetPlatform = {
       return F(`Content/SearchContentByTagAndType/${E(param1)}/${E(param2)}/${E(param3)}/` + P(p_));
     },
     SearchContentEx: function(param1, p_={}) {
-      return F(`Content/SearchEx/${E(param1)}/` + P(p_));
+      return F(`Content/SearchEx/${E(param1)}/`, p_);
     },
     SearchContentWithText: function(param1, p_={}) {
       return F(`Content/Search/${E(param1)}/` + P(p_));
     },
   },
-  CoreService: {
+  coreService: {
     GetAvailableLocales: function(p_={}) {
       return F('/GetAvailableLocales/' + P(p_));
     },
@@ -296,15 +296,15 @@ window.bungieNetPlatform = {
       return F('/HelloWorld/' + P(p_));
     },
   },
-  DestinyService: {
+  destinyService: {
     BuyItem: function(p_={}) {
-      return F('Destiny/BuyItem/' + P(p_));
+      return F('Destiny/BuyItem/', p_);
     },
     EquipItem: function(p_={}) {
-      return F('Destiny/EquipItem/' + P(p_));
+      return F('Destiny/EquipItem/', p_);
     },
     EquipItems: function(p_={}) {
-      return F('Destiny/EquipItems/' + P(p_));
+      return F('Destiny/EquipItems/', p_);
     },
     GetAccount: function(membershipType, destinyMembershipId, p_={}) {
       return F(`Destiny/${E(membershipType)}/Account/${E(destinyMembershipId)}/` + P(p_));
@@ -469,47 +469,47 @@ window.bungieNetPlatform = {
       return F(`Destiny/${E(membershipType)}/MyAccount/Character/${E(characterId)}/Vendors/Summaries/` + P(p_));
     },
     RefundItem: function(param1, p_={}) {
-      return F(`Destiny/${E(param1)}/RefundItem/` + P(p_));
+      return F(`Destiny/${E(param1)}/RefundItem/`, p_);
     },
     SearchDestinyPlayer: function(membershipType, displayName, p_={}) {
       return F(`Destiny/SearchDestinyPlayer/${E(membershipType)}/${E(displayName)}/` + P(p_));
     },
     SetItemLockState: function(p_={}) {
-      return F('Destiny/SetLockState/' + P(p_));
+      return F('Destiny/SetLockState/', p_);
     },
     SetQuestTrackedState: function(p_={}) {
-      return F('Destiny/SetQuestTrackedState/' + P(p_));
+      return F('Destiny/SetQuestTrackedState/', p_);
     },
     TransferItem: function(p_={}) {
-      return F('Destiny/TransferItem/' + P(p_));
+      return F('Destiny/TransferItem/', p_);
     },
   },
-  ExternalSocialService: {
+  externalSocialService: {
     GetAggregatedSocialFeed: function(param1, p_={}) {
       return F(`ExternalSocial/GetAggregatedSocialFeed/${E(param1)}/` + P(p_));
     },
   },
-  ForumService: {
+  forumService: {
     ApproveFireteamThread: function(param1, p_={}) {
-      return F(`Forum/Recruit/Approve/${E(param1)}/` + P(p_));
+      return F(`Forum/Recruit/Approve/${E(param1)}/`, p_);
     },
     ChangeLockState: function(param1, param2, p_={}) {
-      return F(`Forum/ChangeLockState/${E(param1)}/${E(param2)}/` + P(p_));
+      return F(`Forum/ChangeLockState/${E(param1)}/${E(param2)}/`, p_);
     },
     ChangePinState: function(param1, param2, p_={}) {
-      return F(`Forum/ChangePinState/${E(param1)}/${E(param2)}/` + P(p_));
+      return F(`Forum/ChangePinState/${E(param1)}/${E(param2)}/`, p_);
     },
     CreateContentComment: function(p_={}) {
-      return F('Forum/CreateContentComment/' + P(p_));
+      return F('Forum/CreateContentComment/', p_);
     },
     CreatePost: function(p_={}) {
-      return F('Forum/CreatePost/' + P(p_));
+      return F('Forum/CreatePost/', p_);
     },
     DeletePost: function(param1, p_={}) {
-      return F(`Forum/DeletePost/${E(param1)}/` + P(p_));
+      return F(`Forum/DeletePost/${E(param1)}/`, p_);
     },
     EditPost: function(param1, p_={}) {
-      return F(`Forum/EditPost/${E(param1)}/` + P(p_));
+      return F(`Forum/EditPost/${E(param1)}/`, p_);
     },
     GetCoreTopicsPaged: function(param1, param2, param3, param4, p_={}) {
       return F(`Forum/GetCoreTopicsPaged/${E(param1)}/${E(param2)}/${E(param3)}/${E(param4)}/` + P(p_));
@@ -539,7 +539,7 @@ window.bungieNetPlatform = {
       return F(`Forum/GetPostsThreadedPagedFromChild/${E(childPostId)}/${E(page)}/${E(pageSize)}/${E(replySize)}/${E(rootThreadMode)}/${E(sortMode)}/` + P(p_));
     },
     GetRecruitmentThreadSummaries: function(p_={}) {
-      return F('Forum/Recruit/Summaries/' + P(p_));
+      return F('Forum/Recruit/Summaries/', p_);
     },
     GetTopicForContent: function(contentId, p_={}) {
       return F(`Forum/GetTopicForContent/${E(contentId)}/` + P(p_));
@@ -548,110 +548,110 @@ window.bungieNetPlatform = {
       return F(`Forum/GetTopicsPaged/${E(page)}/${E(pageSize)}/${E(group)}/${E(sort)}/${E(quickDate)}/${E(categoryFilter)}/` + P(p_));
     },
     JoinFireteamThread: function(param1, p_={}) {
-      return F(`Forum/Recruit/Join/${E(param1)}/` + P(p_));
+      return F(`Forum/Recruit/Join/${E(param1)}/`, p_);
     },
     KickBanFireteamApplicant: function(param1, param2, p_={}) {
-      return F(`Forum/Recruit/KickBan/${E(param1)}/${E(param2)}/` + P(p_));
+      return F(`Forum/Recruit/KickBan/${E(param1)}/${E(param2)}/`, p_);
     },
     LeaveFireteamThread: function(param1, p_={}) {
-      return F(`Forum/Recruit/Leave/${E(param1)}/` + P(p_));
+      return F(`Forum/Recruit/Leave/${E(param1)}/`, p_);
     },
     MarkReplyAsAnswer: function(param1, param2, p_={}) {
-      return F(`Forum/MarkReplyAsAnswer/${E(param1)}/${E(param2)}/` + P(p_));
+      return F(`Forum/MarkReplyAsAnswer/${E(param1)}/${E(param2)}/`, p_);
     },
     ModerateGroupPost: function(param1, p_={}) {
-      return F(`Forum/Post/${E(param1)}/GroupModerate/` + P(p_));
+      return F(`Forum/Post/${E(param1)}/GroupModerate/`, p_);
     },
     ModeratePost: function(param1, p_={}) {
-      return F(`Forum/Post/${E(param1)}/Moderate/` + P(p_));
+      return F(`Forum/Post/${E(param1)}/Moderate/`, p_);
     },
     ModerateTag: function(param1, p_={}) {
-      return F(`Forum/Tags/${E(param1)}/Moderate/` + P(p_));
+      return F(`Forum/Tags/${E(param1)}/Moderate/`, p_);
     },
     PollVote: function(param1, param2, p_={}) {
-      return F(`Forum/Poll/Vote/${E(param1)}/${E(param2)}/` + P(p_));
+      return F(`Forum/Poll/Vote/${E(param1)}/${E(param2)}/`, p_);
     },
     RatePost: function(param1, param2, p_={}) {
-      return F(`Forum/RatePost/${E(param1)}/${E(param2)}/` + P(p_));
+      return F(`Forum/RatePost/${E(param1)}/${E(param2)}/`, p_);
     },
     UnmarkReplyAsAnswer: function(param1, p_={}) {
-      return F(`Forum/UnmarkReplyAsAnswer/${E(param1)}/` + P(p_));
+      return F(`Forum/UnmarkReplyAsAnswer/${E(param1)}/`, p_);
     },
   },
-  GameService: {
+  gameService: {
     GetPlayerGamesById: function(param1, p_={}) {
       return F(`Game/GetPlayerGamesById/${E(param1)}/` + P(p_));
     },
     ReachModelSneakerNet: function(param1, p_={}) {
-      return F(`Game/ReachModelSneakerNet/${E(param1)}/` + P(p_));
+      return F(`Game/ReachModelSneakerNet/${E(param1)}/`, p_);
     },
   },
-  GroupService: {
+  groupService: {
     ApproveAllPending: function(groupId, p_={}) {
-      return F(`Group/${E(groupId)}/Members/ApproveAll/` + P(p_));
+      return F(`Group/${E(groupId)}/Members/ApproveAll/`, p_);
     },
     ApproveGroupMembership: function(groupId, membershipId, p_={}) {
-      return F(`Group/${E(groupId)}/Members/${E(membershipId)}/Approve/` + P(p_));
+      return F(`Group/${E(groupId)}/Members/${E(membershipId)}/Approve/`, p_);
     },
     ApproveGroupMembershipV2: function(groupId, membershipId, p_={}) {
-      return F(`Group/${E(groupId)}/Members/${E(membershipId)}/ApproveV2/` + P(p_));
+      return F(`Group/${E(groupId)}/Members/${E(membershipId)}/ApproveV2/`, p_);
     },
     ApprovePendingForList: function(groupId, p_={}) {
-      return F(`Group/${E(groupId)}/Members/ApproveList/` + P(p_));
+      return F(`Group/${E(groupId)}/Members/ApproveList/`, p_);
     },
     BanMember: function(groupId, membershipId, p_={}) {
-      return F(`Group/${E(groupId)}/Members/${E(membershipId)}/Ban/` + P(p_));
+      return F(`Group/${E(groupId)}/Members/${E(membershipId)}/Ban/`, p_);
     },
     BreakAlliance: function(groupId, allyGroupId, p_={}) {
-      return F(`Group/${E(groupId)}/Relationship/${E(allyGroupId)}/BreakAlliance/` + P(p_));
+      return F(`Group/${E(groupId)}/Relationship/${E(allyGroupId)}/BreakAlliance/`, p_);
     },
     BreakAlliances: function(groupId, p_={}) {
-      return F(`Group/${E(groupId)}/BreakAlliances/` + P(p_));
+      return F(`Group/${E(groupId)}/BreakAlliances/`, p_);
     },
     CreateGroup: function(p_={}) {
-      return F('Group/Create/' + P(p_));
+      return F('Group/Create/', p_);
     },
     CreateGroupV2: function(p_={}) {
-      return F('Group/Create/V2/' + P(p_));
+      return F('Group/Create/V2/', p_);
     },
     CreateMinimalGroup: function(p_={}) {
-      return F('Group/Create/Minimal/' + P(p_));
+      return F('Group/Create/Minimal/', p_);
     },
     DenyAllPending: function(groupId, p_={}) {
-      return F(`Group/${E(groupId)}/Members/DenyAll/` + P(p_));
+      return F(`Group/${E(groupId)}/Members/DenyAll/`, p_);
     },
     DenyGroupMembership: function(groupId, membershipId, p_={}) {
-      return F(`Group/${E(groupId)}/Members/${E(membershipId)}/Deny/` + P(p_));
+      return F(`Group/${E(groupId)}/Members/${E(membershipId)}/Deny/`, p_);
     },
     DenyGroupMembershipV2: function(groupId, membershipId, p_={}) {
-      return F(`Group/${E(groupId)}/Members/${E(membershipId)}/DenyV2/` + P(p_));
+      return F(`Group/${E(groupId)}/Members/${E(membershipId)}/DenyV2/`, p_);
     },
     DenyPendingForList: function(groupId, p_={}) {
-      return F(`Group/${E(groupId)}/Members/DenyList/` + P(p_));
+      return F(`Group/${E(groupId)}/Members/DenyList/`, p_);
     },
     DisableClanForGroup: function(groupId, clanMembershipType, p_={}) {
-      return F(`Group/${E(groupId)}/Clans/Disable/${E(clanMembershipType)}/` + P(p_));
+      return F(`Group/${E(groupId)}/Clans/Disable/${E(clanMembershipType)}/`, p_);
     },
     DisbandAlliance: function(groupId, p_={}) {
-      return F(`Group/${E(groupId)}/BreakAllAlliances/` + P(p_));
+      return F(`Group/${E(groupId)}/BreakAllAlliances/`, p_);
     },
     EditGroup: function(groupId, p_={}) {
-      return F(`Group/${E(groupId)}/Edit/` + P(p_));
+      return F(`Group/${E(groupId)}/Edit/`, p_);
     },
     EditGroupMembership: function(groupId, membershipId, groupMembershipType, p_={}) {
-      return F(`Group/${E(groupId)}/Members/${E(membershipId)}/SetMembershipType/${E(groupMembershipType)}/` + P(p_));
+      return F(`Group/${E(groupId)}/Members/${E(membershipId)}/SetMembershipType/${E(groupMembershipType)}/`, p_);
     },
     EditGroupV2: function(groupId, p_={}) {
-      return F(`Group/${E(groupId)}/EditV2/` + P(p_));
+      return F(`Group/${E(groupId)}/EditV2/`, p_);
     },
     EnableClanForGroup: function(groupId, clanMembershipType, p_={}) {
-      return F(`Group/${E(groupId)}/Clans/Enable/${E(clanMembershipType)}/` + P(p_));
+      return F(`Group/${E(groupId)}/Clans/Enable/${E(clanMembershipType)}/`, p_);
     },
     FollowGroupsWithGroup: function(groupId, p_={}) {
-      return F(`Group/${E(groupId)}/FollowList/` + P(p_));
+      return F(`Group/${E(groupId)}/FollowList/`, p_);
     },
     FollowGroupWithGroup: function(groupId, followGroupId, p_={}) {
-      return F(`Group/${E(groupId)}/Follow/${E(followGroupId)}/` + P(p_));
+      return F(`Group/${E(groupId)}/Follow/${E(followGroupId)}/`, p_);
     },
     GetAdminsOfGroup: function(groupId, p_={}) {
       return F(`Group/${E(groupId)}/Admins/` + P(p_));
@@ -759,81 +759,81 @@ window.bungieNetPlatform = {
       return F(`Group/${E(groupId)}/Members/PendingV2/` + P(p_));
     },
     GetRecommendedGroups: function(p_={}) {
-      return F('Group/Recommended/' + P(p_));
+      return F('Group/Recommended/', p_);
     },
     GroupSearch: function(p_={}) {
-      return F('Group/Search/' + P(p_));
+      return F('Group/Search/', p_);
     },
     InviteClanMember: function(groupId, membershipId, clanMembershipType, p_={}) {
-      return F(`Group/${E(groupId)}/InviteToClan/${E(membershipId)}/${E(clanMembershipType)}/` + P(p_));
+      return F(`Group/${E(groupId)}/InviteToClan/${E(membershipId)}/${E(clanMembershipType)}/`, p_);
     },
     InviteGroupMember: function(groupId, membershipId, p_={}) {
-      return F(`Group/${E(groupId)}/Invite/${E(membershipId)}/` + P(p_));
+      return F(`Group/${E(groupId)}/Invite/${E(membershipId)}/`, p_);
     },
     InviteManyToJoinAlliance: function(groupId, p_={}) {
-      return F(`Group/${E(groupId)}/Allies/InviteMany/` + P(p_));
+      return F(`Group/${E(groupId)}/Allies/InviteMany/`, p_);
     },
     InviteToJoinAlliance: function(groupId, allyGroupId, p_={}) {
-      return F(`Group/${E(groupId)}/Allies/Invite/${E(allyGroupId)}/` + P(p_));
+      return F(`Group/${E(groupId)}/Allies/Invite/${E(allyGroupId)}/`, p_);
     },
     JoinClanForGroup: function(groupId, clanMembershipType, p_={}) {
-      return F(`Group/${E(groupId)}/Clans/Join/${E(clanMembershipType)}/` + P(p_));
+      return F(`Group/${E(groupId)}/Clans/Join/${E(clanMembershipType)}/`, p_);
     },
     KickMember: function(groupId, membershipId, p_={}) {
-      return F(`Group/${E(groupId)}/Members/${E(membershipId)}/Kick/` + P(p_));
+      return F(`Group/${E(groupId)}/Members/${E(membershipId)}/Kick/`, p_);
     },
     LeaveClanForGroup: function(groupId, clanMembershipType, p_={}) {
-      return F(`Group/${E(groupId)}/Clans/Leave/${E(clanMembershipType)}/` + P(p_));
+      return F(`Group/${E(groupId)}/Clans/Leave/${E(clanMembershipType)}/`, p_);
     },
     Migrate: function(param1, param2, param3, p_={}) {
-      return F(`Group/${E(param1)}/Migrate/${E(param2)}/${E(param3)}/` + P(p_));
+      return F(`Group/${E(param1)}/Migrate/${E(param2)}/${E(param3)}/`, p_);
     },
     OverrideFounderAdmin: function(groupId, membershipType, p_={}) {
-      return F(`Group/${E(groupId)}/Admin/FounderOverride/${E(membershipType)}/` + P(p_));
+      return F(`Group/${E(groupId)}/Admin/FounderOverride/${E(membershipType)}/`, p_);
     },
     RefreshClanSettingsInDestiny: function(clanMembershipType, p_={}) {
-      return F(`Group/MyClans/Refresh/${E(clanMembershipType)}/` + P(p_));
+      return F(`Group/MyClans/Refresh/${E(clanMembershipType)}/`, p_);
     },
     RequestGroupMembership: function(groupId, p_={}) {
-      return F(`Group/${E(groupId)}/Members/Apply/` + P(p_));
+      return F(`Group/${E(groupId)}/Members/Apply/`, p_);
     },
     RequestGroupMembershipV2: function(groupId, p_={}) {
-      return F(`Group/${E(groupId)}/Members/ApplyV2/` + P(p_));
+      return F(`Group/${E(groupId)}/Members/ApplyV2/`, p_);
     },
     RequestToJoinAlliance: function(groupId, allyGroupId, p_={}) {
-      return F(`Group/${E(groupId)}/Allies/RequestToJoin/${E(allyGroupId)}/` + P(p_));
+      return F(`Group/${E(groupId)}/Allies/RequestToJoin/${E(allyGroupId)}/`, p_);
     },
     RescindGroupMembership: function(groupId, p_={}) {
-      return F(`Group/${E(groupId)}/Members/Rescind/` + P(p_));
+      return F(`Group/${E(groupId)}/Members/Rescind/`, p_);
     },
     SetGroupAsAlliance: function(groupId, p_={}) {
-      return F(`Group/${E(groupId)}/SetAsAlliance/` + P(p_));
+      return F(`Group/${E(groupId)}/SetAsAlliance/`, p_);
     },
     SetPrivacy: function(groupId, param2, p_={}) {
-      return F(`Group/${E(groupId)}/Privacy/${E(param2)}/` + P(p_));
+      return F(`Group/${E(groupId)}/Privacy/${E(param2)}/`, p_);
     },
     UnbanMember: function(groupId, membershipId, p_={}) {
-      return F(`Group/${E(groupId)}/Members/${E(membershipId)}/Unban/` + P(p_));
+      return F(`Group/${E(groupId)}/Members/${E(membershipId)}/Unban/`, p_);
     },
     UndeleteGroup: function(groupId, p_={}) {
-      return F(`Group/${E(groupId)}/Undelete/` + P(p_));
+      return F(`Group/${E(groupId)}/Undelete/`, p_);
     },
     UnfollowAllGroupsWithGroup: function(groupId, p_={}) {
-      return F(`Group/${E(groupId)}/UnfollowAll/` + P(p_));
+      return F(`Group/${E(groupId)}/UnfollowAll/`, p_);
     },
     UnfollowGroupsWithGroup: function(groupId, p_={}) {
-      return F(`Group/${E(groupId)}/UnfollowList/` + P(p_));
+      return F(`Group/${E(groupId)}/UnfollowList/`, p_);
     },
     UnfollowGroupWithGroup: function(groupId, followGroupId, p_={}) {
-      return F(`Group/${E(groupId)}/Unfollow/${E(followGroupId)}/` + P(p_));
+      return F(`Group/${E(groupId)}/Unfollow/${E(followGroupId)}/`, p_);
     },
   },
-  IgnoreService: {
+  ignoreService: {
     FlagItem: function(p_={}) {
-      return F('Ignore/Flag/' + P(p_));
+      return F('Ignore/Flag/', p_);
     },
     GetIgnoresForUser: function(p_={}) {
-      return F('Ignore/MyIgnores/' + P(p_));
+      return F('Ignore/MyIgnores/', p_);
     },
     GetIgnoreStatusForPost: function(param1, p_={}) {
       return F(`Ignore/MyIgnores/Posts/${E(param1)}/` + P(p_));
@@ -845,26 +845,26 @@ window.bungieNetPlatform = {
       return F(`Ignore/ReportContext/${E(param1)}/` + P(p_));
     },
     IgnoreItem: function(p_={}) {
-      return F('Ignore/Ignore/' + P(p_));
+      return F('Ignore/Ignore/', p_);
     },
     MyLastReport: function(p_={}) {
       return F('Ignore/MyLastReport/' + P(p_));
     },
     UnignoreItem: function(p_={}) {
-      return F('Ignore/Unignore/' + P(p_));
+      return F('Ignore/Unignore/', p_);
     },
   },
-  JSONPService: {
+  jSONPService: {
     GetCurrentUser: function(p_={}) {
       return F('JSONP/GetBungieNetUser/' + P(p_));
     },
   },
-  MessageService: {
+  messageService: {
     CreateConversation: function(p_={}) {
-      return F('Message/CreateConversation/' + P(p_));
+      return F('Message/CreateConversation/', p_);
     },
     CreateConversationV2: function(p_={}) {
-      return F('Message/CreateConversationV2/' + P(p_));
+      return F('Message/CreateConversationV2/', p_);
     },
     GetAllianceInvitedToJoinInvitations: function(param1, param2, p_={}) {
       return F(`Message/AllianceInvitations/InvitationsToJoinAnotherGroup/${E(param1)}/${E(param2)}/` + P(p_));
@@ -927,37 +927,37 @@ window.bungieNetPlatform = {
       return F(`Message/LeaveConversation/${E(param1)}/` + P(p_));
     },
     ModerateGroupWall: function(param1, param2, p_={}) {
-      return F(`Message/ModerateGroupWall/${E(param1)}/${E(param2)}/` + P(p_));
+      return F(`Message/ModerateGroupWall/${E(param1)}/${E(param2)}/`, p_);
     },
     ReviewAllInvitations: function(param1, param2, p_={}) {
-      return F(`Message/Invitations/ReviewAllDirect/${E(param1)}/${E(param2)}/` + P(p_));
+      return F(`Message/Invitations/ReviewAllDirect/${E(param1)}/${E(param2)}/`, p_);
     },
     ReviewInvitation: function(param1, param2, param3, p_={}) {
-      return F(`Message/Invitations/${E(param1)}/${E(param2)}/${E(param3)}/` + P(p_));
+      return F(`Message/Invitations/${E(param1)}/${E(param2)}/${E(param3)}/`, p_);
     },
     ReviewInvitationDirect: function(invitationId, invitationResponseState, p_={}) {
-      return F(`Message/Invitations/ReviewDirect/${E(invitationId)}/${E(invitationResponseState)}/` + P(p_));
+      return F(`Message/Invitations/ReviewDirect/${E(invitationId)}/${E(invitationResponseState)}/`, p_);
     },
     ReviewInvitations: function(param1, p_={}) {
-      return F(`Message/Invitations/ReviewListDirect/${E(param1)}/` + P(p_));
+      return F(`Message/Invitations/ReviewListDirect/${E(param1)}/`, p_);
     },
     SaveMessageV2: function(p_={}) {
-      return F('Message/SaveMessageV2/' + P(p_));
+      return F('Message/SaveMessageV2/', p_);
     },
     SaveMessageV3: function(p_={}) {
-      return F('Message/SaveMessageV3/' + P(p_));
+      return F('Message/SaveMessageV3/', p_);
     },
     SaveMessageV4: function(p_={}) {
-      return F('Message/SaveMessageV4/' + P(p_));
+      return F('Message/SaveMessageV4/', p_);
     },
     UpdateConversationLastViewedTimestamp: function(p_={}) {
-      return F('Message/Conversations/UpdateLastViewedTimestamp/' + P(p_));
+      return F('Message/Conversations/UpdateLastViewedTimestamp/', p_);
     },
     UserIsTyping: function(p_={}) {
-      return F('Message/UserIsTyping/' + P(p_));
+      return F('Message/UserIsTyping/', p_);
     },
   },
-  NotificationService: {
+  notificationService: {
     GetRealTimeEvents: function(param1, param2, p_={}) {
       return F(`Notification/Events/${E(param1)}/${E(param2)}/` + P(p_));
     },
@@ -971,26 +971,26 @@ window.bungieNetPlatform = {
       return F('Notification/Reset/' + P(p_));
     },
   },
-  SurveyService: {
+  surveyService: {
     GetSurvey: function(p_={}) {
       return F('Survey/GetSurvey/' + P(p_));
     },
   },
-  TokensService: {
+  tokensService: {
     ApplyOfferToCurrentDestinyMembership: function(param1, param2, p_={}) {
-      return F(`Tokens/ApplyOfferToCurrentDestinyMembership/${E(param1)}/${E(param2)}/` + P(p_));
+      return F(`Tokens/ApplyOfferToCurrentDestinyMembership/${E(param1)}/${E(param2)}/`, p_);
     },
     BreakBond: function(p_={}) {
-      return F('Tokens/RAF/BreakBond/' + P(p_));
+      return F('Tokens/RAF/BreakBond/', p_);
     },
     ClaimAndApplyOnToken: function(tokenType, p_={}) {
-      return F(`Tokens/ClaimAndApplyToken/${E(tokenType)}/` + P(p_));
+      return F(`Tokens/ClaimAndApplyToken/${E(tokenType)}/`, p_);
     },
     ClaimToken: function(p_={}) {
-      return F('Tokens/Claim/' + P(p_));
+      return F('Tokens/Claim/', p_);
     },
     ConsumeMarketplacePlatformCodeOffer: function(param1, param2, param3, p_={}) {
-      return F(`Tokens/ConsumeMarketplacePlatformCodeOffer/${E(param1)}/${E(param2)}/${E(param3)}/` + P(p_));
+      return F(`Tokens/ConsumeMarketplacePlatformCodeOffer/${E(param1)}/${E(param2)}/${E(param3)}/`, p_);
     },
     GetCurrentUserOfferHistory: function(p_={}) {
       return F('Tokens/OfferHistory/' + P(p_));
@@ -1005,10 +1005,10 @@ window.bungieNetPlatform = {
       return F('Tokens/MarketplacePlatformCodeOfferHistory/' + P(p_));
     },
     RAFClaim: function(p_={}) {
-      return F('Tokens/RAF/Claim/' + P(p_));
+      return F('Tokens/RAF/Claim/', p_);
     },
     RAFGenerateReferralCode: function(param1, p_={}) {
-      return F(`Tokens/RAF/GenerateReferralCode/${E(param1)}/` + P(p_));
+      return F(`Tokens/RAF/GenerateReferralCode/${E(param1)}/`, p_);
     },
     RAFGetNewPlayerBondDetails: function(p_={}) {
       return F('Tokens/RAF/GetNewPlayerBondDetails/' + P(p_));
@@ -1017,15 +1017,15 @@ window.bungieNetPlatform = {
       return F('Tokens/RAF/GetVeteranBondDetails/' + P(p_));
     },
     VerifyAge: function(p_={}) {
-      return F('Tokens/VerifyAge/' + P(p_));
+      return F('Tokens/VerifyAge/', p_);
     },
   },
-  UserService: {
+  userService: {
     CreateUser: function(p_={}) {
-      return F('User/CreateUser/' + P(p_));
+      return F('User/CreateUser/', p_);
     },
     EditSuccessMessageFlags: function(param1, p_={}) {
-      return F(`User/MessageFlags/Success/Update/${E(param1)}/` + P(p_));
+      return F(`User/MessageFlags/Success/Update/${E(param1)}/`, p_);
     },
     GetAvailableAvatars: function(p_={}) {
       return F('User/GetAvailableAvatars/' + P(p_));
@@ -1082,13 +1082,13 @@ window.bungieNetPlatform = {
       return F('User/GetMembershipIds/' + P(p_));
     },
     LinkOverride: function(p_={}) {
-      return F('User/LinkOverride/' + P(p_));
+      return F('User/LinkOverride/', p_);
     },
     RegisterMobileAppPair: function(p_={}) {
-      return F('User/RegisterMobileAppPair/' + P(p_));
+      return F('User/RegisterMobileAppPair/', p_);
     },
     RemovePartnership: function(param1, p_={}) {
-      return F(`User/Partnerships/${E(param1)}/Remove/` + P(p_));
+      return F(`User/Partnerships/${E(param1)}/Remove/`, p_);
     },
     SearchUsers: function(p_={}) {
       return F('User/SearchUsers/' + P(p_));
@@ -1100,25 +1100,25 @@ window.bungieNetPlatform = {
       return F(`User/SearchUsersPaged/${E(searchTerm)}/${E(page)}/${E(param3)}/` + P(p_));
     },
     SetAcknowledged: function(ackId, p_={}) {
-      return F(`User/Acknowledged/${E(ackId)}/` + P(p_));
+      return F(`User/Acknowledged/${E(ackId)}/`, p_);
     },
     UnregisterMobileAppPair: function(param1, p_={}) {
-      return F(`User/UnregisterMobileAppPair/${E(param1)}/` + P(p_));
+      return F(`User/UnregisterMobileAppPair/${E(param1)}/`, p_);
     },
     UpdateDestinyEmblemAvatar: function(p_={}) {
-      return F('User/UpdateDestinyEmblemAvatar/' + P(p_));
+      return F('User/UpdateDestinyEmblemAvatar/', p_);
     },
     UpdateNotificationSetting: function(p_={}) {
-      return F('User/Notification/Update/' + P(p_));
+      return F('User/Notification/Update/', p_);
     },
     UpdateStateInfoForMobileAppPair: function(p_={}) {
-      return F('User/UpdateStateInfoForMobileAppPair/' + P(p_));
+      return F('User/UpdateStateInfoForMobileAppPair/', p_);
     },
     UpdateUser: function(p_={}) {
-      return F('User/UpdateUser/' + P(p_));
+      return F('User/UpdateUser/', p_);
     },
     UpdateUserAdmin: function(param1, p_={}) {
-      return F(`User/UpdateUserAdmin/${E(param1)}/` + P(p_));
+      return F(`User/UpdateUserAdmin/${E(param1)}/`, p_);
     },
   },
 };
