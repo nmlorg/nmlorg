@@ -5,10 +5,14 @@ var bungie = window.bungie = window.bungie || {};
 bungie.auth = bungie.auth || {};
 
 
+var AUTH = {};
+var deauthTimeout = null;
+var reauthTimeout = null;
+
+
 function getTokens(code) {
   return bungieNetPlatform.applicationService.GetAccessTokensFromCode({code})
       .then(handleAccessTokens)
-      .then(scheduleTokenRefresh)
       .catch(navigateToLogin);
 }
 
@@ -17,7 +21,6 @@ function handleAccessTokens(data) {
   if (!data.Response || !data.Response.accessToken || !data.Response.refreshToken)
     throw data;
 
-  const AUTH = bungie.AUTH;
   const now = Date.now() / 1000;
 
   AUTH.access_token = data.Response.accessToken.value;
@@ -28,6 +31,7 @@ function handleAccessTokens(data) {
   AUTH.refresh_expires = now + data.Response.refreshToken.expires;
   AUTH.scope = data.Response.scope;
   bungie.store('AUTH', AUTH);
+  scheduleTokenRefresh();
 }
 
 
@@ -43,23 +47,32 @@ function navigateToLogin() {
 
 function refreshTokens() {
   return bungieNetPlatform.applicationService.GetAccessTokensFromRefreshToken(
-      {refreshToken: bungie.AUTH.refresh_token})
+      {refreshToken: AUTH.refresh_token})
       .then(handleAccessTokens)
-      .then(scheduleTokenRefresh)
       .catch(navigateToLogin);
 }
 
 
 function scheduleTokenRefresh() {
-  if (bungie.reauthTimeout)
-    window.clearTimeout(bungie.reauthTimeout);
-  const delay = Math.ceil((bungie.AUTH.refresh_ready + Math.random()) * 1000 - Date.now());
+  bungie.accessToken = AUTH.access_token;
+
+  if (deauthTimeout)
+    window.clearTimeout(deauthTimeout);
+  var delay = Math.ceil((AUTH.access_expires - Math.random()) * 1000 - Date.now());
+  console.log(`Deauthenticating in ${delay} ms.`);
+  deauthTimeout = window.setTimeout(() => {bungie.accessToken = null}, delay);
+
+  if (reauthTimeout)
+    window.clearTimeout(reauthTimeout);
+  var delay = Math.ceil((AUTH.refresh_ready + Math.random()) * 1000 - Date.now());
   console.log(`Reauthenticating in ${delay} ms.`);
-  bungie.reauthTimeout = window.setTimeout(refreshTokens, delay);
+  reauthTimeout = window.setTimeout(refreshTokens, delay);
 }
 
 
 bungie.auth.init = function() {
+  AUTH = bungie.load('AUTH') || {};
+
   const params = {};
 
   for (let s of window.location.search.substring(1).split('&')) {
@@ -83,18 +96,11 @@ bungie.auth.init = function() {
     return getTokens(params.code);
   }
 
-  const AUTH = bungie.AUTH;
-  const now = Date.now() / 1000;
-
-  if (AUTH.access_expires && (AUTH.access_expires >= now))
-    scheduleTokenRefresh();
-
-  return Promise.resolve();
+  return bungie.auth.login(true);
 };
 
 
-bungie.auth.login = function() {
-  const AUTH = bungie.AUTH;
+bungie.auth.login = function(passive) {
   const now = Date.now() / 1000;
 
   if (AUTH.access_expires && (AUTH.access_expires >= now)) {
@@ -102,8 +108,10 @@ bungie.auth.login = function() {
     return Promise.resolve();
   } else if (AUTH.refresh_token && (AUTH.refresh_ready <= now) && (AUTH.refresh_expires > now)) {
     return refreshTokens();
-  } else {
+  } else if (!passive) {
     return navigateToLogin();
+  } else {
+    return Promise.resolve();
   }
 };
 

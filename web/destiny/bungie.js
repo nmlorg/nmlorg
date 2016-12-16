@@ -15,9 +15,6 @@ bungie.store = function(key, data) {
 };
 
 
-var AUTH = bungie.AUTH = bungie.load('AUTH') || {};
-
-
 bungie.fetch = function(url, data) {
   const auth = !url.match(/^app[/]getaccesstokens/i);
   var tries = 50;
@@ -54,9 +51,9 @@ bungie.fetch = function(url, data) {
     });
     if (bungie.API_KEY)
       req.setRequestHeader('X-API-Key', bungie.API_KEY);
-    if (AUTH.access_token && (auth !== false))
-      req.setRequestHeader('Authorization', 'Bearer ' + AUTH.access_token);
-    console.log('bungie.fetch:', method, url, data, auth, tries, backoff);
+    if ((auth !== false) && bungie.accessToken)
+      req.setRequestHeader('Authorization', 'Bearer ' + bungie.accessToken);
+    console.log('bungie.fetch:', method, url, data, tries, backoff);
     req.send(sendData);
   });
 };
@@ -66,9 +63,6 @@ bungie.fetch = function(url, data) {
 bungie.init = function(apiKey, authUrl) {
   bungie.API_KEY = apiKey;
   bungie.API_AUTH_URL = authUrl;
-
-  if (bungie.auth)
-    return bungie.auth.init();
 
   return Promise.resolve();
 };

@@ -105,6 +105,7 @@ class Account extends React.Component {
 
 
 bungie.init(API_KEY, API_AUTH_URL)
+    .then(bungie.auth.init)
     .then(function() {
       ReactDOM.render(<App/>, document.getElementById('root'));
     });
