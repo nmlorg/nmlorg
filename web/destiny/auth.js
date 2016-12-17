@@ -17,19 +17,19 @@ function getTokens(code) {
 }
 
 
-function handleAccessTokens(data) {
-  if (!data.Response || !data.Response.accessToken || !data.Response.refreshToken)
-    throw data;
+function handleAccessTokens(response) {
+  if (!response.accessToken || !response.refreshToken)
+    throw response;
 
   const now = Date.now() / 1000;
 
-  AUTH.access_token = data.Response.accessToken.value;
-  AUTH.access_ready = now + data.Response.accessToken.readyin;
-  AUTH.access_expires = now + data.Response.accessToken.expires;
-  AUTH.refresh_token = data.Response.refreshToken.value;
-  AUTH.refresh_ready = now + data.Response.refreshToken.readyin;
-  AUTH.refresh_expires = now + data.Response.refreshToken.expires;
-  AUTH.scope = data.Response.scope;
+  AUTH.access_token = response.accessToken.value;
+  AUTH.access_ready = now + response.accessToken.readyin;
+  AUTH.access_expires = now + response.accessToken.expires;
+  AUTH.refresh_token = response.refreshToken.value;
+  AUTH.refresh_ready = now + response.refreshToken.readyin;
+  AUTH.refresh_expires = now + response.refreshToken.expires;
+  AUTH.scope = response.scope;
   bungie.store('AUTH', AUTH);
   scheduleTokenRefresh();
 }

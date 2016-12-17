@@ -39,7 +39,7 @@ bungie.fetch = function(url, data) {
           const data = JSON.parse(this.responseText);
           console.log('bungie.fetch: `->', data);
           if (data.ErrorCode == 1)
-            return resolve(data);
+            return resolve(data.Response);
         } catch(e) {
           console.log('bungie.fetch: `->', e);
         }

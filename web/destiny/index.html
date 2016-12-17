@@ -51,7 +51,7 @@ class ChooseAccount extends React.Component {
           e.preventDefault();
           bungie.auth.login()
             .then(bungieNetPlatform.userService.GetCurrentBungieNetUser)
-            .then(data => bungie.Account.load(254, data.Response.membershipId))
+            .then(response => bungie.Account.load(254, response.membershipId))
             .then(account => this.props.app.setState({account}));
         }}>Login</button>
       </div>;
@@ -59,7 +59,7 @@ class ChooseAccount extends React.Component {
 
     if (!this.state.r) {
       bungieNetPlatform.destinyService.SearchDestinyPlayer('all', this.state.q)
-          .then(data => this.setState({r: data.Response}));
+          .then(r => this.setState({r}));
       return <span>Searching for <code>{this.state.q}</code>.</span>;
     }
 

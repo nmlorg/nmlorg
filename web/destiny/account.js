@@ -10,8 +10,8 @@ bungie.Account = class BungieAccount {
 
   load(membershipType, membershipId) {
     return bungieNetPlatform.userService.GetBungieAccount(membershipId, membershipType)
-        .then(data => {
-          for (let [k, v] of Object.entries(data.Response))
+        .then(response => {
+          for (let [k, v] of Object.entries(response))
             this[k] = v;
           this.destinyAccounts = this.destinyAccounts.map(
               account => new bungie.DestinyAccount(account));
