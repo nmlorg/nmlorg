@@ -3,33 +3,31 @@
 var bungie = window.bungie = window.bungie || {};
 
 
+function makePlural(s) {
+  if (s[s.length - 1] == 'y')
+    return s.substring(0, s.length - 1) + 'ies';
+  else
+    return s + 's';
+}
+
+
 bungie.derefHashes = function(data) {
   if (data instanceof Array) {
     return data.map(bungie.derefHashes);
   } else if (data instanceof Object) {
     var ret = {};
     for (let [k, v] of Object.entries(data)) {
-      if (k == 'activityHash')
-        ret.activityDef = bungie.DEFS.activities[v];
-      else if (k == 'bucketTypeHash')
-        ret.bucketTypeDef = bungie.DEFS.bucketTypes[v];
-      else if (k == 'damageTypeHash')
-        ret.damageTypeDef = bungie.DEFS.damageTypes[v];
-      else if (k == 'destinationHash')
-        ret.destinationDef = bungie.DEFS.destinations[v];
-      else if (k == 'itemHash')
-        ret.itemDef = bungie.DEFS.items[v];
-      else if (k == 'objectiveHash')
-        ret.objectiveDef = bungie.DEFS.objectives[v];
-      else if (k == 'perkHash')
-        ret.itemDef = bungie.DEFS.perks[v];
-      else if (k == 'progressionHash')
-        ret.itemDef = bungie.DEFS.progressions[v];
-      else if (k == 'statHash')
-        ret.statDef = bungie.DEFS.stats[v];
-      else if (k == 'talentGridHash')
-        ret.statDef = bungie.DEFS.talentGrids[v];
-      else
+      if (k.match(/Hash$/)) {
+        const base = k.substring(0, k.length - 4);
+        const plural = makePlural(base);
+        if (bungie.DEFS[plural])
+          ret[base + 'Def'] = bungie.DEFS[plural][v];
+      } else if (k.match(/Hashes$/)) {
+        const base = k.substring(0, k.length - 6);
+        const plural = makePlural(base);
+        if (bungie.DEFS[plural])
+          ret[base + 'Defs'] = v.map(code => bungie.DEFS[plural][code]);
+      } else
         ret[k] = bungie.derefHashes(v);
     }
     return ret;
