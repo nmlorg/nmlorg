@@ -38,7 +38,7 @@ class ChooseAccount extends React.Component {
   }
 
   render() {
-    if (!this.state.q) {
+    if (!this.state.q && !this.state.r) {
       return <div>
         Hi! Who would you like to look up?<br/>
         <form onSubmit={e => {
@@ -50,9 +50,8 @@ class ChooseAccount extends React.Component {
         <button onClick={e => {
           e.preventDefault();
           bungie.auth.login()
-            .then(bungieNetPlatform.userService.GetCurrentBungieNetUser)
-            .then(response => bungie.Account.load(254, response.membershipId))
-            .then(account => this.props.app.setState({account}));
+            .then(bungieNetPlatform.userService.GetCurrentBungieAccount)
+            .then(response => this.setState({r: response.destinyAccounts.map(account => account.userInfo)}));
         }}>Login</button>
       </div>;
     }
@@ -63,22 +62,24 @@ class ChooseAccount extends React.Component {
       return <span>Searching for <code>{this.state.q}</code>.</span>;
     }
 
-    if (this.state.r.length == 1) {
-      bungie.Account.load(this.state.r[0].membershipType, this.state.r[0].membershipId)
-          .then(account => this.props.app.setState({account}));
-      return <span>Retrieving <code>{this.state.r[0].displayName}</code>.</span>;
+    if (!this.state.r.length)
+      return <span>No results for <code>{this.state.q}</code>.</span>;
+
+    if (this.state.r.length > 1) {
+      return <ul>
+        {this.state.r.map(result => <li>
+          <img src={'https://www.bungie.net' + result.iconPath}/>
+          <button onClick={e => {
+            e.preventDefault();
+            this.setState({r: [result]});
+          }}>{result.displayName}</button>
+        </li>)}
+      </ul>;
     }
 
-    return <ul>
-      {this.state.r.map(result => <li>
-        <img src={'https://www.bungie.net' + result.iconPath}/>
-        <button onClick={e => {
-          e.preventDefault();
-          bungie.Account.load(result.membershipType, result.membershipId)
-              .then(account => this.props.app.setState({account}));
-        }}>{result.displayName}</button>
-      </li>)}
-    </ul>;
+    bungie.Account.load(this.state.r[0].membershipType, this.state.r[0].membershipId)
+        .then(account => this.props.app.setState({account}));
+    return <span>Retrieving <code>{this.state.r[0].displayName}</code>.</span>;
   }
 }
 
@@ -86,7 +87,6 @@ class ChooseAccount extends React.Component {
 class Account extends React.Component {
   render() {
     const account = this.props.account;
-    console.log('account:', account);
     return <ul>
       <li>
         Bungie user <code>{account.bungieNetUser.displayName}</code> (account <code>{account.bungieNetUser.membershipId}/254</code>):
