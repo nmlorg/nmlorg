@@ -94,13 +94,74 @@ class Account extends React.Component {
           {account.destinyAccounts.map(account => <li>
             Destiny user <code>{account.userInfo.displayName}</code> (account <code>{account.userInfo.membershipId}/{account.userInfo.membershipType}</code>):
             <ul>
-              {account.characters.map(character => <li>Character <code>{character.characterId}</code></li>)}
+              {account.characters.map(character => <li><Character character={character}/></li>)}
             </ul>
           </li>)}
         </ul>
       </li>
     </ul>;
   }
+}
+
+
+class Character extends React.Component {
+  constructor() {
+    super();
+    this.state = {};
+  }
+
+  render() {
+    const character = this.props.character;
+
+    if (!this.state.inventory) {
+      character.GetCharacterInventory({definitions: true})
+          .then(response => this.setState({inventory: response.data}));
+      return <span>Loading inventory for character <code>{character.characterId}</code>.</span>;
+    }
+
+    var buckets = {};
+
+    for (let [bucketName, subBuckets] of Object.entries(this.state.inventory.buckets)) {
+      buckets[bucketName] = {};
+      for (let subBucket of subBuckets) {
+        const subBucketName = bungie.DEFS.buckets[subBucket.bucketHash].bucketName;
+        buckets[bucketName][subBucketName] = subBucket.items.map(item => bungie.derefHashes(item));
+      }
+    }
+
+    return <div>
+      Character <code>{character.characterId}</code><br/>
+      Quests: {renderNestedObject(buckets.Invisible.Quests)}<br/>
+      Bounties: {renderNestedObject(buckets.Item.Bounties)}<br/>
+      Mission Items: {renderNestedObject(buckets.Item.Mission)}<br/>
+      Messages: {renderNestedObject(buckets.Invisible.Messages)}<br/>
+      Lost Items: {renderNestedObject(buckets.Invisible['Lost Items'])}<br/>
+      Equipment: {renderNestedObject(buckets.Equippable)}<br/>
+      Ornaments: {renderNestedObject(buckets.Item.Ornaments)}<br/>
+      Consumables: {renderNestedObject(buckets.Item.Consumables)}<br/>
+      Materials: {renderNestedObject(buckets.Item.Materials)}<br/>
+    </div>;
+
+    return renderNestedObject(buckets);
+  }
+}
+
+
+function renderNestedObject(data) {
+  if (data instanceof Array) {
+    if (!data.length)
+      return <span>[]</span>;
+    return <span><button onClick={e => {let s = e.target.nextElementSibling.style; s.display = s.display ? '' : 'none';}}>*</button> [<ol style={{display: 'none'}}>
+      {data.map(v => <li>{renderNestedObject(v)}</li>)}
+    </ol>]</span>;
+  } else if (data instanceof Object) {
+    if (!Object.keys(data).length)
+      return <span>{'{}'}</span>;
+    return <span><button onClick={e => {let s = e.target.nextElementSibling.style; s.display = s.display ? '' : 'none';}}>*</button> {'{'}<ul style={{display: 'none'}}>
+      {Object.entries(data).sort().map(([k, v]) => <li>{k}: {renderNestedObject(v)}</li>)}
+    </ul>{'}'}</span>;
+  } else
+    return <span>{JSON.stringify(data)}</span>;
 }
 
 
