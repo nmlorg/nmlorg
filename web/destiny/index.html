@@ -23,7 +23,9 @@ class App extends React.Component {
   }
 
   render() {
-    if (!this.state.account)
+    if (window.location.search == '?apidemo')
+      return <APIDemo/>;
+    else if (!this.state.account)
       return <ChooseAccount app={this}/>;
     else
       return <Account account={this.state.account}/>;
@@ -105,8 +107,8 @@ class Account extends React.Component {
 
 
 class Character extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {};
   }
 
@@ -147,6 +149,82 @@ class Character extends React.Component {
 }
 
 
+class APIDemo extends React.Component {
+  render() {
+    const promises = [
+        [bungieNetPlatform.destinyService.GetAccount(2, '4611686018436064455'), 'GetAccount'],
+        [bungieNetPlatform.destinyService.GetAccountSummary(2, '4611686018436064455'), 'GetAccountSummary'],
+        [bungieNetPlatform.destinyService.GetAllItemsSummary(2, '4611686018436064455'), 'GetAllItemsSummary'],
+        [bungieNetPlatform.destinyService.GetVault(2, '4611686018436064455'), 'GetVault'],
+        [bungieNetPlatform.destinyService.GetVaultSummary(2, '4611686018436064455'), 'GetVaultSummary'],
+        [bungieNetPlatform.destinyService.GetCharacter(2, '4611686018436064455', '2305843009223046587'), 'GetCharacter'],
+        [bungieNetPlatform.destinyService.GetCharacterSummary(2, '4611686018436064455', '2305843009223046587'), 'GetCharacterSummary'],
+        [bungieNetPlatform.destinyService.GetCharacterInventory(2, '4611686018436064455', '2305843009223046587'), 'GetCharacterInventory'],
+        [bungieNetPlatform.destinyService.GetCharacterInventorySummary(2, '4611686018436064455', '2305843009223046587'), 'GetCharacterInventorySummary'],
+    ];
+
+    return <table>
+      <thead>
+        <tr>{promises.map(([promise, title]) => {
+          return <th>{title}</th>;
+        })}</tr>
+      </thead>
+      <tbody>
+        <tr>{promises.map(([promise, title]) => {
+          return <APIDemoTD promise={promise}/>;
+        })}</tr>
+      </tbody>
+    </table>;
+  }
+}
+
+
+class APIDemoTD extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
+  render() {
+    if (this.state.data)
+      return <td style={{border: '1px solid black', 'vertical-align': 'top', 'white-space': 'nowrap'}}>
+        All itemIds: {countAllItems(this.state.data)}<br/>
+        Unique itemIds: {countUniqueItems(this.state.data).size}<br/>
+        <br/>
+        {renderNestedObject(this.state.data)}
+      </td>;
+
+    this.props.promise.then(data => this.setState({data: data.data}));
+    return <td style={{'vertical-align': 'top'}}>Loading...</td>;
+  }
+}
+
+
+function countAllItems(data) {
+  var ret = 0;
+  if ((data instanceof Object) && !(data instanceof Array)) {
+    if (data.itemHash)
+      ret++;
+    data = Object.values(data);
+  }
+  if (data instanceof Array)
+    ret += data.map(item => countAllItems(item)).reduce((a, b) => a + b, 0);
+  return ret;
+}
+
+
+function countUniqueItems(data, seen=new Set()) {
+  if ((data instanceof Object) && !(data instanceof Array)) {
+    if (data.itemHash)
+      seen.add(data.itemHash);
+    data = Object.values(data);
+  }
+  if (data instanceof Array)
+    data.map(item => countUniqueItems(item, seen)).reduce((a, b) => a + b, 0);
+  return seen;
+}
+
+
 function renderNestedObject(data) {
   if (data instanceof Array) {
     if (!data.length)
@@ -170,5 +248,4 @@ bungie.init(API_KEY, API_AUTH_URL)
     .then(function() {
       ReactDOM.render(<App/>, document.getElementById('root'));
     });
-
 </script>
