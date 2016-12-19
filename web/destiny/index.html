@@ -152,15 +152,15 @@ class Character extends React.Component {
 class APIDemo extends React.Component {
   render() {
     const promises = [
-        [bungieNetPlatform.destinyService.GetAccount(2, '4611686018436064455'), 'GetAccount'],
-        [bungieNetPlatform.destinyService.GetAccountSummary(2, '4611686018436064455'), 'GetAccountSummary'],
-        [bungieNetPlatform.destinyService.GetAllItemsSummary(2, '4611686018436064455'), 'GetAllItemsSummary'],
-        [bungieNetPlatform.destinyService.GetVault(2, '4611686018436064455'), 'GetVault'],
-        [bungieNetPlatform.destinyService.GetVaultSummary(2, '4611686018436064455'), 'GetVaultSummary'],
-        [bungieNetPlatform.destinyService.GetCharacter(2, '4611686018436064455', '2305843009223046587'), 'GetCharacter'],
-        [bungieNetPlatform.destinyService.GetCharacterSummary(2, '4611686018436064455', '2305843009223046587'), 'GetCharacterSummary'],
-        [bungieNetPlatform.destinyService.GetCharacterInventory(2, '4611686018436064455', '2305843009223046587'), 'GetCharacterInventory'],
-        [bungieNetPlatform.destinyService.GetCharacterInventorySummary(2, '4611686018436064455', '2305843009223046587'), 'GetCharacterInventorySummary'],
+        [bungieNetPlatform.destinyService.GetAccount(2, '4611686018436064455', {definitions: true}), 'GetAccount'],
+        [bungieNetPlatform.destinyService.GetAccountSummary(2, '4611686018436064455', {definitions: true}), 'GetAccountSummary'],
+        [bungieNetPlatform.destinyService.GetAllItemsSummary(2, '4611686018436064455', {definitions: true}), 'GetAllItemsSummary'],
+        [bungieNetPlatform.destinyService.GetVault(2, {definitions: true}), 'GetVault'],
+        [bungieNetPlatform.destinyService.GetVaultSummary(2, {definitions: true}), 'GetVaultSummary'],
+        [bungieNetPlatform.destinyService.GetCharacter(2, '4611686018436064455', '2305843009223046587', {definitions: true}), 'GetCharacter'],
+        [bungieNetPlatform.destinyService.GetCharacterSummary(2, '4611686018436064455', '2305843009223046587', {definitions: true}), 'GetCharacterSummary'],
+        [bungieNetPlatform.destinyService.GetCharacterInventory(2, '4611686018436064455', '2305843009223046587', {definitions: true}), 'GetCharacterInventory'],
+        [bungieNetPlatform.destinyService.GetCharacterInventorySummary(2, '4611686018436064455', '2305843009223046587', {definitions: true}), 'GetCharacterInventorySummary'],
     ];
 
     return <table>
@@ -186,13 +186,18 @@ class APIDemoTD extends React.Component {
   }
 
   render() {
-    if (this.state.data)
+    if (this.state.data) {
+      const allItems = countAllItems(this.state.data);
+      const uniqueItems = countUniqueItems(this.state.data);
       return <td style={{border: '1px solid black', 'vertical-align': 'top', 'white-space': 'nowrap'}}>
-        All itemIds: {countAllItems(this.state.data)}<br/>
-        Unique itemIds: {countUniqueItems(this.state.data).size}<br/>
+        {renderNestedObject(this.state.data)}<br/>
         <br/>
-        {renderNestedObject(this.state.data)}
+        All itemIds: {allItems}<br/>
+        Unique itemIds: {uniqueItems.size}<br/>
+        <br/>
+        {Array.from(uniqueItems).sort().map(name => <div>{name}</div>)}
       </td>;
+    }
 
     this.props.promise.then(data => this.setState({data: data.data}));
     return <td style={{'vertical-align': 'top'}}>Loading...</td>;
@@ -216,7 +221,7 @@ function countAllItems(data) {
 function countUniqueItems(data, seen=new Set()) {
   if ((data instanceof Object) && !(data instanceof Array)) {
     if (data.itemHash)
-      seen.add(data.itemHash);
+      seen.add(bungie.DEFS.items[data.itemHash].itemName);
     data = Object.values(data);
   }
   if (data instanceof Array)
