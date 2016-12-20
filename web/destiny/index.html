@@ -15,6 +15,12 @@
 <script src="bungie.js"></script>
 <script src="bungieNetPlatform.js"></script>
 
+<style>
+td, th {
+  vertical-align: top;
+}
+</style>
+
 <script type="text/babel">
 class App extends React.Component {
   constructor(props) {
@@ -93,19 +99,53 @@ class Account extends React.Component {
       <li>
         Bungie user <code>{account.bungieNetUser.displayName}</code> (account <code>{account.bungieNetUser.membershipId}/254</code>):
         <ul>
-          {account.destinyAccounts.map(account => <li>
-            Destiny user <code>{account.userInfo.displayName}</code> (account <code>{account.userInfo.membershipId}/{account.userInfo.membershipType}</code>):
-            <ul>
-              {account.characters.map(character => <li>
-                Character <code>{character.characterId}</code>
-                <Inventory character={character}/>
-              </li>)}
-              <li>
-                Vault
-                <Inventory account={account}/>
-              </li>
-            </ul>
-          </li>)}
+          {account.destinyAccounts.map(account => {
+            const promises = account.characters.map(character => character.getItemsTree());
+            promises.push(account.getVaultItemsTree());
+            const buckets = [
+                ['Invisible', 'Quests'],
+                ['Item', 'Bounties'],
+                ['Equippable', 'Subclass'],
+                ['Equippable', 'Primary Weapons'],
+                ['Equippable', 'Special Weapons'],
+                ['Equippable', 'Heavy Weapons'],
+                ['Equippable', 'Ghost'],
+                ['Equippable', 'Helmet'],
+                ['Equippable', 'Gauntlets'],
+                ['Equippable', 'Chest Armor'],
+                ['Equippable', 'Leg Armor'],
+                ['Equippable', 'Class Armor'],
+                ['Equippable', 'Artifacts'],
+                ['Equippable', 'Emblems'],
+                ['Equippable', 'Emotes'],
+                ['Equippable', 'Shaders'],
+                ['Equippable', 'Ships'],
+                ['Equippable', 'Sparrow Horn'],
+                ['Equippable', 'Vehicle'],
+                ['Item', 'Ornaments'],
+                ['Item', 'Consumables'],
+                ['Item', 'Materials'],
+                ['Item', 'Mission'],
+            ];
+            return <li>
+              Destiny user <code>{account.userInfo.displayName}</code> (account <code>{account.userInfo.membershipId}/{account.userInfo.membershipType}</code>):
+              <table>
+                <thead>
+                  <tr>
+                    <td></td>
+                    {account.characters.map(character => <th><Placard title={`${character.level} ${character.gender.genderName} ${character.race.raceName} ${character.characterClass.className}`}/></th>)}
+                    <th><Placard title="Vault"/></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {buckets.map(([category, bucket]) => <tr>
+                    <th>{bucket}</th>
+                    {promises.map(promise => <ItemListTD promise={promise} category={category} bucket={bucket}/>)}
+                  </tr>)}
+                </tbody>
+              </table>
+            </li>;
+          })}
         </ul>
       </li>
     </ul>;
@@ -113,35 +153,26 @@ class Account extends React.Component {
 }
 
 
-class Inventory extends React.Component {
+class ItemListTD extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
   }
 
   render() {
-    if (!this.state.itemTree) {
-      if (this.props.account) {
-        this.props.account.getVaultItemsTree().then(itemTree => this.setState({itemTree}));
-        return <div>Loading vault.</div>;
-      } else if (this.props.character) {
-        this.props.character.getItemsTree().then(itemTree => this.setState({itemTree}));
-        return <div>Loading character inventory.</div>;
-      } else
-        return <div>Unknown inventory source.</div>;
+    if (!this.state.data) {
+      this.props.promise.then(data => {this.setState({data: data[this.props.category][this.props.bucket] || []})});
+      return <td>Loading...</td>;
     }
 
-    const itemTree = this.state.itemTree;
+    return <td>{renderNestedObject(this.state.data)}</td>;
+  }
+}
 
-    return <ul>
-      <li>Quests: {renderNestedObject(itemTree.Invisible.Quests)}</li>
-      <li>Bounties: {renderNestedObject(itemTree.Item.Bounties)}</li>
-      <li>Equipment: {renderNestedObject(itemTree.Equippable)}</li>
-      <li>Ornaments: {renderNestedObject(itemTree.Item.Ornaments)}</li>
-      <li>Consumables: {renderNestedObject(itemTree.Item.Consumables)}</li>
-      <li>Materials: {renderNestedObject(itemTree.Item.Materials)}</li>
-      <li>Mission Items: {renderNestedObject(itemTree.Item.Mission)}</li>
-    </ul>;
+
+class Placard extends React.Component {
+  render() {
+    return <div className="placard">{this.props.title}</div>;
   }
 }
 
@@ -186,7 +217,7 @@ class APIDemoTD extends React.Component {
     if (this.state.data) {
       const allItems = countAllItems(this.state.data);
       const uniqueItems = countUniqueItems(this.state.data);
-      return <td style={{border: '1px solid black', 'vertical-align': 'top', 'white-space': 'nowrap'}}>
+      return <td style={{border: '1px solid black', 'white-space': 'nowrap'}}>
         {renderNestedObject(this.state.data)}<br/>
         <br/>
         All itemIds: {allItems}<br/>
@@ -197,7 +228,7 @@ class APIDemoTD extends React.Component {
     }
 
     this.props.promise.then(data => this.setState({data: data.data}));
-    return <td style={{'vertical-align': 'top'}}>Loading...</td>;
+    return <td>Loading...</td>;
   }
 }
 
