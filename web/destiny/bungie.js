@@ -89,6 +89,19 @@ bungie.fetch = function(url, data) {
 };
 
 
+bungie.findItems = function*(data) {
+  if (data instanceof Array) {
+    for (let item of data)
+      yield* bungie.findItems(item);
+  } else if (data instanceof Object) {
+    if (data.itemHash)
+      yield data;
+    else
+      for (let item of Object.values(data))
+        yield* bungie.findItems(item);
+  }
+};
+
 
 bungie.init = function(apiKey, authUrl) {
   bungie.API_KEY = apiKey;

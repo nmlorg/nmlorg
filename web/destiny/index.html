@@ -96,7 +96,14 @@ class Account extends React.Component {
           {account.destinyAccounts.map(account => <li>
             Destiny user <code>{account.userInfo.displayName}</code> (account <code>{account.userInfo.membershipId}/{account.userInfo.membershipType}</code>):
             <ul>
-              {account.characters.map(character => <li><Character character={character}/></li>)}
+              {account.characters.map(character => <li>
+                Character <code>{character.characterId}</code>
+                <Inventory character={character}/>
+              </li>)}
+              <li>
+                Vault
+                <Inventory account={account}/>
+              </li>
             </ul>
           </li>)}
         </ul>
@@ -106,45 +113,35 @@ class Account extends React.Component {
 }
 
 
-class Character extends React.Component {
+class Inventory extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
   }
 
   render() {
-    const character = this.props.character;
-
-    if (!this.state.inventory) {
-      character.GetCharacterInventory({definitions: true})
-          .then(response => this.setState({inventory: response.data}));
-      return <span>Loading inventory for character <code>{character.characterId}</code>.</span>;
+    if (!this.state.itemTree) {
+      if (this.props.account) {
+        this.props.account.getVaultItemsTree().then(itemTree => this.setState({itemTree}));
+        return <div>Loading vault.</div>;
+      } else if (this.props.character) {
+        this.props.character.getItemsTree().then(itemTree => this.setState({itemTree}));
+        return <div>Loading character inventory.</div>;
+      } else
+        return <div>Unknown inventory source.</div>;
     }
 
-    var buckets = {};
+    const itemTree = this.state.itemTree;
 
-    for (let [bucketName, subBuckets] of Object.entries(this.state.inventory.buckets)) {
-      buckets[bucketName] = {};
-      for (let subBucket of subBuckets) {
-        const subBucketName = bungie.DEFS.buckets[subBucket.bucketHash].bucketName;
-        buckets[bucketName][subBucketName] = subBucket.items.map(item => bungie.derefHashes(item));
-      }
-    }
-
-    return <div>
-      Character <code>{character.characterId}</code><br/>
-      Quests: {renderNestedObject(buckets.Invisible.Quests)}<br/>
-      Bounties: {renderNestedObject(buckets.Item.Bounties)}<br/>
-      Mission Items: {renderNestedObject(buckets.Item.Mission)}<br/>
-      Messages: {renderNestedObject(buckets.Invisible.Messages)}<br/>
-      Lost Items: {renderNestedObject(buckets.Invisible['Lost Items'])}<br/>
-      Equipment: {renderNestedObject(buckets.Equippable)}<br/>
-      Ornaments: {renderNestedObject(buckets.Item.Ornaments)}<br/>
-      Consumables: {renderNestedObject(buckets.Item.Consumables)}<br/>
-      Materials: {renderNestedObject(buckets.Item.Materials)}<br/>
-    </div>;
-
-    return renderNestedObject(buckets);
+    return <ul>
+      <li>Quests: {renderNestedObject(itemTree.Invisible.Quests)}</li>
+      <li>Bounties: {renderNestedObject(itemTree.Item.Bounties)}</li>
+      <li>Equipment: {renderNestedObject(itemTree.Equippable)}</li>
+      <li>Ornaments: {renderNestedObject(itemTree.Item.Ornaments)}</li>
+      <li>Consumables: {renderNestedObject(itemTree.Item.Consumables)}</li>
+      <li>Materials: {renderNestedObject(itemTree.Item.Materials)}</li>
+      <li>Mission Items: {renderNestedObject(itemTree.Item.Mission)}</li>
+    </ul>;
   }
 }
 

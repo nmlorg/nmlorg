@@ -28,6 +28,16 @@ bungie.DestinyAccount = class DestinyAccount {
     this.characters = this.characters.map(character => new bungie.DestinyCharacter(character));
   }
 
+  getVaultItems() {
+    return this.GetVault({definitions: true})
+        .then(response => Array.from(bungie.findItems(response.data),
+                                     item => new bungie.DestinyItem(item)));
+  }
+
+  getVaultItemsTree() {
+    return this.getVaultItems().then(items => buildItemsTree(items));
+  }
+
   GetAccount(p_={}) {
     return bungieNetPlatform.destinyService.GetAccount(
         this.userInfo.membershipType, this.userInfo.membershipId, p_);
@@ -111,6 +121,16 @@ bungie.DestinyCharacter = class DestinyCharacter {
       this[k] = v;
   }
 
+  getItems() {
+    return this.GetCharacterInventory({definitions: true})
+        .then(response => Array.from(bungie.findItems(response.data),
+                                     item => new bungie.DestinyItem(item)));
+  }
+
+  getItemsTree() {
+    return this.getItems().then(items => buildItemsTree(items));
+  }
+
   GetActivityHistory(p_={}) {
     return bungieNetPlatform.destinyService.GetActivityHistory(
         this.membershipType, this.membershipId, this.characterId, p_);
@@ -189,6 +209,37 @@ bungie.DestinyCharacter = class DestinyCharacter {
   GetVendorSummariesForCurrentCharacter(p_={}) {
     return bungieNetPlatform.destinyService.GetVendorSummariesForCurrentCharacter(
         this.membershipType, this.characterId, p_);
+  }
+};
+
+
+
+const BUCKET_CATEGORIES = ['Invisible', 'Item', 'Currency', 'Equippable', 'Ignored', 'Unknown'];
+const LOCATIONS = ['Unknown', 'Inventory', 'Vault', 'Vendor', 'Postmaster'];
+
+
+function buildItemsTree(items) {
+  const categories = {};
+  for (let category of BUCKET_CATEGORIES)
+    categories[category] = {};
+  for (let item of items) {
+    if (!categories[item.bucketCategory][item.bucketName])
+      categories[item.bucketCategory][item.bucketName] = [];
+    categories[item.bucketCategory][item.bucketName].push(item);
+  }
+  return categories;
+}
+
+
+bungie.DestinyItem = class DestinyItem {
+  constructor(data) {
+    for (let [k, v] of Object.entries(data))
+      this[k] = v;
+    this.itemDef = bungie.DEFS.items[this.itemHash];
+    this.bucketDef = bungie.DEFS.buckets[this.itemDef.bucketTypeHash];
+    this.bucketCategory = this.bucketDef ? BUCKET_CATEGORIES[this.bucketDef.category] : 'Unknown';
+    this.bucketName = this.bucketDef ? this.bucketDef.bucketName : 'Unknown';
+    this.locationName = LOCATIONS[this.location || 0];
   }
 };
 
