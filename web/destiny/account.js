@@ -215,7 +215,9 @@ bungie.DestinyCharacter = class DestinyCharacter {
 
 
 const BUCKET_CATEGORIES = ['Invisible', 'Item', 'Currency', 'Equippable', 'Ignored', 'Unknown'];
+const ITEM_STATES = ['None', 'Locked', 'Tracked'];
 const LOCATIONS = ['Unknown', 'Inventory', 'Vault', 'Vendor', 'Postmaster'];
+const TRANSFER_STATUSES = ['CanTransfer', 'ItemIsEquipped', 'NotTransferrable', , 'NoRoomInDestination'];
 
 
 function buildItemsTree(items) {
@@ -233,13 +235,14 @@ function buildItemsTree(items) {
 
 bungie.DestinyItem = class DestinyItem {
   constructor(data) {
-    for (let [k, v] of Object.entries(data))
+    for (let [k, v] of Object.entries(bungie.derefHashes(data)))
       this[k] = v;
-    this.itemDef = bungie.DEFS.items[this.itemHash];
     this.bucketDef = bungie.DEFS.buckets[this.itemDef.bucketTypeHash];
     this.bucketCategory = this.bucketDef ? BUCKET_CATEGORIES[this.bucketDef.category] : 'Unknown';
     this.bucketName = this.bucketDef ? this.bucketDef.bucketName : 'Unknown';
     this.locationName = LOCATIONS[this.location || 0];
+    this.stateName = ITEM_STATES[this.state];
+    this.transferStatusName = TRANSFER_STATUSES[this.transferStatus];
   }
 };
 

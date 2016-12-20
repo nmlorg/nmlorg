@@ -93,62 +93,75 @@ class ChooseAccount extends React.Component {
 
 
 class Account extends React.Component {
+  constructor(props) {
+    super(props);
+    this.account = this.props.account.destinyAccounts[0];
+    this.promises = this.account.characters.map(character => character.getItemsTree());
+    this.promises.push(this.account.getVaultItemsTree());
+    this.promises.forEach(promise => promise.then(data => {
+      for (let [category, buckets] of Object.entries(data)) {
+        if (category == 'Currency')
+          continue;  // Currency items are returned as part of the inventory for each character.
+        Object.keys(buckets).forEach(bucket => {
+          for (let [category2, bucket2] of this.state.buckets)
+            if ((category == category2) && (bucket == bucket2))
+              return;
+          this.setState(prevState => ({buckets: prevState.buckets.concat([[category, bucket]])}));
+        });
+      }
+    }));
+    this.state = {
+        buckets: [
+            ['Invisible', 'Quests'],
+            ['Item', 'Bounties'],
+            ['Equippable', 'Subclass'],
+            ['Equippable', 'Primary Weapons'],
+            ['Equippable', 'Special Weapons'],
+            ['Equippable', 'Heavy Weapons'],
+            ['Equippable', 'Ghost'],
+            ['Equippable', 'Helmet'],
+            ['Equippable', 'Gauntlets'],
+            ['Equippable', 'Chest Armor'],
+            ['Equippable', 'Leg Armor'],
+            ['Equippable', 'Class Armor'],
+            ['Equippable', 'Artifacts'],
+            ['Equippable', 'Emblems'],
+            ['Equippable', 'Emotes'],
+            ['Equippable', 'Shaders'],
+            ['Equippable', 'Ships'],
+            ['Equippable', 'Sparrow Horn'],
+            ['Equippable', 'Vehicle'],
+            ['Item', 'Ornaments'],
+            ['Item', 'Consumables'],
+            ['Item', 'Materials'],
+            ['Item', 'Mission'],
+            ['Unknown', 'Unknown'],
+        ],
+    };
+  }
+
   render() {
-    const account = this.props.account;
-    return <ul>
-      <li>
-        Bungie user <code>{account.bungieNetUser.displayName}</code> (account <code>{account.bungieNetUser.membershipId}/254</code>):
-        <ul>
-          {account.destinyAccounts.map(account => {
-            const promises = account.characters.map(character => character.getItemsTree());
-            promises.push(account.getVaultItemsTree());
-            const buckets = [
-                ['Invisible', 'Quests'],
-                ['Item', 'Bounties'],
-                ['Equippable', 'Subclass'],
-                ['Equippable', 'Primary Weapons'],
-                ['Equippable', 'Special Weapons'],
-                ['Equippable', 'Heavy Weapons'],
-                ['Equippable', 'Ghost'],
-                ['Equippable', 'Helmet'],
-                ['Equippable', 'Gauntlets'],
-                ['Equippable', 'Chest Armor'],
-                ['Equippable', 'Leg Armor'],
-                ['Equippable', 'Class Armor'],
-                ['Equippable', 'Artifacts'],
-                ['Equippable', 'Emblems'],
-                ['Equippable', 'Emotes'],
-                ['Equippable', 'Shaders'],
-                ['Equippable', 'Ships'],
-                ['Equippable', 'Sparrow Horn'],
-                ['Equippable', 'Vehicle'],
-                ['Item', 'Ornaments'],
-                ['Item', 'Consumables'],
-                ['Item', 'Materials'],
-                ['Item', 'Mission'],
-            ];
-            return <li>
-              Destiny user <code>{account.userInfo.displayName}</code> (account <code>{account.userInfo.membershipId}/{account.userInfo.membershipType}</code>):
-              <table>
-                <thead>
-                  <tr>
-                    <td></td>
-                    {account.characters.map(character => <th><Placard title={`${character.level} ${character.gender.genderName} ${character.race.raceName} ${character.characterClass.className}`}/></th>)}
-                    <th><Placard title="Vault"/></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {buckets.map(([category, bucket]) => <tr>
-                    <th>{bucket}</th>
-                    {promises.map(promise => <ItemListTD promise={promise} category={category} bucket={bucket}/>)}
-                  </tr>)}
-                </tbody>
-              </table>
-            </li>;
-          })}
-        </ul>
-      </li>
-    </ul>;
+    const account = this.account;
+    return <div>
+      <table>
+        <thead>
+          <tr>
+            <td>
+              <Placard title={`Bungie user ${this.props.account.bungieNetUser.displayName}`}/>
+              <Placard title={`Destiny user ${this.account.userInfo.displayName}`}/>
+            </td>
+            {this.account.characters.map(character => <th><Placard title={`${character.level} ${character.gender.genderName} ${character.race.raceName} ${character.characterClass.className}`}/></th>)}
+            <th><Placard title="Vault"/></th>
+          </tr>
+        </thead>
+        <tbody>
+          {this.state.buckets.map(([category, bucket]) => <tr>
+            <th>{bucket}</th>
+            {this.promises.map(promise => <ItemListTD promise={promise} category={category} bucket={bucket}/>)}
+          </tr>)}
+        </tbody>
+      </table>
+    </div>;
   }
 }
 

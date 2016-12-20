@@ -27,8 +27,8 @@ bungie.derefHashes = function(data) {
         const plural = makePlural(base);
         if (bungie.DEFS[plural])
           ret[base + 'Defs'] = v.map(code => bungie.DEFS[plural][code]);
-      } else
-        ret[k] = bungie.derefHashes(v);
+      }
+      ret[k] = bungie.derefHashes(v);
     }
     return ret;
   } else
