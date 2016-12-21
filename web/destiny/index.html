@@ -19,6 +19,13 @@
 td, th {
   vertical-align: top;
 }
+
+div.placard {
+  background-color: black;
+  color: white;
+  height: 40px;
+  width: 300px;
+}
 </style>
 
 <script type="text/babel">
@@ -141,7 +148,6 @@ class Account extends React.Component {
   }
 
   render() {
-    const account = this.account;
     return <div>
       <table>
         <thead>
@@ -169,16 +175,48 @@ class Account extends React.Component {
 class ItemListTD extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+        expanded: false,
+    };
+    this.props.promise.then(data => this.setState({items: data[this.props.category][this.props.bucket] || []}));
   }
 
   render() {
-    if (!this.state.data) {
-      this.props.promise.then(data => {this.setState({data: data[this.props.category][this.props.bucket] || []})});
+    if (!this.state.items)
       return <td>Loading...</td>;
-    }
 
-    return <td>{renderNestedObject(this.state.data)}</td>;
+    if (!this.state.items.length)
+      return <td>No items</td>;
+
+    var items = this.state.items;
+    if (!this.state.expanded && (this.state.items.length > 4))
+      items = items.slice(0, 3);
+    items = items.map(item => <div onClick={e => console.log(item)}>
+      <Item item={item}/>
+    </div>);
+    if (this.state.items.length > 4) {
+      if (!this.state.expanded) {
+        const item = this.state.items[3];
+        items.push(<div onClick={e => this.setState({expanded: true})}
+                        style={{opacity: .3}}>
+          <Item item={item}/>
+        </div>);
+      } else {
+        items.push(<button onClick={e => {
+          e.preventDefault();
+          this.setState({expanded: false});
+        }}>Collapse</button>);
+      }
+    }
+    return <td>{items}</td>;
+  }
+}
+
+
+class Item extends React.Component {
+  render() {
+    const item = this.props.item;
+    return <Placard title={`${item.itemDef.itemName}`}/>;
   }
 }
 

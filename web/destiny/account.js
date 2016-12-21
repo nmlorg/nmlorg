@@ -243,6 +243,36 @@ bungie.DestinyItem = class DestinyItem {
     this.locationName = LOCATIONS[this.location || 0];
     this.stateName = ITEM_STATES[this.state];
     this.transferStatusName = TRANSFER_STATUSES[this.transferStatus];
+    if (this.nodes && this.talentGridDef && this.talentGridDef.nodes) {
+      const nodeDefs = [];
+      for (let nodeDef of this.talentGridDef.nodes)
+        nodeDefs[nodeDef.nodeHash] = nodeDef;
+      for (let node of this.nodes) {
+        node.nodeDef = nodeDefs[node.nodeHash];
+        const stepDefs = [];
+        for (let stepDef of node.nodeDef.steps)
+          stepDefs[stepDef.stepIndex] = stepDef;
+        node.stepDef = stepDefs[node.stepIndex];
+      }
+      this.nodeGrid = this.getNodeGrid();
+    }
+  }
+
+  getNodeGrid() {
+    const grid = [];
+    const finalColumn = [];
+    for (let node of this.nodes) {
+      if ((node.nodeDef.column < 0) || (node.nodeDef.row < 0))
+        finalColumn.push(node);
+      else {
+        if (!grid[node.nodeDef.column])
+          grid[node.nodeDef.column] = [];
+        grid[node.nodeDef.column][node.nodeDef.row] = node;
+      }
+    }
+    if (finalColumn.length)
+      grid.push(finalColumn);
+    return grid;
   }
 };
 
