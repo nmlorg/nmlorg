@@ -21,10 +21,19 @@ td, th {
 }
 
 div.placard {
-  background-color: black;
+  background-color: #636363;
   color: white;
   height: 40px;
   width: 300px;
+}
+
+div.placard.active {
+  background-color: #212121;
+}
+
+div.placard > img {
+  height: 40px;
+  width: 40px;
 }
 </style>
 
@@ -152,12 +161,17 @@ class Account extends React.Component {
       <table>
         <thead>
           <tr>
-            <td>
-              <Placard title={`Bungie user ${this.props.account.bungieNetUser.displayName}`}/>
-              <Placard title={`Destiny user ${this.account.userInfo.displayName}`}/>
-            </td>
-            {this.account.characters.map(character => <th><Placard title={`${character.level} ${character.gender.genderName} ${character.race.raceName} ${character.characterClass.className}`}/></th>)}
-            <th><Placard title="Vault"/></th>
+            <th>
+              {this.props.account.bungieNetUser.displayName}
+              {this.props.account.bungieNetUser.displayName != this.account.userInfo.displayName ? ` (${this.account.userInfo.displayName})` : ''}
+            </th>
+            {this.account.characters.map(character => <td>
+              <Placard active={true}
+                       background={character.backgroundPath}
+                       icon={character.emblemPath}
+                       title={`${character.level} ${character.gender.genderName} ${character.race.raceName} ${character.characterClass.className}`}/>
+            </td>)}
+            <td><Placard active={true} title="Vault"/></td>
           </tr>
         </thead>
         <tbody>
@@ -216,14 +230,33 @@ class ItemListTD extends React.Component {
 class Item extends React.Component {
   render() {
     const item = this.props.item;
-    return <Placard title={`${item.itemDef.itemName}`}/>;
+    return <Placard active={!item.canEquip || item.isEquipped}
+                    background={item.itemDef.secondaryIcon}
+                    icon={item.itemDef.icon}
+                    title={`${item.itemDef.itemName}`}/>;
   }
 }
 
 
 class Placard extends React.Component {
+  fixImage(src) {
+    return (src && src != '/img/misc/missing_icon.png') ? 'https://www.bungie.net' + src : '';
+  }
+
   render() {
-    return <div className="placard">{this.props.title}</div>;
+    const props = this.props;
+    props.background = this.fixImage(props.background);
+    props.icon = this.fixImage(props.icon);
+    const className = 'placard' + (props.active ? ' active' : '');
+    const style = {};
+    if (props.background) {
+      style.backgroundImage = `url(${JSON.stringify(props.background)})`;
+      style.backgroundSize = '100% 100%';
+    }
+    return <div className={className} style={style}>
+      {props.icon ? <img src={props.icon}/> : ''}
+      {props.title}
+    </div>;
   }
 }
 
