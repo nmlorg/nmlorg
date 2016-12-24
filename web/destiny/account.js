@@ -241,6 +241,7 @@ bungie.DestinyItem = class DestinyItem {
     this.bucketCategory = this.bucketDef ? BUCKET_CATEGORIES[this.bucketDef.category] : 'Unknown';
     this.bucketName = this.bucketDef ? this.bucketDef.bucketName : 'Unknown';
     this.locationName = LOCATIONS[this.location || 0];
+    this.questlineItemDef = bungie.DEFS.items[this.itemDef.questlineItemHash];
     this.stateName = ITEM_STATES[this.state];
     this.transferStatusName = TRANSFER_STATUSES[this.transferStatus];
     if (this.nodes && this.talentGridDef && this.talentGridDef.nodes) {
