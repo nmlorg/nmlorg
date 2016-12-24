@@ -248,6 +248,10 @@ class ItemListTD extends React.Component {
       return -1;
     else if (aTitle > bTitle)
       return 1;
+    if (a.stackSize > b.stackSize)
+      return -1;
+    else if (a.stackSize < b.stackSize)
+      return 1;
     return 0;
   }
 
