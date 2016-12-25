@@ -217,6 +217,9 @@ bungie.DestinyCharacter = class DestinyCharacter {
 const BUCKET_CATEGORIES = ['Invisible', 'Item', 'Currency', 'Equippable', 'Ignored', 'Unknown'];
 const ITEM_STATES = ['None', 'Locked', 'Tracked'];
 const LOCATIONS = ['Unknown', 'Inventory', 'Vault', 'Vendor', 'Postmaster'];
+const NODE_STATE_NAMES = ['Invalid', 'CanUpgrade', 'NoPoints', 'NoPrerequisites', 'NoSteps',
+                          'NoUnlock', 'NoMaterial', 'NoGridLevel', 'SwappingLocked', 'MustSwap',
+                          'Complete', 'Unknown', 'CreationOnly', 'Hidden'];
 const TRANSFER_STATUSES = ['CanTransfer', 'ItemIsEquipped', 'NotTransferrable', , 'NoRoomInDestination'];
 
 
@@ -250,6 +253,7 @@ bungie.DestinyItem = class DestinyItem {
         nodeDefs[nodeDef.nodeHash] = nodeDef;
       for (let node of this.nodes) {
         node.nodeDef = nodeDefs[node.nodeHash];
+        node.stateName = NODE_STATE_NAMES[node.state];
         const stepDefs = [];
         for (let stepDef of node.nodeDef.steps)
           stepDefs[stepDef.stepIndex] = stepDef;

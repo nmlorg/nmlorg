@@ -31,10 +31,8 @@ div.placard {
   background-color: #636363;
   background-size: 100% 100%;
   border: 1px solid white;
-  color: white;
   font-size: 12px;
   height: 59px;
-  overflow: hidden;
   position: relative;
   width: 285px;
 }
@@ -48,25 +46,30 @@ div.placard.neutral {
   background-color: #212121;
 }
 
-div.placard > img {
+div.placard > div.content {
+  color: white;
+  overflow: hidden;
+}
+
+div.placard > div.content > img {
   float: left;
   height: 59px;
   margin-right: 4px;
 }
 
-div.placard > div.text {
+div.placard > div.content > div.text {
   font-size: 13px;
   font-weight: 200;
 }
 
-div.placard > div.title {
+div.placard > div.content > div.title {
   font-size: 18px;
   padding: 4px;
   position: relative;
   white-space: nowrap;
 }
 
-div.placard > div.right {
+div.placard > div.content > div.right {
   font-size: 18px;
   padding: 4px;
   position: absolute;
@@ -74,6 +77,36 @@ div.placard > div.right {
   height: 100%;
   text-align: right;
   top: 0;
+}
+
+div.placard > div.drawer {
+  background-color: rgb(30, 36, 43);
+  border: 5px solid black;
+  color: white;
+  position: absolute;
+  top: 59px;
+  z-index: 1;
+}
+
+div.grid-node > img {
+  background-color: rgb(51, 56, 63);
+  border: 5px solid rgb(70, 75, 81);
+  border-radius: 96px;
+  height: 96px;
+  width: 96px;
+}
+
+div.grid-node.active > img {
+  background-color: rgb(72, 135, 186);
+  border-color: rgb(72, 135, 186);
+}
+
+div.grid-node.unlocked > img {
+  border-color: rgb(94, 161, 106);
+}
+
+div.grid-node.hidden > img {
+  background-color: red;
 }
 </style>
 
@@ -162,7 +195,7 @@ class Account extends React.Component {
           for (let [category2, bucket2] of this.state.buckets)
             if ((category == category2) && (bucket == bucket2))
               return;
-          this.setState(prevState => ({buckets: prevState.buckets.concat([[category, bucket]])}));
+          this.setState(prev => ({buckets: prev.buckets.concat([[category, bucket]])}));
         });
       }
     }));
@@ -265,9 +298,7 @@ class ItemListTD extends React.Component {
     var items = this.state.items.sort(ItemListTD.cmpItem);
     if (!this.state.expanded && (this.state.items.length > 4))
       items = items.slice(0, 3);
-    items = items.map(item => <div onClick={e => console.log(item)}>
-      <Item item={item}/>
-    </div>);
+    items = items.map(item => <Item item={item}/>);
     if (this.state.items.length > 4) {
       if (!this.state.expanded) {
         const item = this.state.items[3];
@@ -306,30 +337,73 @@ class Item extends React.Component {
                     icon={itemDef.icon}
                     right={item.primaryStat ? item.primaryStat.value : item.stackSize != 1 ? item.stackSize : '' }
                     text={text}
-                    title={title}/>;
+                    title={title}>
+      <button onClick={e => {e.preventDefault(); e.stopPropagation(); console.log(item)}}>Info</button>
+      {item.nodeGrid && <NodeGrid grid={item.nodeGrid}/>}
+    </Placard>;
+  }
+}
+
+
+class NodeGrid extends React.Component {
+  render() {
+    const grid = this.props.grid;
+    const numRows = grid.map(column => column.length).reduce((a, b) => a > b ? a : b, 0);
+    const rows = Array.from({length: numRows}, (_, i) => i);
+    return <table>
+      <tbody>
+        {rows.map(rowNum => {
+          const row = [];
+          for (let colNum = 0; colNum < grid.length; colNum++)
+            row.push(<td>{grid[colNum] && grid[colNum][rowNum] && <NodeGridNode node={grid[colNum][rowNum]}/>}</td>);
+          return <tr>{row}</tr>;
+        })}
+      </tbody>
+    </table>;
+  }
+}
+
+
+class NodeGridNode extends React.Component {
+  render() {
+    const node = this.props.node;
+    return <div className={`grid-node ${node.isActivated ? 'active' : node.hidden ? 'hidden' : node.stateName == 'MustSwap' ? 'unlocked' : ''}`}>
+      <img src={`https://www.bungie.net${node.stepDef.icon}`}/>
+      <b>{node.stepDef.nodeStepName || node.stepDef.interactionDescription}</b><br/>
+      {node.stepDef.nodeStepDescription}
+      {['Complete', 'Hidden', 'MustSwap', 'NoGridLevel'].indexOf(node.stateName) == -1 && ` (${node.stateName})`}
+    </div>;
   }
 }
 
 
 class Placard extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
   fixImage(src) {
     return (src && src != '/img/misc/missing_icon.png') ? 'https://www.bungie.net' + src : '';
   }
 
   render() {
     const props = this.props;
-    props.background = this.fixImage(props.background);
-    props.icon = this.fixImage(props.icon);
+    const background = this.fixImage(props.background);
+    const icon = this.fixImage(props.icon);
     const className = 'placard' + (props.active ? ' active' : props.neutral ? ' neutral' : '');
     const style = {};
-    if (props.background) {
-      style.backgroundImage = `url(${JSON.stringify(props.background)})`;
+    if (background) {
+      style.backgroundImage = `url(${JSON.stringify(background)})`;
     }
-    return <div className={className} style={style}>
-      {props.icon ? <img src={props.icon}/> : ''}
-      <div className="title">{props.title}</div>
-      <div className="text">{props.text}</div>
-      <div className="right">{props.right}</div>
+    return <div className={className} style={style} onClick={e => this.setState(prev => ({open: !prev.open}))}>
+      <div className="content">
+        {icon ? <img src={icon}/> : ''}
+        <div className="title">{props.title}</div>
+        <div className="text">{props.text}</div>
+        <div className="right">{props.right}</div>
+      </div>
+      {this.state.open && props.children ? <div className="drawer">{props.children}</div> : ''}
     </div>;
   }
 }
