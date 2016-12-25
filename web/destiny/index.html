@@ -18,6 +18,8 @@
 <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 <style>
 body {
+  background-color: rgb(18, 23, 28);
+  color: white;
   font-family: 'Roboto', sans-serif;
   font-size: 16px;
   font-weight: 400;
@@ -28,18 +30,19 @@ td, th {
 }
 
 div.placard {
-  background-color: #636363;
+  background-color: rgb(29, 34, 39);
   background-size: 100% 100%;
-  border: 1px solid white;
+  border-radius: 5px;
   font-size: 12px;
   height: 59px;
+  margin: 2px;
   position: relative;
   width: 285px;
 }
 
 div.placard.active {
-  background-color: #212121;
-  border: 1px solid red;
+  background-color: rgb(58, 68, 78);
+  box-shadow: 0 0 5px 1px rgba(245, 245, 245, 0.5);
 }
 
 div.placard.neutral {
@@ -47,7 +50,7 @@ div.placard.neutral {
 }
 
 div.placard > div.content {
-  color: white;
+  border-radius: 5px;
   overflow: hidden;
 }
 
@@ -82,7 +85,6 @@ div.placard > div.content > div.right {
 div.placard > div.drawer {
   background-color: rgb(30, 36, 43);
   border: 5px solid black;
-  color: white;
   position: absolute;
   top: 59px;
   z-index: 1;
