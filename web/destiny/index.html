@@ -30,9 +30,6 @@ td, th {
 }
 
 div.placard {
-  background-color: rgb(29, 34, 39);
-  background-size: 100% 100%;
-  border-radius: 5px;
   font-size: 12px;
   height: 59px;
   margin: 2px;
@@ -40,17 +37,32 @@ div.placard {
   width: 285px;
 }
 
-div.placard.active {
-  background-color: rgb(58, 68, 78);
+div.placard > div {
+  background-color: rgb(30, 36, 43);
+}
+
+div.placard.active > div {
+  background-color: rgb(60, 72, 86);
   box-shadow: 0 0 5px 1px rgba(245, 245, 245, 0.5);
 }
 
-div.placard.neutral {
-  background-color: #212121;
+div.placard.neutral > div {
+  background-color: rgb(30, 36, 43);
+}
+
+div.placard > div:first-child {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+div.placard > div:last-child {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 
 div.placard > div.content {
-  border-radius: 5px;
+  background-size: 100% 100%;
+  height: 59px;
   overflow: hidden;
 }
 
@@ -83,8 +95,11 @@ div.placard > div.content > div.right {
 }
 
 div.placard > div.drawer {
-  background-color: rgb(30, 36, 43);
-  border: 5px solid black;
+  border-top-right-radius: 5px;
+  min-height: 59px;
+  min-width: 285px;
+  overflow: hidden;
+  padding: 10px;
   position: absolute;
   top: 59px;
   z-index: 1;
@@ -398,8 +413,8 @@ class Placard extends React.Component {
     if (background) {
       style.backgroundImage = `url(${JSON.stringify(background)})`;
     }
-    return <div className={className} style={style} onClick={e => this.setState(prev => ({open: !prev.open}))}>
-      <div className="content">
+    return <div className={className} onClick={e => this.setState(prev => ({open: !prev.open}))}>
+      <div className="content" style={style}>
         {icon ? <img src={icon}/> : ''}
         <div className="title">{props.title}</div>
         <div className="text">{props.text}</div>
