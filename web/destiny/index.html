@@ -39,6 +39,7 @@ div.placard {
 
 div.placard > div {
   background-color: rgb(30, 36, 43);
+  box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.5);
 }
 
 div.placard.active > div {
@@ -343,7 +344,7 @@ class Item extends React.Component {
     var text = '';
     if (item.objectives.length)
       for (let objective of item.objectives)
-        text += `${objective.isComplete ? '\u2611' : '\u2610'}\u00a0${objective.objectiveDef.displayDescription || item.itemDef.itemDescription} `;
+        text += `${objective.isComplete ? '\u2611' : '\u2610'}\u00a0${objective.objectiveDef.displayDescription || item.itemDef.itemDescription} (${objective.progress}/${objective.objectiveDef.completionValue}) `;
     else if (item.perks.length)
       for (let perk of item.perks)
         text += `${perk.isActive ? '\u2611' : '\u2610'}\u00a0${perk.perkDef.displayName} `;
@@ -355,8 +356,11 @@ class Item extends React.Component {
                     right={item.primaryStat ? item.primaryStat.value : item.stackSize != 1 ? item.stackSize : '' }
                     text={text}
                     title={title}>
-      <button onClick={e => {e.preventDefault(); e.stopPropagation(); console.log(item)}}>Info</button>
+      {item.itemDef.itemDescription}
+      {item.objectives.map(objective => <div>{`${objective.isComplete ? '\u2611' : '\u2610'}\u00a0${objective.objectiveDef.displayDescription || item.itemDef.itemDescription} (${objective.progress}/${objective.objectiveDef.completionValue})`}</div>)}
+      {item.perks.map(perk => <div>{`${perk.isActive ? '\u2611' : '\u2610'}\u00a0${perk.perkDef.displayName}`}</div>)}
       {item.nodeGrid && <NodeGrid grid={item.nodeGrid}/>}
+      <div><button onClick={e => {e.preventDefault(); e.stopPropagation(); console.log(item)}}>Debug</button></div>
     </Placard>;
   }
 }
