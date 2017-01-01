@@ -342,7 +342,7 @@ class Item extends React.Component {
     const itemDef = item.questlineItemDef || item.itemDef;
     var title = item.questlineItemDef ? `${item.questlineItemDef.itemName}: ${item.itemDef.itemName}` : item.itemDef.itemName;
     if (item.sourceDefs && (item.sourceDefs.length == 1))
-      title = `${title} (${item.sourceDefs[0].sourceName})`;
+      title = <span><img width="16" height="16" src={`https://www.bungie.net${item.sourceDefs[0].icon}`} title={item.sourceDefs[0].description}/> {title}</span>;
     var text = '';
     if (item.objectives.length)
       for (let objective of item.objectives)
