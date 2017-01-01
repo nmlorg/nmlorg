@@ -340,7 +340,9 @@ class Item extends React.Component {
   render() {
     const item = this.props.item;
     const itemDef = item.questlineItemDef || item.itemDef;
-    const title = item.questlineItemDef ? `${item.questlineItemDef.itemName}: ${item.itemDef.itemName}` : item.itemDef.itemName;
+    var title = item.questlineItemDef ? `${item.questlineItemDef.itemName}: ${item.itemDef.itemName}` : item.itemDef.itemName;
+    if (item.sourceDefs && (item.sourceDefs.length == 1))
+      title = `${title} (${item.sourceDefs[0].sourceName})`;
     var text = '';
     if (item.objectives.length)
       for (let objective of item.objectives)
@@ -357,8 +359,21 @@ class Item extends React.Component {
                     text={text}
                     title={title}>
       {item.itemDef.itemDescription}
-      {item.objectives.map(objective => <div>{`${objective.isComplete ? '\u2611' : '\u2610'}\u00a0${objective.objectiveDef.displayDescription || item.itemDef.itemDescription} (${objective.progress}/${objective.objectiveDef.completionValue})`}</div>)}
-      {item.perks.map(perk => <div>{`${perk.isActive ? '\u2611' : '\u2610'}\u00a0${perk.perkDef.displayName}`}</div>)}
+      {Boolean(item.objectives.length) && <p>
+        Objectives:<br/>
+        {item.objectives.map(objective => <div>{`${objective.isComplete ? '\u2611' : '\u2610'}\u00a0${objective.objectiveDef.displayDescription || item.itemDef.itemDescription} (${objective.progress}/${objective.objectiveDef.completionValue})`}</div>)}
+      </p>}
+      {Boolean(item.perks.length) && <p>
+        Perks:<br/>
+        {item.perks.map(perk => <div>{`${perk.isActive ? '\u2611' : '\u2610'}\u00a0${perk.perkDef.displayName}`}</div>)}
+      </p>}
+      {item.sourceDefs && Boolean(item.sourceDefs.length) && <p>
+        Sources:<br/>
+        {item.sourceDefs.map(source => source && <div>
+          <img width="12" height="12" src={`https://www.bungie.net${source.icon}`}/>
+          {source.description}
+        </div>)}
+      </p>}
       {item.nodeGrid && <NodeGrid grid={item.nodeGrid}/>}
       <div><button onClick={e => {e.preventDefault(); e.stopPropagation(); console.log(item)}}>Debug</button></div>
     </Placard>;
