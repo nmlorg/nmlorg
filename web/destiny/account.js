@@ -220,6 +220,7 @@ const LOCATIONS = ['Unknown', 'Inventory', 'Vault', 'Vendor', 'Postmaster'];
 const NODE_STATE_NAMES = ['Invalid', 'CanUpgrade', 'NoPoints', 'NoPrerequisites', 'NoSteps',
                           'NoUnlock', 'NoMaterial', 'NoGridLevel', 'SwappingLocked', 'MustSwap',
                           'Complete', 'Unknown', 'CreationOnly', 'Hidden'];
+const SOURCE_CATEGORIES = ['None', 'Activity', 'Vendor', 'Aggregate'];
 const TRANSFER_STATUSES = ['CanTransfer', 'ItemIsEquipped', 'NotTransferrable', , 'NoRoomInDestination'];
 
 
@@ -245,8 +246,16 @@ bungie.DestinyItem = class DestinyItem {
     this.bucketName = this.bucketDef ? this.bucketDef.bucketName : 'Unknown';
     this.locationName = LOCATIONS[this.location || 0];
     this.questlineItemDef = bungie.DEFS.items[this.itemDef.questlineItemHash];
-    if (this.itemDef.sourceHashes)
-      this.sourceDefs = this.itemDef.sourceHashes.map(code => bungie.DEFS.sources[code]);
+    this.sources = {};
+    for (let category of SOURCE_CATEGORIES)
+      this.sources[category] = [];
+    for (let code of this.itemDef.sourceHashes || []) {
+      let sourceDef = bungie.DEFS.sources[code];
+      if (sourceDef) {
+        let category = SOURCE_CATEGORIES[sourceDef.category];
+        this.sources[category].push(sourceDef);
+      }
+    }
     this.stateName = ITEM_STATES[this.state];
     this.transferStatusName = TRANSFER_STATUSES[this.transferStatus];
     if (this.nodes && this.talentGridDef && this.talentGridDef.nodes) {

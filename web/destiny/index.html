@@ -341,8 +341,8 @@ class Item extends React.Component {
     const item = this.props.item;
     const itemDef = item.questlineItemDef || item.itemDef;
     var title = item.questlineItemDef ? `${item.questlineItemDef.itemName}: ${item.itemDef.itemName}` : item.itemDef.itemName;
-    if (item.sourceDefs && (item.sourceDefs.length == 1))
-      title = <span><img width="16" height="16" src={`https://www.bungie.net${item.sourceDefs[0].icon}`} title={item.sourceDefs[0].description}/> {title}</span>;
+    if (item.locationName != 'Inventory')
+      title = `${title} (${item.locationName})`;
     var text = '';
     if (item.objectives.length)
       for (let objective of item.objectives)
@@ -359,17 +359,31 @@ class Item extends React.Component {
                     text={text}
                     title={title}>
       {item.itemDef.itemDescription}
-      {Boolean(item.objectives.length) && <p>
+      {(item.objectives.length > 0) && <p>
         Objectives:<br/>
         {item.objectives.map(objective => <div>{`${objective.isComplete ? '\u2611' : '\u2610'}\u00a0${objective.objectiveDef.displayDescription || item.itemDef.itemDescription} (${objective.progress}/${objective.objectiveDef.completionValue})`}</div>)}
       </p>}
-      {Boolean(item.perks.length) && <p>
+      {(item.perks.length > 0) && <p>
         Perks:<br/>
         {item.perks.map(perk => <div>{`${perk.isActive ? '\u2611' : '\u2610'}\u00a0${perk.perkDef.displayName}`}</div>)}
       </p>}
-      {item.sourceDefs && Boolean(item.sourceDefs.length) && <p>
-        Sources:<br/>
-        {item.sourceDefs.map(source => source && <div>
+      {(item.sources.Activity.length > 0) && <p>
+        Activity sources:<br/>
+        {item.sources.Activity.map(source => source && <div>
+          <img width="12" height="12" src={`https://www.bungie.net${source.icon}`}/>
+          {source.description}
+        </div>)}
+      </p>}
+      {(item.sources.Vendor.length > 0) && <p>
+        Vendor sources:<br/>
+        {item.sources.Vendor.map(source => source && <div>
+          <img width="12" height="12" src={`https://www.bungie.net${source.icon}`}/>
+          {source.description}
+        </div>)}
+      </p>}
+      {(item.sources.Aggregate.length > 0) && <p>
+        Requirements:<br/>
+        {item.sources.Aggregate.map(source => source && <div>
           <img width="12" height="12" src={`https://www.bungie.net${source.icon}`}/>
           {source.description}
         </div>)}
