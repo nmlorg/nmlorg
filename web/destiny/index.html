@@ -166,7 +166,7 @@ class Account extends React.Component {
         <tbody>
           {this.state.buckets.map(([category, bucket]) => <tr>
             <th>{bucket}</th>
-            {Object.values(this.state.containers).map(({character, itemTree}) => <ItemListTD character={character} items={itemTree[category][bucket] || []}/>)}
+            {Object.values(this.state.containers).map(({character, itemTree}) => <ItemListTD acc={this} character={character} items={itemTree[category][bucket] || []}/>)}
           </tr>)}
         </tbody>
       </table>
@@ -209,13 +209,13 @@ class ItemListTD extends React.Component {
     var items = sortedItems;
     if (!this.state.expanded && (items.length > 4))
       items = items.slice(0, 3);
-    items = items.map(item => <Item item={item}/>);
+    items = items.map(item => <Item acc={this.props.acc} item={item}/>);
     if (sortedItems.length > 4) {
       if (!this.state.expanded) {
         const item = sortedItems[3];
         items.push(<div onClick={e => this.setState({expanded: true})}
                         style={{opacity: .3}}>
-          <Item item={item}/>
+          <Item acc={this.props.acc} item={item}/>
         </div>);
       } else {
         items.push(<button onClick={e => {
@@ -252,6 +252,27 @@ class Item extends React.Component {
                     text={text}
                     title={title}>
       {item.itemDef.itemDescription}
+      {item.transferStatusName == 'CanTransfer' && <div>
+        {Object.values(this.props.acc.state.containers).map(({character, itemTree}) => {
+          const newCharacterId = character && character.characterId;
+          if (newCharacterId != item.owner.characterId)
+            return <button onClick={e => {
+              e.preventDefault();
+              e.stopPropagation();
+              const oldCharacterId = item.owner.characterId || '';
+              item.transfer(newCharacterId, item.stackSize)
+                .then(() => this.props.acc.setState(prev => {
+                  const bucket = prev.containers[oldCharacterId].itemTree[item.bucketCategory][item.bucketName];
+                  bucket.splice(bucket.indexOf(item), 1);
+                  const newCategory = prev.containers[newCharacterId || ''].itemTree[item.bucketCategory];
+                  if (!newCategory[item.bucketName])
+                    newCategory[item.bucketName] = [];
+                  newCategory[item.bucketName].push(item);
+                  return prev;
+                }));
+            }}>Transfer to {character ? `${character.race.raceName} ${character.gender.genderName} ${character.characterClass.className}` : 'Vault'}</button>;
+        })}
+      </div>}
       {(item.objectives.length > 0) && <p>
         Objectives:<br/>
         {item.objectives.map(objective => <div>{`${objective.isComplete ? '\u2611' : '\u2610'}\u00a0${objective.objectiveDef.displayDescription || item.itemDef.itemDescription} (${objective.progress}/${objective.objectiveDef.completionValue})`}</div>)}
@@ -283,12 +304,6 @@ class Item extends React.Component {
       </p>}
       {item.nodeGrid && <NodeGrid grid={item.nodeGrid}/>}
       <div><button onClick={e => {e.preventDefault(); e.stopPropagation(); console.log(item)}}>Debug</button></div>
-      {item.transferStatusName == 'CanTransfer' && <div>
-        <div><button onClick={e => {e.preventDefault(); e.stopPropagation(); item.transfer(null, 1)}}>Transfer to Vault</button></div>
-        <div><button onClick={e => {e.preventDefault(); e.stopPropagation(); item.transfer('2305843009223046587', 1)}}>Transfer to 2305843009223046587</button></div>
-        <div><button onClick={e => {e.preventDefault(); e.stopPropagation(); item.transfer('2305843009242445650', 1)}}>Transfer to 2305843009242445650</button></div>
-        <div><button onClick={e => {e.preventDefault(); e.stopPropagation(); item.transfer('2305843009249195909', 1)}}>Transfer to 2305843009249195909</button></div>
-      </div>}
     </Placard>;
   }
 }
