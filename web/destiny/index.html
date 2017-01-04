@@ -136,9 +136,7 @@ class App extends React.Component {
   }
 
   render() {
-    if (window.location.search == '?apidemo')
-      return <APIDemo/>;
-    else if (!this.state.account)
+    if (!this.state.account)
       return <ChooseAccount app={this}/>;
     else
       return <Account account={this.state.account}/>;
@@ -462,105 +460,6 @@ class Placard extends React.Component {
       {this.state.open && props.children ? <div className="drawer">{props.children}</div> : ''}
     </div>;
   }
-}
-
-
-class APIDemo extends React.Component {
-  render() {
-    const promises = [
-        [bungieNetPlatform.destinyService.GetAccount(2, '4611686018436064455', {definitions: true}), 'GetAccount'],
-        [bungieNetPlatform.destinyService.GetAccountSummary(2, '4611686018436064455', {definitions: true}), 'GetAccountSummary'],
-        [bungieNetPlatform.destinyService.GetAllItemsSummary(2, '4611686018436064455', {definitions: true}), 'GetAllItemsSummary'],
-        [bungieNetPlatform.destinyService.GetVault(2, {definitions: true}), 'GetVault'],
-        [bungieNetPlatform.destinyService.GetVaultSummary(2, {definitions: true}), 'GetVaultSummary'],
-        [bungieNetPlatform.destinyService.GetCharacter(2, '4611686018436064455', '2305843009223046587', {definitions: true}), 'GetCharacter'],
-        [bungieNetPlatform.destinyService.GetCharacterSummary(2, '4611686018436064455', '2305843009223046587', {definitions: true}), 'GetCharacterSummary'],
-        [bungieNetPlatform.destinyService.GetCharacterInventory(2, '4611686018436064455', '2305843009223046587', {definitions: true}), 'GetCharacterInventory'],
-        [bungieNetPlatform.destinyService.GetCharacterInventorySummary(2, '4611686018436064455', '2305843009223046587', {definitions: true}), 'GetCharacterInventorySummary'],
-    ];
-
-    return <table>
-      <thead>
-        <tr>{promises.map(([promise, title]) => {
-          return <th>{title}</th>;
-        })}</tr>
-      </thead>
-      <tbody>
-        <tr>{promises.map(([promise, title]) => {
-          return <APIDemoTD promise={promise}/>;
-        })}</tr>
-      </tbody>
-    </table>;
-  }
-}
-
-
-class APIDemoTD extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
-  render() {
-    if (this.state.data) {
-      const allItems = countAllItems(this.state.data);
-      const uniqueItems = countUniqueItems(this.state.data);
-      return <td style={{border: '1px solid black', 'white-space': 'nowrap'}}>
-        {renderNestedObject(this.state.data)}<br/>
-        <br/>
-        All itemIds: {allItems}<br/>
-        Unique itemIds: {uniqueItems.size}<br/>
-        <br/>
-        {Array.from(uniqueItems).sort().map(name => <div>{name}</div>)}
-      </td>;
-    }
-
-    this.props.promise.then(data => this.setState({data: data.data}));
-    return <td>Loading...</td>;
-  }
-}
-
-
-function countAllItems(data) {
-  var ret = 0;
-  if ((data instanceof Object) && !(data instanceof Array)) {
-    if (data.itemHash)
-      ret++;
-    data = Object.values(data);
-  }
-  if (data instanceof Array)
-    ret += data.map(item => countAllItems(item)).reduce((a, b) => a + b, 0);
-  return ret;
-}
-
-
-function countUniqueItems(data, seen=new Set()) {
-  if ((data instanceof Object) && !(data instanceof Array)) {
-    if (data.itemHash)
-      seen.add(bungie.DEFS.items[data.itemHash].itemName);
-    data = Object.values(data);
-  }
-  if (data instanceof Array)
-    data.map(item => countUniqueItems(item, seen)).reduce((a, b) => a + b, 0);
-  return seen;
-}
-
-
-function renderNestedObject(data) {
-  if (data instanceof Array) {
-    if (!data.length)
-      return <span>[]</span>;
-    return <span><button onClick={e => {let s = e.target.nextElementSibling.style; s.display = s.display ? '' : 'none';}}>*</button> [<ol style={{display: 'none'}}>
-      {data.map(v => <li>{renderNestedObject(v)}</li>)}
-    </ol>]</span>;
-  } else if (data instanceof Object) {
-    if (!Object.keys(data).length)
-      return <span>{'{}'}</span>;
-    return <span><button onClick={e => {let s = e.target.nextElementSibling.style; s.display = s.display ? '' : 'none';}}>*</button> {'{'}<ul style={{display: 'none'}}>
-      {Object.entries(data).sort().map(([k, v]) => <li>{k}: {renderNestedObject(v)}</li>)}
-    </ul>{'}'}</span>;
-  } else
-    return <span>{JSON.stringify(data)}</span>;
 }
 
 
