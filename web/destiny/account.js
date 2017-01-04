@@ -31,7 +31,8 @@ bungie.DestinyAccount = class DestinyAccount {
   getVaultItems() {
     return this.GetVault({definitions: true})
         .then(response => Array.from(bungie.findItems(response.data),
-                                     item => new bungie.DestinyItem(item)));
+                                     item => new bungie.DestinyItem(item,
+                                                                    this.userInfo.membershipType)));
   }
 
   getVaultItemsTree() {
@@ -124,7 +125,8 @@ bungie.DestinyCharacter = class DestinyCharacter {
   getItems() {
     return this.GetCharacterInventory({definitions: true})
         .then(response => Array.from(bungie.findItems(response.data),
-                                     item => new bungie.DestinyItem(item)));
+                                     item => new bungie.DestinyItem(item, this.membershipType,
+                                                                    this.characterId)));
   }
 
   getItemsTree() {
@@ -238,12 +240,13 @@ function buildItemsTree(items) {
 
 
 bungie.DestinyItem = class DestinyItem {
-  constructor(data) {
+  constructor(data, membershipType, characterId) {
     for (let [k, v] of Object.entries(bungie.derefHashes(data)))
       this[k] = v;
     this.bucketDef = bungie.DEFS.buckets[this.itemDef.bucketTypeHash];
     this.bucketCategory = this.bucketDef ? BUCKET_CATEGORIES[this.bucketDef.category] : 'Unknown';
     this.bucketName = this.bucketDef ? this.bucketDef.bucketName : 'Unknown';
+    this.owner = {characterId, membershipType};
     this.locationName = LOCATIONS[this.location || 0];
     this.questlineItemDef = bungie.DEFS.items[this.itemDef.questlineItemHash];
     this.sources = {};
@@ -289,6 +292,38 @@ bungie.DestinyItem = class DestinyItem {
     if (finalColumn.length)
       grid.push(finalColumn);
     return grid;
+  }
+
+  transfer_(characterId, transferToVault, stackSize) {
+    return bungieNetPlatform.destinyService.TransferItem({
+        membershipType: this.owner.membershipType,
+        itemReferenceHash: this.itemHash,
+        itemId: this.itemInstanceId,
+        stackSize,
+        characterId,
+        transferToVault,
+    });
+  }
+
+  transfer(characterId, stackSize=1) {
+    var promise = Promise.resolve();
+    if (this.owner.characterId == characterId)
+      return promise;
+    if (this.owner.characterId)
+      promise = promise.then(() => this.transferToVault(stackSize));
+    if (characterId)
+      promise = promise.then(() => this.transferFromVault(characterId, stackSize));
+    return promise;
+  }
+
+  transferFromVault(characterId, stackSize=1) {
+    return this.transfer_(characterId, false, stackSize)
+      .then(() => {this.owner.characterId = characterId});
+  }
+
+  transferToVault(stackSize=1) {
+    return this.transfer_(this.owner.characterId, true, stackSize)
+      .then(() => {this.owner.characterId = null});
   }
 };
 

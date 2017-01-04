@@ -390,6 +390,12 @@ class Item extends React.Component {
       </p>}
       {item.nodeGrid && <NodeGrid grid={item.nodeGrid}/>}
       <div><button onClick={e => {e.preventDefault(); e.stopPropagation(); console.log(item)}}>Debug</button></div>
+      {item.transferStatusName == 'CanTransfer' && <div>
+        <div><button onClick={e => {e.preventDefault(); e.stopPropagation(); item.transfer(null, 1)}}>Transfer to Vault</button></div>
+        <div><button onClick={e => {e.preventDefault(); e.stopPropagation(); item.transfer('2305843009223046587', 1)}}>Transfer to 2305843009223046587</button></div>
+        <div><button onClick={e => {e.preventDefault(); e.stopPropagation(); item.transfer('2305843009242445650', 1)}}>Transfer to 2305843009242445650</button></div>
+        <div><button onClick={e => {e.preventDefault(); e.stopPropagation(); item.transfer('2305843009249195909', 1)}}>Transfer to 2305843009249195909</button></div>
+      </div>}
     </Placard>;
   }
 }
