@@ -90,20 +90,6 @@ class Account extends React.Component {
   constructor(props) {
     super(props);
     this.account = this.props.account.destinyAccounts[0];
-    this.promises = this.account.characters.map(character => character.getItemsTree());
-    this.promises.push(this.account.getVaultItemsTree());
-    this.promises.forEach(promise => promise.then(data => {
-      for (let [category, buckets] of Object.entries(data)) {
-        if (category == 'Currency')
-          continue;  // Currency items are returned as part of the inventory for each character.
-        Object.keys(buckets).forEach(bucket => {
-          for (let [category2, bucket2] of this.state.buckets)
-            if ((category == category2) && (bucket == bucket2))
-              return;
-          this.setState(prev => ({buckets: prev.buckets.concat([[category, bucket]])}));
-        });
-      }
-    }));
     this.state = {
         buckets: [
             ['Invisible', 'Quests'],
@@ -131,7 +117,26 @@ class Account extends React.Component {
             ['Item', 'Mission'],
             ['Unknown', 'Unknown'],
         ],
+        containers: {},
     };
+    this.refresh();
+  }
+
+  refresh() {
+    const promises = this.account.characters.map(character => character.getItemsTree());
+    promises.push(this.account.getVaultItemsTree());
+    Promise.all(promises).then(itemsByCharacter => {
+      const containers = {};
+      for (let i = 0; i < this.account.characters.length; i++) {
+        const character = this.account.characters[i];
+        containers[character.characterId] = {
+            character,
+            itemTree: itemsByCharacter[i],
+        };
+      }
+      containers[''] = {itemTree: itemsByCharacter[this.account.characters.length]};
+      this.setState({containers});
+    });
   }
 
   render() {
@@ -140,24 +145,28 @@ class Account extends React.Component {
         <thead>
           <tr>
             <th>
-              {this.props.account.bungieNetUser.displayName}
-              {this.props.account.bungieNetUser.displayName != this.account.userInfo.displayName ? ` (${this.account.userInfo.displayName})` : ''}
+              <div>
+                {this.props.account.bungieNetUser.displayName}
+                {this.props.account.bungieNetUser.displayName != this.account.userInfo.displayName ? ` (${this.account.userInfo.displayName})` : ''}
+              </div>
+              <button onClick={() => this.refresh()}>Refresh</button>
             </th>
-            {this.account.characters.map(character => <td>
-              <Placard background={character.backgroundPath}
-                       icon={character.emblemPath}
-                       right={character.level}
-                       text={`${character.race.raceName} ${character.gender.genderName}`}
-                       title={character.characterClass.className}
-                       neutral={true}/>
+            {Object.values(this.state.containers).map(({character, itemTree}) => <td>
+              {character
+                ? <Placard background={character.backgroundPath}
+                           icon={character.emblemPath}
+                           neutral={true}
+                           right={character.level}
+                           text={`${character.race.raceName} ${character.gender.genderName}`}
+                           title={character.characterClass.className}/>
+                : <Placard neutral={true} title="Vault"/>}
             </td>)}
-            <td><Placard neutral={true} title="Vault"/></td>
           </tr>
         </thead>
         <tbody>
           {this.state.buckets.map(([category, bucket]) => <tr>
             <th>{bucket}</th>
-            {this.promises.map(promise => <ItemListTD promise={promise} category={category} bucket={bucket}/>)}
+            {Object.values(this.state.containers).map(({character, itemTree}) => <ItemListTD character={character} items={itemTree[category][bucket] || []}/>)}
           </tr>)}
         </tbody>
       </table>
@@ -172,7 +181,6 @@ class ItemListTD extends React.Component {
     this.state = {
         expanded: false,
     };
-    this.props.promise.then(data => this.setState({items: data[this.props.category][this.props.bucket] || []}));
   }
 
   static cmpItem(a, b) {
@@ -194,19 +202,17 @@ class ItemListTD extends React.Component {
   }
 
   render() {
-    if (!this.state.items)
-      return <td>Loading...</td>;
-
-    if (!this.state.items.length)
+    if (!this.props.items.length)
       return <td/>;
 
-    var items = this.state.items.sort(ItemListTD.cmpItem);
-    if (!this.state.expanded && (this.state.items.length > 4))
+    const sortedItems = Array.from(this.props.items).sort(ItemListTD.cmpItem);
+    var items = sortedItems;
+    if (!this.state.expanded && (items.length > 4))
       items = items.slice(0, 3);
     items = items.map(item => <Item item={item}/>);
-    if (this.state.items.length > 4) {
+    if (sortedItems.length > 4) {
       if (!this.state.expanded) {
-        const item = this.state.items[3];
+        const item = sortedItems[3];
         items.push(<div onClick={e => this.setState({expanded: true})}
                         style={{opacity: .3}}>
           <Item item={item}/>
