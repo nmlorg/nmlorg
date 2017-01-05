@@ -248,6 +248,7 @@ class Item extends React.Component {
     return <Placard active={item.isEquipped || (item.stateName == 'Tracked')}
                     background={itemDef.secondaryIcon}
                     icon={itemDef.icon}
+                    key={item.itemInstanceId}
                     right={item.primaryStat ? item.primaryStat.value : item.stackSize != 1 ? item.stackSize : '' }
                     text={text}
                     title={title}>
@@ -279,7 +280,7 @@ class Item extends React.Component {
       </p>}
       {(item.perks.length > 0) && <p>
         Perks:<br/>
-        {item.perks.map(perk => <div>{`${perk.isActive ? '\u2611' : '\u2610'}\u00a0${perk.perkDef.displayName}`}</div>)}
+        {item.perks.map(perk => <div>{`${perk.isActive ? '\u2611' : '\u2610'}\u00a0${perk.perkDef.displayName}: ${perk.perkDef.displayDescription}`}</div>)}
       </p>}
       {(item.sources.Activity.length > 0) && <p>
         Activity sources:<br/>
