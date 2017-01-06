@@ -52,8 +52,8 @@ class ChooseAccount extends React.Component {
         <button onClick={e => {
           e.preventDefault();
           bungie.auth.login()
-            .then(bungieNetPlatform.userService.GetCurrentBungieAccount)
-            .then(response => this.setState({r: response.destinyAccounts.map(account => account.userInfo)}));
+              .then(bungieNetPlatform.userService.GetCurrentBungieAccount)
+              .then(response => this.setState({r: response.destinyAccounts.map(account => account.userInfo)}));
         }}>Login</button>
       </div>;
     }
@@ -262,15 +262,15 @@ class Item extends React.Component {
               e.stopPropagation();
               const oldCharacterId = item.owner.characterId || '';
               item.transfer(newCharacterId, item.stackSize)
-                .then(() => this.props.acc.setState(prev => {
-                  const bucket = prev.containers[oldCharacterId].itemTree[item.bucketCategory][item.bucketName];
-                  bucket.splice(bucket.indexOf(item), 1);
-                  const newCategory = prev.containers[newCharacterId || ''].itemTree[item.bucketCategory];
-                  if (!newCategory[item.bucketName])
-                    newCategory[item.bucketName] = [];
-                  newCategory[item.bucketName].push(item);
-                  return prev;
-                }));
+                  .then(() => this.props.acc.setState(prev => {
+                    const bucket = prev.containers[oldCharacterId].itemTree[item.bucketCategory][item.bucketName];
+                    bucket.splice(bucket.indexOf(item), 1);
+                    const newCategory = prev.containers[newCharacterId || ''].itemTree[item.bucketCategory];
+                    if (!newCategory[item.bucketName])
+                      newCategory[item.bucketName] = [];
+                    newCategory[item.bucketName].push(item);
+                    return prev;
+                  }));
             }}>Transfer to {character ? `${character.race.raceName} ${character.gender.genderName} ${character.characterClass.className}` : 'Vault'}</button>;
         })}
       </div>}

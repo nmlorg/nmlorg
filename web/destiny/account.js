@@ -318,12 +318,12 @@ bungie.DestinyItem = class DestinyItem {
 
   transferFromVault(characterId, stackSize=1) {
     return this.transfer_(characterId, false, stackSize)
-      .then(() => {this.owner.characterId = characterId});
+        .then(() => {this.owner.characterId = characterId});
   }
 
   transferToVault(stackSize=1) {
     return this.transfer_(this.owner.characterId, true, stackSize)
-      .then(() => {this.owner.characterId = null});
+        .then(() => {this.owner.characterId = null});
   }
 };
 
