@@ -123,20 +123,17 @@ class Account extends React.Component {
   }
 
   refresh() {
-    const promises = this.account.characters.map(character => character.getItemsTree());
-    promises.push(this.account.getVaultItemsTree());
-    Promise.all(promises).then(itemsByCharacter => {
-      const containers = {};
-      for (let i = 0; i < this.account.characters.length; i++) {
-        const character = this.account.characters[i];
-        containers[character.characterId] = {
-            character,
-            itemTree: itemsByCharacter[i],
-        };
-      }
-      containers[''] = {itemTree: itemsByCharacter[this.account.characters.length]};
-      this.setState({containers});
+    const account = this.account;
+    const containers = {};
+    const promises = [];
+    account.characters.forEach(character => {
+      const container = containers[character.characterId] = {character};
+      promises.push(character.getItemsTree().then(itemTree => container.itemTree = itemTree));
     });
+    containers[''] = {};
+    promises.push(account.getVaultItemsTree().then(itemTree => containers[''].itemTree = itemTree));
+
+    Promise.all(promises).then(() => this.setState({containers}));
   }
 
   render() {

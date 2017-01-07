@@ -89,6 +89,15 @@ bungie.fetch = function(url, data) {
 };
 
 
+bungie.findHash = function(hash) {
+  const ret = [];
+  for (let [k, v] of Object.entries(bungie.DEFS))
+    if (v[hash])
+      ret.push([k, v[hash]]);
+  return ret;
+};
+
+
 bungie.findItems = function*(data) {
   if (data instanceof Array) {
     for (let item of data)
