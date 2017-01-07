@@ -1,37 +1,29 @@
 class ItemTable extends React.Component {
   render() {
     const base = this.props.base;
-    return <div>
-      <table>
-        <thead>
-          <tr>
-            <th>
-              <div>
-                {base.props.account.bungieNetUser.displayName}
-                {base.props.account.bungieNetUser.displayName != base.account.userInfo.displayName ? ` (${base.account.userInfo.displayName})` : ''}
-              </div>
-              <button onClick={() => base.refresh()}>Refresh</button>
-            </th>
-            {Object.values(base.state.containers).map(({character, itemTree}) => <td>
-              {character
-                ? <Placard background={character.backgroundPath}
-                           icon={character.emblemPath}
-                           neutral={true}
-                           right={character.level}
-                           text={`${character.race.raceName} ${character.gender.genderName}`}
-                           title={character.characterClass.className}/>
-                : <Placard neutral={true} title="Vault"/>}
-            </td>)}
-          </tr>
-        </thead>
-        <tbody>
-          {base.state.buckets.map(([category, bucket]) => <tr>
-            <th>{bucket}</th>
-            {Object.values(base.state.containers).map(({character, itemTree}) => <ItemListTD acc={base} character={character} items={itemTree[category][bucket] || []}/>)}
-          </tr>)}
-        </tbody>
-      </table>
-    </div>;
+    return <table>
+      <thead>
+        <tr>
+          <td/>
+          {Object.values(base.state.containers).map(({character, itemTree}) => <td>
+            {character
+              ? <Placard background={character.backgroundPath}
+                         icon={character.emblemPath}
+                         neutral={true}
+                         right={character.level}
+                         text={`${character.race.raceName} ${character.gender.genderName}`}
+                         title={character.characterClass.className}/>
+              : <Placard neutral={true} title="Vault"/>}
+          </td>)}
+        </tr>
+      </thead>
+      <tbody>
+        {base.state.buckets.map(([category, bucket]) => <tr>
+          <th>{bucket}</th>
+          {Object.values(base.state.containers).map(({character, itemTree}) => <ItemListTD acc={base} character={character} items={itemTree[category][bucket] || []}/>)}
+        </tr>)}
+      </tbody>
+    </table>;
   }
 }
 
