@@ -10,6 +10,7 @@
 <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
 <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 <script src="account.js"></script>
+<script src="activitytable.js" type="text/babel"></script>
 <script src="apikey.js"></script>
 <script src="auth.js"></script>
 <script src="bungie.js"></script>
@@ -119,6 +120,7 @@ class Account extends React.Component {
             ['Unknown', 'Unknown'],
         ],
         containers: {},
+        tab: 0,
     };
     this.refresh();
   }
@@ -130,6 +132,7 @@ class Account extends React.Component {
     account.characters.forEach(character => {
       const container = containers[character.characterId] = {character};
       promises.push(character.getItemsTree().then(itemTree => container.itemTree = itemTree));
+      promises.push(character.getAdvisors().then(advisors => container.advisors = advisors));
     });
     containers[''] = {};
     promises.push(account.getVaultItemsTree().then(itemTree => containers[''].itemTree = itemTree));
@@ -137,8 +140,27 @@ class Account extends React.Component {
     Promise.all(promises).then(() => this.setState({containers}));
   }
 
+  static tabs = [
+      ItemTable,
+      ActivityTable,
+  ];
+
   render() {
-    return <ItemTable base={this}/>;
+    const Tab = Account.tabs[this.state.tab];
+    return <div>
+      <nav>
+        {this.props.account.bungieNetUser.displayName}
+        {this.props.account.bungieNetUser.displayName != this.account.userInfo.displayName ? ` (${this.account.userInfo.displayName})` : ''}
+        <br/>
+        <button onClick={() => this.refresh()}>Refresh</button>
+        &bull;
+        {Account.tabs.map((cls, i) => <button disabled={i == this.state.tab ? true : false}
+                                              onClick={e => this.setState({tab: i})}>
+          {cls.name}
+        </button>)}
+      </nav>
+      <Tab base={this}/>
+    </div>;
   }
 }
 

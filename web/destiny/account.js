@@ -116,10 +116,128 @@ bungie.DestinyAccount = class DestinyAccount {
 };
 
 
+const RAID_STEPS = {
+    RAID_MOON1: [
+        'Traverse the Abyss (The Stills)',
+        'Cross the Bridge (Oversoul Throne)',
+        'Reach the Summoning Crystal (Oversoul Throne)',
+        'Defeat Crota (Oversoul Throne)',
+    ],
+    RAID_RISE_OF_IRON: [
+        'Enter the Wall (Foundry 113)',
+        "Defeat Vosik (Splicer's Den)",
+        'Travel Down the Wall (Apex)',
+        'Destroy the SIVA Source (Perfection Complex)',
+        'Defeat Aksis (Perfection Complex)',
+    ],
+    RAID_TAKEN_KING: [
+        'Power the Glyph (Basilica)',
+        'Defeat the Warpriest (Basilica)',
+        "Defeat Golgoroth (Golgoroth's Cellar)",
+        'Defeat the Daughters of Oryx (Threshold)',
+        'Defeat Oryx, the Taken King (Threshold)',
+    ],
+    RAID_VENUS1: [
+        "Destroy the Oracles (Templar's Well)",
+        "Kill the Templar (Templar's Well)",
+        'Awaken the Glass Throne (Vault of Glass)',
+        'Destroy Atheon (Vault of Glass)',
+    ],
+};
+
+
+function titleCase(s) {
+  return s.split(/(\s+)/).map(word => word[0].toUpperCase() + word.substring(1).toLowerCase()).join('');
+}
+
+
 bungie.DestinyCharacter = class DestinyCharacter {
   constructor(data) {
     for (let [k, v] of Object.entries(data))
       this[k] = v;
+  }
+
+  getAdvisors() {
+    return this.GetAdvisorsForCharacter({definitions: true})
+        .then(response => {
+          const activities = [];
+          for (let advisor of Object.values(response.data.activityAdvisors)) {
+            if (advisor.dailyChapterActivities) {
+              for (let activityHash of advisor.dailyChapterActivities.tierActivityHashes) {
+                const activity = bungie.derefHashes({
+                    activeRewardIndexes: advisor.dailyChapterActivities.activeRewardIndexes[activityHash],
+                    activityHash,
+                    activityTypeName: 'Daily Mission',
+                    isCompleted: advisor.dailyChapterActivities.isCompleted,
+                    skullIndexes: [],
+                });
+                activities.push(activity);
+              }
+            } else if (advisor.dailyCrucible) {
+              const bundle = bungie.DEFS.activityBundles[advisor.dailyCrucible.activityBundleHash];
+              for (let activityHash of bundle.activityHashes) {
+                const activity = {
+                    activeRewardIndexes: /*advisor.dailyCrucible.activeRewardIndexes*/ [],
+                    activityDef: bundle,
+                    activityHash,
+                    activityTypeName: 'Daily Crucible',
+                    isCompleted: advisor.dailyCrucible.isCompleted,
+                    skullIndexes: [],
+                };
+                activities.push(activity);
+              }
+            } else if (advisor.heroicStrike) {
+              for (let tier of advisor.heroicStrike.tiers) {
+                const activity = bungie.derefHashes(tier);
+                activity.activityTypeName = 'Heroic Strike';
+                activities.push(activity);
+              }
+            } else if (advisor.materialUpgrades) {
+            } else if (advisor.nightfall) {
+              for (let tier of advisor.nightfall.tiers) {
+                const activity = bungie.derefHashes(tier);
+                activity.activityTypeName = 'Nightfall';
+                activity.skullIndexes = [];  // TODO: Find the activity entry where these are defined.
+                activities.push(activity);
+              }
+            } else if (advisor.raidActivities) {
+              const steps = RAID_STEPS[advisor.raidActivities.raidIdentifier];
+              for (let tier of advisor.raidActivities.tiers) {
+                const activity = bungie.derefHashes(tier);
+                activity.activityTypeName = 'Raid';
+                if (steps)
+                  activity.steps.forEach((step, i) => {if (!step.displayName) step.displayName = steps[i]});
+                activities.push(activity);
+              }
+            }
+          }
+          for (let activity of activities) {
+            activity.destinationDef = bungie.DEFS.destinations[activity.activityDef.destinationHash];
+            activity.placeDef = bungie.DEFS.places[activity.activityDef.placeHash];
+            activity.rewards = activity.activeRewardIndexes.map(i => activity.activityDef.rewards[i]);
+            activity.skulls = activity.skullIndexes.map(i => activity.activityDef.skulls[i]);
+            activity.challenges = activity.skulls.filter(skull => skull.displayName.match(/ Challenge$/));
+            activity.modifiers = activity.skulls.filter(skull => !skull.displayName.match(/ Challenge$/));
+            if (activity.difficultyIdentifier && activity.difficultyIdentifier.match(/^DIFFICULTY_/) &&
+                (activity.difficultyIdentifier != 'DIFFICULTY_NORMAL'))
+              activity.modifiers.push({displayName: titleCase(activity.difficultyIdentifier.substring('DIFFICULTY_'.length).replace(/_/g, ' '))});
+            if (!activity.steps || !activity.steps.length) {
+              activity.steps = [
+                  {displayName: `Complete ${activity.activityDef.activityName}`, isComplete: activity.isCompleted},
+              ];
+            }
+          }
+
+          const bounties = [];
+          for (let advisor of Object.values(response.data.bounties)) {
+          }
+
+          const quests = [];
+          for (let advisor of Object.values(response.data.quests.quests)) {
+          }
+
+          return {activities, bounties, quests};
+        });
   }
 
   getItems() {

@@ -5,7 +5,7 @@ class ItemTable extends React.Component {
       <thead>
         <tr>
           <td/>
-          {Object.values(base.state.containers).map(({character, itemTree}) => <td>
+          {Object.values(base.state.containers).map(({character}) => <td>
             {character
               ? <Placard background={character.backgroundPath}
                          icon={character.emblemPath}
@@ -41,11 +41,9 @@ class ItemListTD extends React.Component {
     const bValue = b.primaryStat ? b.primaryStat.value : 0;
     if (aValue != bValue)
       return bValue - aValue;
-    const aTitle = a.questlineItemDef ? `${a.questlineItemDef.itemName}: ${a.itemDef.itemName}` : a.itemDef.itemName;
-    const bTitle = b.questlineItemDef ? `${b.questlineItemDef.itemName}: ${b.itemDef.itemName}` : b.itemDef.itemName;
-    if (aTitle < bTitle)
+    if (a.itemDef.itemName < b.itemDef.itemName)
       return -1;
-    else if (aTitle > bTitle)
+    else if (a.itemDef.itemName > b.itemDef.itemName)
       return 1;
     if (a.stackSize > b.stackSize)
       return -1;
@@ -85,8 +83,7 @@ class ItemListTD extends React.Component {
 class Item extends React.Component {
   render() {
     const item = this.props.item;
-    const itemDef = item.questlineItemDef || item.itemDef;
-    var title = item.questlineItemDef ? `${item.questlineItemDef.itemName}: ${item.itemDef.itemName}` : item.itemDef.itemName;
+    var title = item.itemDef.itemName;
     if (item.locationName != 'Inventory')
       title = `${title} (${item.locationName})`;
     var text = '';
@@ -99,8 +96,8 @@ class Item extends React.Component {
     else
       text = item.itemDef.itemDescription;
     return <Placard active={item.isEquipped || (item.stateName == 'Tracked')}
-                    background={itemDef.secondaryIcon}
-                    icon={itemDef.icon}
+                    background={item.itemDef.secondaryIcon}
+                    icon={item.itemDef.icon}
                     key={item.itemInstanceId}
                     right={item.primaryStat ? item.primaryStat.value : item.stackSize != 1 ? item.stackSize : '' }
                     text={text}
