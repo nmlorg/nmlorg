@@ -144,7 +144,7 @@ class ActivityTable extends React.Component {
       <thead>
         <tr>
           <td/>
-          {Object.values(base.state.containers).map(({character}) => character && <td colSpan={colSpan}>
+          {containers.map(({character}) => <td colSpan={colSpan}>
             <Placard background={character.backgroundPath}
                      icon={character.emblemPath}
                      neutral={true}
@@ -154,28 +154,50 @@ class ActivityTable extends React.Component {
           </td>)}
         </tr>
       </thead>
-      <tbody>
-        {activityList.map(([title, {characterSteps, link, longTitle, placeTitle}]) => <tr>
-          <td title={longTitle}>
-            {link ? <a href={link} target="_blank">{title}</a> : title.replace(/ [(].*,.*[)]/, ' (...)')}
-            {placeTitle && <div style={{float: 'right'}}>&nbsp;{placeTitle}</div>}
-          </td>
-          {Object.values(base.state.containers).map(({character}) => {
-            if (!character)
-              return;
-            const steps = characterSteps[character.characterId];
-            if (!steps)
-              return <td colSpan={colSpan}/>;
-            const stepSpan = colSpan / steps.length;
-            return steps.map(step => {
-              const check = step.isComplete ? '\u2611' : step.completionValue > 1 ? `${step.progress} / ${step.completionValue}` : '\u2610';
-              return <th colSpan={stepSpan}
-                         style={{backgroundColor: step.isComplete ? 'grey' : 'lightblue'}}
-                         title={step.displayName}>{check}</th>;
-            });
-          })}
-        </tr>)}
-      </tbody>
+      {activityList.map(([title, {characterSteps, link, longTitle, placeTitle}]) =>
+        <ActivityRow characterSteps={characterSteps} colSpan={colSpan} containers={containers}
+                     link={link} longTitle={longTitle} placeTitle={placeTitle} title={title}/>
+      )}
     </table>;
+  }
+}
+
+
+class ActivityRow extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {open: false};
+  }
+
+  render() {
+    const {characterSteps, colSpan, containers, link, longTitle, placeTitle, title} = this.props;
+    return <tbody onClick={e => {this.setState(prev => ({open: !prev.open}))}}>
+      <tr>
+        <td title={longTitle}>
+          {link ? <a href={link} target="_blank">{title}</a> : title.replace(/ [(].*,.*[)]/, ' (...)')}
+          {placeTitle && <div style={{float: 'right'}}>&nbsp;{placeTitle}</div>}
+        </td>
+        {containers.map(({character}) => {
+          if (!character)
+            return;
+          const steps = characterSteps[character.characterId];
+          if (!steps)
+            return <td colSpan={colSpan}/>;
+          const stepSpan = colSpan / steps.length;
+          return steps.map(step => {
+            const check = step.isComplete ? '\u2611' : step.completionValue > 1 ? `${step.progress} / ${step.completionValue}` : '\u2610';
+            return <th colSpan={stepSpan}
+                       style={{backgroundColor: step.isComplete ? 'grey' : 'lightblue'}}
+                       title={step.displayName}>{check}</th>;
+          });
+        })}
+      </tr>
+      {this.state.open && <tr>
+        <td style={{backgroundColor: 'rgb(30, 36, 43)', whiteSpace: 'pre-wrap'}}>{longTitle}</td>
+        <td style={{backgroundColor: 'rgb(30, 36, 43)'}} colSpan={containers.length * colSpan}>
+          {Object.values(characterSteps)[0].map(step => <div>&bull; {step.displayName}</div>)}
+        </td>
+      </tr>}
+    </tbody>;
   }
 }
