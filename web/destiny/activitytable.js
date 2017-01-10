@@ -21,9 +21,33 @@ class ActivityTable extends React.Component {
         activities[title].characterSteps[character.characterId] = activity.steps;
       }
 
+      for (let bounty of advisors.bounties) {
+        var title = `${bounty.activityTypeName}: ${bounty.questDef.itemName}`;
+        const longTitle = [bounty.questDef.itemName];
+        if (bounty.questHash != bounty.stepHash) {
+          title = `${title}: ${bounty.stepDef.itemName}`;
+          longTitle.push(bounty.stepDef.itemName);
+        }
+        longTitle.push('');
+        longTitle.push(bounty.stepDef.itemDescription);
+        if (!activities[title])
+          activities[title] = {
+              activity: bounty,
+              characterSteps: {},
+              longTitle: longTitle.join('\n'),
+          };
+        const steps = bounty.stepObjectives.map(step => ({
+            completionValue: step.objectiveDef.completionValue,
+            displayName: step.objectiveDef.displayDescription,
+            isComplete: step.isComplete,
+            progress: step.progress,
+        }));
+        activities[title].characterSteps[character.characterId] = steps;
+      }
+
       for (let quest of advisors.quests) {
         var title = `${quest.activityTypeName}: ${quest.questDef.itemName}: ${quest.stepDef.itemName}`;
-        const longTitle = [quest.questDef.itemName, quest.stepDef.itemName]
+        const longTitle = [quest.questDef.itemName, quest.stepDef.itemName, '', quest.stepDef.itemDescription]
             .join('\n');
         if (!activities[title])
           activities[title] = {
