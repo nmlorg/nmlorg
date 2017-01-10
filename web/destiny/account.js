@@ -266,6 +266,16 @@ bungie.DestinyCharacter = class DestinyCharacter {
               }
             }
           }
+
+          for (let advisor of response.data.weeklyCrucible) {
+            const activity = bungie.derefHashes(advisor);
+            activity.activeRewardIndexes = [];  // TODO: Find the activity entry where these are defined.
+            activity.activityTypeName = 'Weekly Crucible';
+            activity.activityDef = activity.activityBundleDef;
+            activity.skullIndexes = [];
+            activities.push(activity);
+          }
+
           for (let activity of activities) {
             activity.destinationDef = bungie.DEFS.destinations[activity.activityDef.destinationHash];
             activity.placeDef = bungie.DEFS.places[activity.activityDef.placeHash];
