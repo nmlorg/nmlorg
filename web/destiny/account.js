@@ -284,8 +284,13 @@ bungie.DestinyCharacter = class DestinyCharacter {
             activity.challenges = activity.skulls.filter(skull => skull.displayName.match(/ Challenge$/));
             activity.modifiers = activity.skulls.filter(skull => !skull.displayName.match(/ Challenge$/));
             if (activity.difficultyIdentifier && activity.difficultyIdentifier.match(/^DIFFICULTY_/) &&
-                (activity.difficultyIdentifier != 'DIFFICULTY_NORMAL'))
-              activity.modifiers.push({displayName: titleCase(activity.difficultyIdentifier.substring('DIFFICULTY_'.length).replace(/_/g, ' '))});
+                (activity.difficultyIdentifier != 'DIFFICULTY_NORMAL')) {
+              const level = titleCase(activity.difficultyIdentifier.substring('DIFFICULTY_'.length).replace(/_/g, ' '));
+              activity.modifiers.push({
+                  description: `Difficulty: ${level}`,
+                  displayName: `${level} Mode`,
+              });
+            }
             if (!activity.steps || !activity.steps.length) {
               activity.steps = [
                   {displayName: `Complete ${activity.activityDef.activityName}`, isComplete: activity.isCompleted},

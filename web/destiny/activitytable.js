@@ -26,13 +26,18 @@ class ActivityTable extends React.Component {
         var title = ` ${activity.activityTypeName}: ${activity.activityDef.activityName}`;
         if (activity.modifiers.length)
           title = `${title} (${activity.modifiers.map(mod => mod.displayName).sort().join(', ')})`;
-        const longTitle = [activity.activityDef.activityName]
-            .concat(activity.skulls.map(skull => `${skull.displayName}: ${skull.description}`))
-            .join('\n');
+        const longTitle = [activity.activityDef.activityName, '',
+                           activity.activityDef.activityDescription];
+        if (activity.modifiers.length)
+          longTitle.push('', 'Modifiers:',
+                         ...activity.modifiers.map(skull => `\u2022 ${skull.displayName}: ${skull.description}`));
+        if (activity.challenges.length)
+          longTitle.push('', 'Active challenges:',
+                         ...activity.challenges.map(skull => `\u2022 ${skull.displayName}: ${skull.description}`));
         if (!activities[title])
           activities[title] = {
               characterSteps: {},
-              longTitle,
+              longTitle: longTitle.join('\n'),
               placeTitle: activity.placeDef.placeName,
           };
         activities[title].characterSteps[character.characterId] = activity.steps;
