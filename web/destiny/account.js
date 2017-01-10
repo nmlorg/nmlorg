@@ -222,7 +222,8 @@ bungie.DestinyCharacter = class DestinyCharacter {
                 const activity = bungie.derefHashes({
                     activeRewardIndexes: advisor.dailyChapterActivities.activeRewardIndexes[activityHash],
                     activityHash,
-                    activityTypeName: 'Daily Mission',
+                    activityPeriod: 'Daily',
+                    activityTypeName: 'Mission',
                     isCompleted: advisor.dailyChapterActivities.isCompleted,
                     skullIndexes: [],
                 });
@@ -235,7 +236,8 @@ bungie.DestinyCharacter = class DestinyCharacter {
                     activeRewardIndexes: /*advisor.dailyCrucible.activeRewardIndexes*/ [],
                     activityDef: bundle,
                     activityHash,
-                    activityTypeName: 'Daily Crucible',
+                    activityPeriod: 'Daily',
+                    activityTypeName: 'Crucible',
                     isCompleted: advisor.dailyCrucible.isCompleted,
                     skullIndexes: [],
                 };
@@ -244,6 +246,7 @@ bungie.DestinyCharacter = class DestinyCharacter {
             } else if (advisor.heroicStrike) {
               for (let tier of advisor.heroicStrike.tiers) {
                 const activity = bungie.derefHashes(tier);
+                activity.activityPeriod = 'Weekly';
                 activity.activityTypeName = 'Heroic Strike';
                 activities.push(activity);
               }
@@ -251,6 +254,7 @@ bungie.DestinyCharacter = class DestinyCharacter {
             } else if (advisor.nightfall) {
               for (let tier of advisor.nightfall.tiers) {
                 const activity = bungie.derefHashes(tier);
+                activity.activityPeriod = 'Weekly';
                 activity.activityTypeName = 'Nightfall';
                 activity.skullIndexes = [];  // TODO: Find the activity entry where these are defined.
                 activities.push(activity);
@@ -259,6 +263,7 @@ bungie.DestinyCharacter = class DestinyCharacter {
               const steps = RAID_STEPS[advisor.raidActivities.raidIdentifier];
               for (let tier of advisor.raidActivities.tiers) {
                 const activity = bungie.derefHashes(tier);
+                activity.activityPeriod = 'Weekly';
                 activity.activityTypeName = 'Raid';
                 if (steps)
                   activity.steps.forEach((step, i) => {if (!step.displayName) step.displayName = steps[i]});
@@ -270,7 +275,8 @@ bungie.DestinyCharacter = class DestinyCharacter {
           for (let advisor of response.data.weeklyCrucible) {
             const activity = bungie.derefHashes(advisor);
             activity.activeRewardIndexes = [];  // TODO: Find the activity entry where these are defined.
-            activity.activityTypeName = 'Weekly Crucible';
+            activity.activityPeriod = 'Weekly';
+            activity.activityTypeName = 'Crucible';
             activity.activityDef = activity.activityBundleDef;
             activity.skullIndexes = [];
             activities.push(activity);
