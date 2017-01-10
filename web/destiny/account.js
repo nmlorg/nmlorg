@@ -231,18 +231,18 @@ bungie.DestinyCharacter = class DestinyCharacter {
           const bounties = [];
           for (let advisor of Object.values(response.data.bounties)) {
             const bounty = bungie.derefHashes(advisor);
-            bounty.activityTypeName = 'Bounty';
             bounty.questDef = bungie.DEFS.items[advisor.questHash];
             bounty.stepDef = bungie.DEFS.items[advisor.stepHash];
+            bounty.activityTypeName = bounty.stepDef.itemTypeName;
             bounties.push(bounty);
           }
 
           const quests = [];
           for (let advisor of Object.values(response.data.quests.quests)) {
             const quest = bungie.derefHashes(advisor);
-            quest.activityTypeName = 'Quest';
             quest.questDef = bungie.DEFS.items[advisor.questHash];
             quest.stepDef = bungie.DEFS.items[advisor.stepHash];
+            quest.activityTypeName = quest.stepDef.itemTypeName;
             quests.push(quest);
           }
 

@@ -6,7 +6,7 @@ class ActivityTable extends React.Component {
 
     for (let {advisors, character} of containers) {
       for (let activity of advisors.activities) {
-        var title = `${activity.activityTypeName}: ${activity.activityDef.activityName}`;
+        var title = ` ${activity.activityTypeName}: ${activity.activityDef.activityName}`;
         if (activity.modifiers.length)
           title = `${title} (${activity.modifiers.map(mod => mod.displayName).sort().join(', ')})`;
         const longTitle = [activity.activityDef.activityName]
@@ -22,7 +22,7 @@ class ActivityTable extends React.Component {
       }
 
       for (let bounty of advisors.bounties) {
-        var title = `${bounty.activityTypeName}: ${bounty.questDef.itemName}`;
+        var title = `Bounty (${bounty.activityTypeName.replace(/ Bounty$/, '')}): ${bounty.questDef.itemName}`;
         const longTitle = [bounty.questDef.itemName];
         if (bounty.questHash != bounty.stepHash) {
           title = `${title}: ${bounty.stepDef.itemName}`;
@@ -38,6 +38,7 @@ class ActivityTable extends React.Component {
           };
         const steps = bounty.stepObjectives.map(step => ({
             completionValue: step.objectiveDef.completionValue,
+            destinationDef: step.destinationDef,
             displayName: step.objectiveDef.displayDescription,
             isComplete: step.isComplete,
             progress: step.progress,
@@ -57,6 +58,7 @@ class ActivityTable extends React.Component {
           };
         const steps = quest.stepObjectives.map(step => ({
             completionValue: step.objectiveDef.completionValue,
+            destinationDef: step.destinationDef,
             displayName: step.objectiveDef.displayDescription,
             isComplete: step.isComplete,
             progress: step.progress,
@@ -67,8 +69,24 @@ class ActivityTable extends React.Component {
 
     const activityList = Object.entries(activities).sort();
     const stepLengths = new Set();
-    for (let [title, {characterSteps}] of activityList)
+    for (let [title, {activity, characterSteps}] of activityList) {
       stepLengths.add(Object.values(characterSteps)[0].length);
+      if (!activity.placeDef) {
+        for (let step of Object.values(characterSteps)[0]) {
+          if (!step.destinationDef)
+            continue;
+          const placeDef = bungie.DEFS.places[step.destinationDef.placeHash];
+          if (!placeDef)
+            continue;
+          if (!activity.placeDef)
+            activity.placeDef = placeDef;
+          else if (activity.placeDef != placeDef) {
+            activity.placeDef = null;
+            break;
+          }
+        }
+      }
+    }
     var colSpan = 1;
     for (let stepLength of Array.from(stepLengths).sort().reverse())
       if (colSpan % stepLength)
