@@ -144,6 +144,7 @@ const RAID_STEPS = {
         'Destroy Atheon (Vault of Glass)',
     ],
 };
+const RECORD_BOOK_STATUSES = ['Incomplete', 'Complete', 'Redeemed'];
 
 
 function titleCase(s) {
@@ -246,7 +247,17 @@ bungie.DestinyCharacter = class DestinyCharacter {
             quests.push(quest);
           }
 
-          return {activities, bounties, quests};
+          const recordBooks = [];
+          for (let advisor of Object.values(response.data.recordBooks)) {
+            const book = bungie.derefHashes(advisor);
+            book.activityTypeName = 'Record Book';
+            book.bookDef = bungie.DEFS.recordBooks[book.bookHash];
+            for (let record of Object.values(book.records))
+              record.statusName = RECORD_BOOK_STATUSES[record.status];
+            recordBooks.push(book);
+          }
+
+          return {activities, bounties, quests, recordBooks};
         });
   }
 

@@ -55,17 +55,16 @@ class ActivityTable extends React.Component {
               longTitle: longTitle.join('\n'),
               placeTitle: Array.from(new Set(placeNames.filter(placeName => placeName))).sort().join(', '),
           };
-        const steps = bounty.stepObjectives.map(step => ({
+        activities[title].characterSteps[character.characterId] = bounty.stepObjectives.map(step => ({
             completionValue: step.objectiveDef.completionValue,
             displayName: step.objectiveDef.displayDescription,
             isComplete: step.isComplete,
             progress: step.progress,
         }));
-        activities[title].characterSteps[character.characterId] = steps;
       }
 
       for (let quest of advisors.quests) {
-        var title = `${quest.activityTypeName}: ${quest.questDef.itemName}: ${quest.stepDef.itemName}`;
+        const title = `${quest.activityTypeName}: ${quest.questDef.itemName}: ${quest.stepDef.itemName}`;
         const longTitle = [quest.questDef.itemName, quest.stepDef.itemName, '', quest.stepDef.itemDescription]
             .join('\n');
         const destinations = quest.stepObjectives.map(step => step.destinationDef).filter(dest => dest);
@@ -77,13 +76,42 @@ class ActivityTable extends React.Component {
               longTitle,
               placeTitle: Array.from(new Set(placeNames)).sort().join(', '),
           };
-        const steps = quest.stepObjectives.map(step => ({
+        activities[title].characterSteps[character.characterId] = quest.stepObjectives.map(step => ({
             completionValue: step.objectiveDef.completionValue,
             displayName: step.objectiveDef.displayDescription,
             isComplete: step.isComplete,
             progress: step.progress,
         }));
-        activities[title].characterSteps[character.characterId] = steps;
+      }
+
+      for (let book of advisors.recordBooks) {
+        for (let record of Object.values(book.records)) {
+          if (record.statusName == 'Redeemed')
+            continue;
+          var title = `${book.activityTypeName}: ${book.bookDef.displayName}: ${record.recordDef.displayName}`;
+          if (record.scramble)
+            title = `${title} (Scrambled)`;
+          if (record.statusName != 'Incomplete')
+            title = `${title} (${record.statusName})`;
+          const longTitle = [`${book.bookDef.displayName} (${book.bookDef.displayDescription})`,
+                             record.recordDef.displayName, '', record.recordDef.description]
+              .join('\n');
+          const destinations = record.objectives.map(step => step.destinationDef).filter(dest => dest);
+          const places = destinations.map(dest => bungie.DEFS.places[dest.placeHash]).filter(place => place);
+          const placeNames = places.map(place => place.placeName);
+          if (!activities[title])
+            activities[title] = {
+                characterSteps: {},
+                longTitle,
+                placeTitle: Array.from(new Set(placeNames)).sort().join(', '),
+            };
+          activities[title].characterSteps[character.characterId] = record.objectives.map(step => ({
+              completionValue: step.objectiveDef.completionValue,
+              displayName: step.objectiveDef.displayDescription,
+              isComplete: step.isComplete,
+              progress: step.progress,
+          }));
+        }
       }
     }
 
