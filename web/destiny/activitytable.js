@@ -15,17 +15,36 @@ class ActivityTable extends React.Component {
         if (!activities[title])
           activities[title] = {
               activity,
-              characters: {},
+              characterSteps: {},
               longTitle,
           };
-        activities[title].characters[character.characterId] = activity;
+        activities[title].characterSteps[character.characterId] = activity.steps;
+      }
+
+      for (let quest of advisors.quests) {
+        var title = `${quest.activityTypeName}: ${quest.questDef.itemName}: ${quest.stepDef.itemName}`;
+        const longTitle = [quest.questDef.itemName, quest.stepDef.itemName]
+            .join('\n');
+        if (!activities[title])
+          activities[title] = {
+              activity: quest,
+              characterSteps: {},
+              longTitle,
+          };
+        const steps = quest.stepObjectives.map(step => ({
+            completionValue: step.objectiveDef.completionValue,
+            displayName: step.objectiveDef.displayDescription,
+            isComplete: step.isComplete,
+            progress: step.progress,
+        }));
+        activities[title].characterSteps[character.characterId] = steps;
       }
     }
 
     const activityList = Object.entries(activities).sort();
     const stepLengths = new Set();
-    for (let [title, {activity}] of activityList)
-      stepLengths.add(activity.steps.length);
+    for (let [title, {characterSteps}] of activityList)
+      stepLengths.add(Object.values(characterSteps)[0].length);
     var colSpan = 1;
     for (let stepLength of Array.from(stepLengths).sort().reverse())
       if (colSpan % stepLength)
@@ -46,22 +65,22 @@ class ActivityTable extends React.Component {
         </tr>
       </thead>
       <tbody>
-        {activityList.map(([title, {activity, characters, longTitle}]) => <tr>
+        {activityList.map(([title, {activity, characterSteps, longTitle}]) => <tr>
           <td title={longTitle}>
             {title.replace(/ [(].*,.*[)]/, ' (...)')}
-            <div style={{float: 'right'}}>&nbsp;{activity.placeDef.placeName}</div>
+            {activity.placeDef && <div style={{float: 'right'}}>&nbsp;{activity.placeDef.placeName}</div>}
           </td>
           {Object.values(base.state.containers).map(({character}) => {
             if (!character)
               return;
-            const activity = characters[character.characterId];
-            if (!activity)
-              return <td colSpan={colspan}/>;
-            const stepSpan = colSpan / activity.steps.length;
-            return activity.steps.map(step => {
-              const [color, check] = step.isComplete ? ['grey', '\u2611'] : ['lightblue', '\u2610'];
+            const steps = characterSteps[character.characterId];
+            if (!steps)
+              return <td colSpan={colSpan}/>;
+            const stepSpan = colSpan / steps.length;
+            return steps.map(step => {
+              const check = step.isComplete ? '\u2611' : step.completionValue > 1 ? `${step.progress} / ${step.completionValue}` : '\u2610';
               return <th colSpan={stepSpan}
-                         style={{backgroundColor: color}}
+                         style={{backgroundColor: step.isComplete ? 'grey' : 'lightblue'}}
                          title={step.displayName}>{check}</th>;
             });
           })}
