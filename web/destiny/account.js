@@ -116,6 +116,60 @@ bungie.DestinyAccount = class DestinyAccount {
 };
 
 
+const CHECKLIST_STEPS = {
+    CHECKLIST_CALCIFIED_FRAGMENTS: {
+        700680: 'I: Predators',
+        700690: 'II: The Hateful Verse',
+        700700: 'III: The Oath',
+        700710: 'IV: Syzygy',
+        700720: 'V: Needle and Worm',
+        700730: 'VI: Sisters',
+        700740: 'VII: The Dive',
+        700750: 'VIII: Leviathan',
+        700760: 'IX: The Bargain',
+        700770: 'X: Immortals',
+        700780: 'XI: Conquerors',
+        700790: 'XII: Out of the Deep',
+        700800: 'XIII: Into the Sky',
+        700810: 'XIV: 52 and One',
+        700820: 'XV: Born As Prey',
+        700830: 'XVI: The Sword Logic',
+        700840: 'XVII: The Weakness Verse',
+        700850: 'XVIII: Leviathan Rises',
+        700860: 'XIX: Crusaders',
+        700870: 'XX: Hive',
+        700880: 'XXI: an incision',
+        700890: 'XXII: The High War',
+        700900: 'XXIII: fire without fuel',
+        700910: 'XXIV: THE SCREAM',
+        700920: 'XXV: Dictata ir Dakaua',
+        700930: 'XXVI: star by star by star',
+        700940: 'XXVII: Eat the Sky',
+        700950: 'XXVIII: King of Shapes',
+        700960: 'XXIX: Carved in Ruin',
+        700970: 'XXX: a golden amputation',
+        700980: 'XXXI: battle made waves',
+        700990: 'XXXII: Majestic. Majestic.',
+        701000: 'XXXIII: When do monsters have dreams',
+        701010: 'XXXIV: More beautiful to know',
+        701020: 'XXXV: This Love Is War',
+        701030: 'XXXVI: Eater of Hope',
+        701040: 'XXXVII: shapes : points',
+        701050: 'XXXVIII: The partition of death',
+        701060: 'XXXIX: open your eye : go into it',
+        701070: 'XL: An Emperor For All Outcomes',
+        701080: 'XLI: Dreadnaught',
+        701090: 'XLII: <>|<>|<>',
+        701100: 'XLIII: End of Failed Timeline',
+        701110: 'XLIV: strict proof eternal',
+        701120: "XLV: I'd shut them all in cells.",
+        701130: 'XLVI: The Gift Mast',
+        701140: 'XLVII: Apocalypse Refrains',
+        701150: 'XLVIII: aiat, aiat, aiat, aiat, aiat',
+        701160: 'XLIX: Forever And A Blade',
+        701170: 'L: Wormfood',
+    },
+};
 const RAID_STEPS = {
     RAID_MOON1: [
         'Traverse the Abyss (The Stills)',
@@ -238,6 +292,16 @@ bungie.DestinyCharacter = class DestinyCharacter {
             bounties.push(bounty);
           }
 
+          const checklists = [];
+          for (let advisor of response.data.checklists) {
+            const checklist = bungie.derefHashes(advisor);
+            checklist.checklistName = checklist.checklistName.replace(/^\[|\]$/g, '');
+            const steps = CHECKLIST_STEPS[checklist.identifier];
+            for (let entry of checklist.entries)
+              entry.name = steps[entry.entityId];
+            checklists.push(checklist);
+          }
+
           const quests = [];
           for (let advisor of Object.values(response.data.quests.quests)) {
             const quest = bungie.derefHashes(advisor);
@@ -257,7 +321,7 @@ bungie.DestinyCharacter = class DestinyCharacter {
             recordBooks.push(book);
           }
 
-          return {activities, bounties, quests, recordBooks};
+          return {activities, bounties, checklists, quests, recordBooks};
         });
   }
 

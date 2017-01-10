@@ -63,6 +63,22 @@ class ActivityTable extends React.Component {
         }));
       }
 
+      for (let checklist of advisors.checklists) {
+        for (let entry of checklist.entries) {
+          if (entry.state)
+            continue;
+          const title = `Checklist: ${checklist.checklistName}: ${entry.name}`;
+          const longTitle = [checklist.checklistName, entry.name];
+          if (!activities[title])
+            activities[title] = {
+                characterSteps: {},
+                link: 'http://www.ign.com/wikis/destiny/Calcified_Fragments#' + entry.name.split(':', 2)[0],
+                longTitle: longTitle.join('\n'),
+            };
+          activities[title].characterSteps[character.characterId] = [{displayName: entry.name, isComplete: entry.state}];
+        }
+      }
+
       for (let quest of advisors.quests) {
         const title = `${quest.activityTypeName}: ${quest.questDef.itemName}: ${quest.stepDef.itemName}`;
         const longTitle = [quest.questDef.itemName, quest.stepDef.itemName, '', quest.stepDef.itemDescription]
@@ -139,9 +155,9 @@ class ActivityTable extends React.Component {
         </tr>
       </thead>
       <tbody>
-        {activityList.map(([title, {characterSteps, longTitle, placeTitle}]) => <tr>
+        {activityList.map(([title, {characterSteps, link, longTitle, placeTitle}]) => <tr>
           <td title={longTitle}>
-            {title.replace(/ [(].*,.*[)]/, ' (...)')}
+            {link ? <a href={link} target="_blank">{title}</a> : title.replace(/ [(].*,.*[)]/, ' (...)')}
             {placeTitle && <div style={{float: 'right'}}>&nbsp;{placeTitle}</div>}
           </td>
           {Object.values(base.state.containers).map(({character}) => {
