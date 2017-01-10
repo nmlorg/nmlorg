@@ -9,22 +9,33 @@ class ActivityTable extends React.Component {
         var title = `${activity.activityTypeName}: ${activity.activityDef.activityName}`;
         if (activity.modifiers.length)
           title = `${title} (${activity.modifiers.map(mod => mod.displayName).sort().join(', ')})`;
+        const longTitle = [activity.activityDef.activityName]
+            .concat(activity.skulls.map(skull => `${skull.displayName}: ${skull.description}`))
+            .join('\n');
         if (!activities[title])
           activities[title] = {
               activity,
               characters: {},
+              longTitle,
           };
         activities[title].characters[character.characterId] = activity;
       }
     }
 
     const activityList = Object.entries(activities).sort();
+    const stepLengths = new Set();
+    for (let [title, {activity}] of activityList)
+      stepLengths.add(activity.steps.length);
+    var colSpan = 1;
+    for (let stepLength of Array.from(stepLengths).sort().reverse())
+      if (colSpan % stepLength)
+        colSpan *= stepLength;
 
     return <table>
       <thead>
         <tr>
-          <td colSpan="2"/>
-          {Object.values(base.state.containers).map(({character}) => character && <td colSpan="2">
+          <td/>
+          {Object.values(base.state.containers).map(({character}) => character && <td colSpan={colSpan}>
             <Placard background={character.backgroundPath}
                      icon={character.emblemPath}
                      neutral={true}
@@ -35,20 +46,26 @@ class ActivityTable extends React.Component {
         </tr>
       </thead>
       <tbody>
-        {activityList.map(([title, {activity, characters}]) => [
-          <tr>
-            <td colSpan="5">{title}</td>
-            <td colSpan="3">{activity.destinationDef.destinationName}</td>
-          </tr>,
-        ].concat(activity.steps.map((step, i) => <tr>
-          <td colSpan="2">&bull; {step.displayName}</td>
-          {containers.map(({character}) => {
+        {activityList.map(([title, {activity, characters, longTitle}]) => <tr>
+          <td title={longTitle}>
+            {title.replace(/ [(].*,.*[)]/, ' (...)')}
+            <div style={{float: 'right'}}>&nbsp;{activity.placeDef.placeName}</div>
+          </td>
+          {Object.values(base.state.containers).map(({character}) => {
+            if (!character)
+              return;
             const activity = characters[character.characterId];
             if (!activity)
-              return <td colSpan="2"/>;
-            return <td colSpan="2" style={{backgroundColor: activity.steps[i].isComplete ? 'grey' : 'lightblue'}}/>;
+              return <td colSpan={colspan}/>;
+            const stepSpan = colSpan / activity.steps.length;
+            return activity.steps.map(step => {
+              const [color, check] = step.isComplete ? ['grey', '\u2611'] : ['lightblue', '\u2610'];
+              return <th colSpan={stepSpan}
+                         style={{backgroundColor: color}}
+                         title={step.displayName}>{check}</th>;
+            });
           })}
-        </tr>)))}
+        </tr>)}
       </tbody>
     </table>;
   }
