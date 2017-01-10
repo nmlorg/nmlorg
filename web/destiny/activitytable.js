@@ -1,3 +1,20 @@
+const PLACE_NAMES = [
+    [/Archon's Forge/, 'Earth'],
+    [/Dreadnaught/, 'Saturn'],
+    [/Plaguelands/, 'Earth'],
+    [/Venus/, 'Venus'],
+];
+
+
+function guessPlaceName(s) {
+  if (!s)
+    return;
+  for (let [regex, placeName] of PLACE_NAMES)
+    if (s.match(regex))
+      return placeName;
+}
+
+
 class ActivityTable extends React.Component {
   render() {
     const base = this.props.base;
@@ -14,9 +31,9 @@ class ActivityTable extends React.Component {
             .join('\n');
         if (!activities[title])
           activities[title] = {
-              activity,
               characterSteps: {},
               longTitle,
+              placeTitle: activity.placeDef.placeName,
           };
         activities[title].characterSteps[character.characterId] = activity.steps;
       }
@@ -30,15 +47,16 @@ class ActivityTable extends React.Component {
         }
         longTitle.push('');
         longTitle.push(bounty.stepDef.itemDescription);
+        const placeNames = bounty.stepObjectives.map(step => guessPlaceName(step.objectiveDef.displayDescription));
+        placeNames.push(guessPlaceName(bounty.stepDef.itemDescription));
         if (!activities[title])
           activities[title] = {
-              activity: bounty,
               characterSteps: {},
               longTitle: longTitle.join('\n'),
+              placeTitle: Array.from(new Set(placeNames.filter(placeName => placeName))).sort().join(', '),
           };
         const steps = bounty.stepObjectives.map(step => ({
             completionValue: step.objectiveDef.completionValue,
-            destinationDef: step.destinationDef,
             displayName: step.objectiveDef.displayDescription,
             isComplete: step.isComplete,
             progress: step.progress,
@@ -50,15 +68,17 @@ class ActivityTable extends React.Component {
         var title = `${quest.activityTypeName}: ${quest.questDef.itemName}: ${quest.stepDef.itemName}`;
         const longTitle = [quest.questDef.itemName, quest.stepDef.itemName, '', quest.stepDef.itemDescription]
             .join('\n');
+        const destinations = quest.stepObjectives.map(step => step.destinationDef).filter(dest => dest);
+        const places = destinations.map(dest => bungie.DEFS.places[dest.placeHash]).filter(place => place);
+        const placeNames = places.map(place => place.placeName);
         if (!activities[title])
           activities[title] = {
-              activity: quest,
               characterSteps: {},
               longTitle,
+              placeTitle: Array.from(new Set(placeNames)).sort().join(', '),
           };
         const steps = quest.stepObjectives.map(step => ({
             completionValue: step.objectiveDef.completionValue,
-            destinationDef: step.destinationDef,
             displayName: step.objectiveDef.displayDescription,
             isComplete: step.isComplete,
             progress: step.progress,
@@ -69,24 +89,8 @@ class ActivityTable extends React.Component {
 
     const activityList = Object.entries(activities).sort();
     const stepLengths = new Set();
-    for (let [title, {activity, characterSteps}] of activityList) {
+    for (let [title, {characterSteps}] of activityList)
       stepLengths.add(Object.values(characterSteps)[0].length);
-      if (!activity.placeDef) {
-        for (let step of Object.values(characterSteps)[0]) {
-          if (!step.destinationDef)
-            continue;
-          const placeDef = bungie.DEFS.places[step.destinationDef.placeHash];
-          if (!placeDef)
-            continue;
-          if (!activity.placeDef)
-            activity.placeDef = placeDef;
-          else if (activity.placeDef != placeDef) {
-            activity.placeDef = null;
-            break;
-          }
-        }
-      }
-    }
     var colSpan = 1;
     for (let stepLength of Array.from(stepLengths).sort().reverse())
       if (colSpan % stepLength)
@@ -107,10 +111,10 @@ class ActivityTable extends React.Component {
         </tr>
       </thead>
       <tbody>
-        {activityList.map(([title, {activity, characterSteps, longTitle}]) => <tr>
+        {activityList.map(([title, {characterSteps, longTitle, placeTitle}]) => <tr>
           <td title={longTitle}>
             {title.replace(/ [(].*,.*[)]/, ' (...)')}
-            {activity.placeDef && <div style={{float: 'right'}}>&nbsp;{activity.placeDef.placeName}</div>}
+            {placeTitle && <div style={{float: 'right'}}>&nbsp;{placeTitle}</div>}
           </td>
           {Object.values(base.state.containers).map(({character}) => {
             if (!character)
