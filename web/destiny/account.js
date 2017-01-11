@@ -285,7 +285,12 @@ bungie.DestinyCharacter = class DestinyCharacter {
           for (let activity of activities) {
             activity.destinationDef = bungie.DEFS.destinations[activity.activityDef.destinationHash];
             activity.placeDef = bungie.DEFS.places[activity.activityDef.placeHash];
-            activity.rewards = activity.activeRewardIndexes.map(i => activity.activityDef.rewards[i]);
+            activity.rewards = [];
+            for (let i of activity.activeRewardIndexes) {
+              const rewardGroup = activity.activityDef.rewards[i];
+              if (rewardGroup)
+                activity.rewards.push(...bungie.derefHashes(rewardGroup.rewardItems));
+            }
             activity.skulls = activity.skullIndexes.map(i => activity.activityDef.skulls[i]);
             activity.challenges = activity.skulls.filter(skull => skull.displayName.match(/ Challenge$/));
             activity.modifiers = activity.skulls.filter(skull => !skull.displayName.match(/ Challenge$/));
@@ -310,6 +315,10 @@ bungie.DestinyCharacter = class DestinyCharacter {
             bounty.questDef = bungie.DEFS.items[advisor.questHash];
             bounty.stepDef = bungie.DEFS.items[advisor.stepHash];
             bounty.activityTypeName = bounty.stepDef.itemTypeName;
+            bounty.rewards = Object.entries(bounty.questDef.values).map(([itemHash, value]) => ({
+                itemDef: bungie.DEFS.items[itemHash],
+                value,
+            }));
             bounties.push(bounty);
           }
 
@@ -329,6 +338,17 @@ bungie.DestinyCharacter = class DestinyCharacter {
             quest.questDef = bungie.DEFS.items[advisor.questHash];
             quest.stepDef = bungie.DEFS.items[advisor.stepHash];
             quest.activityTypeName = quest.stepDef.itemTypeName;
+            const allValues = Object.entries(quest.questDef.values)
+                .concat(Object.entries(quest.stepDef.values));
+            quest.rewards = allValues.map(([itemHash, value]) => ({
+                itemDef: bungie.DEFS.items[itemHash],
+                value,
+            }));
+            quest.stepNum = quest.questDef.setItemHashes.indexOf(quest.stepHash);
+            if (quest.stepNum < quest.questDef.setItemHashes.length - 1)
+              quest.rewards.push({
+                  itemDef: {itemName: `(This is step ${quest.stepNum + 1} of ${quest.questDef.setItemHashes.length}.)`},
+              });
             quests.push(quest);
           }
 
