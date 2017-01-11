@@ -36,6 +36,7 @@ class ActivityTable extends React.Component {
                          ...activity.challenges.map(skull => `\u2022 ${skull.displayName}: ${skull.description}`));
         if (!activities[title])
           activities[title] = {
+              activityPerAccount: activity.activityPerAccount,
               charData: {},
               longTitle: longTitle.join('\n'),
               placeTitle: activity.placeDef.placeName,
@@ -164,9 +165,13 @@ class ActivityTable extends React.Component {
           </td>)}
         </tr>
       </thead>
-      {activityList.map(([title, {charData, link, longTitle, placeTitle}]) =>
-        <ActivityRow charData={charData} colSpan={colSpan} containers={containers}
-                     link={link} longTitle={longTitle} placeTitle={placeTitle} title={title}/>
+      {activityList.map(([title, {activityPerAccount, charData, link, longTitle, placeTitle}]) =>
+        activityPerAccount
+          ? <ActivityRow charData={charData} colSpan={colSpan * containers.length}
+                         containers={containers.slice(0, 1)} link={link} longTitle={longTitle}
+                         placeTitle={placeTitle} title={title}/>
+          : <ActivityRow charData={charData} colSpan={colSpan} containers={containers}
+                         link={link} longTitle={longTitle} placeTitle={placeTitle} title={title}/>
       )}
     </table>;
   }

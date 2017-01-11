@@ -246,6 +246,7 @@ bungie.DestinyCharacter = class DestinyCharacter {
             } else if (advisor.heroicStrike) {
               for (let tier of advisor.heroicStrike.tiers) {
                 const activity = bungie.derefHashes(tier);
+                activity.activityPerAccount = true;
                 activity.activityPeriod = 'Weekly';
                 activity.activityTypeName = 'Heroic Strike';
                 activities.push(activity);
@@ -275,6 +276,7 @@ bungie.DestinyCharacter = class DestinyCharacter {
           for (let advisor of response.data.weeklyCrucible) {
             const activity = bungie.derefHashes(advisor);
             activity.activeRewardIndexes = [];  // TODO: Find the activity entry where these are defined.
+            activity.activityPerAccount = true;
             activity.activityPeriod = 'Weekly';
             activity.activityTypeName = 'Crucible';
             activity.activityDef = activity.activityBundleDef;
