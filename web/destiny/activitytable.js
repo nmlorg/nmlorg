@@ -127,6 +127,7 @@ class ActivityTable extends React.Component {
           const placeNames = places.map(place => place.placeName);
           if (!activities[title])
             activities[title] = {
+                activityPerAccount: book.activityPerAccount,
                 charData: {},
                 longTitle,
                 placeTitle: Array.from(new Set(placeNames)).sort().join(', '),

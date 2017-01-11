@@ -357,6 +357,7 @@ bungie.DestinyCharacter = class DestinyCharacter {
           const recordBooks = [];
           for (let advisor of Object.values(response.data.recordBooks)) {
             const book = bungie.derefHashes(advisor);
+            book.activityPerAccount = true;
             book.activityTypeName = 'Record Book';
             book.bookDef = bungie.DEFS.recordBooks[book.bookHash];
             for (let record of Object.values(book.records))
