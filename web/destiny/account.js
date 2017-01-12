@@ -324,6 +324,8 @@ bungie.DestinyCharacter = class DestinyCharacter {
               continue;
             const vendorDef = bungie.DEFS.vendorDetails[vendorHash];
             for (let advisor of vendor.pendingBounties.saleItems) {
+              if (response.data.bounties[advisor.item.itemHash])
+                continue;
               const bounty = bungie.derefHashes(advisor.item);
               bounty.questDef = bounty.stepDef = bounty.itemDef;
               bounty.sourceDef = vendorDef;
