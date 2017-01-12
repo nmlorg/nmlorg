@@ -47,7 +47,7 @@ class ActivityTable extends React.Component {
       for (let bounty of advisors.bounties) {
         var title = `Bounty (${bounty.activityTypeName.replace(/ Bounty$/, '')}): ${bounty.questDef.itemName}`;
         const longTitle = [bounty.questDef.itemName];
-        if (bounty.questHash != bounty.stepHash) {
+        if (bounty.questDef.itemName != bounty.stepDef.itemName) {
           title = `${title}: ${bounty.stepDef.itemName}`;
           longTitle.push(bounty.stepDef.itemName);
         }
@@ -67,7 +67,11 @@ class ActivityTable extends React.Component {
             isComplete: step.isComplete,
             progress: step.progress,
         }));
-        activities[title].charData[character.characterId] = {rewards: bounty.rewards, steps};
+        activities[title].charData[character.characterId] = {
+            rewards: bounty.rewards,
+            sourceDef: bounty.sourceDef,
+            steps,
+        };
       }
 
       for (let checklist of advisors.checklists) {
@@ -197,11 +201,17 @@ class ActivityRow extends React.Component {
           const data = charData[character.characterId];
           if (!data)
             return <td colSpan={colSpan}/>;
+          if (data.sourceDef)
+            return <th colSpan={colSpan}
+                       style={{backgroundColor: '#bdb76b'}}
+                       title={data.sourceDef.summary.vendorDescription}>
+              <i>({data.sourceDef.summary.vendorName})</i>
+            </th>;
           const stepSpan = colSpan / data.steps.length;
           return data.steps.map(step => {
             const check = step.isComplete ? '\u2611' : step.completionValue > 1 ? `${step.progress} / ${step.completionValue}` : '\u2610';
             return <th colSpan={stepSpan}
-                       style={{backgroundColor: step.isComplete ? 'grey' : 'lightblue'}}
+                       style={{backgroundColor: step.isComplete ? '#696969' : '#1e90ff'}}
                        title={step.displayName}>{check}</th>;
           });
         })}

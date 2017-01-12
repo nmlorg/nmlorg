@@ -316,12 +316,28 @@ bungie.DestinyCharacter = class DestinyCharacter {
             const bounty = bungie.derefHashes(advisor);
             bounty.questDef = bungie.DEFS.items[advisor.questHash];
             bounty.stepDef = bungie.DEFS.items[advisor.stepHash];
+            bounties.push(bounty);
+          }
+
+          for (let [vendorHash, vendor] of Object.entries(response.data.vendorAdvisors)) {
+            if (!vendor.pendingBounties)
+              continue;
+            const vendorDef = bungie.DEFS.vendorDetails[vendorHash];
+            for (let advisor of vendor.pendingBounties.saleItems) {
+              const bounty = bungie.derefHashes(advisor.item);
+              bounty.questDef = bounty.stepDef = bounty.itemDef;
+              bounty.sourceDef = vendorDef;
+              bounty.stepObjectives = bounty.objectives;
+              bounties.push(bounty);
+            }
+          }
+
+          for (let bounty of bounties) {
             bounty.activityTypeName = bounty.stepDef.itemTypeName;
             bounty.rewards = Object.entries(bounty.questDef.values).map(([itemHash, value]) => ({
                 itemDef: bungie.DEFS.items[itemHash],
                 value,
             }));
-            bounties.push(bounty);
           }
 
           const checklists = [];
