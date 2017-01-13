@@ -1,4 +1,29 @@
 class ItemTable extends React.Component {
+  static buckets = [
+      ['Equippable', 'Subclass'],
+      ['Equippable', 'Primary Weapons'],
+      ['Equippable', 'Special Weapons'],
+      ['Equippable', 'Heavy Weapons'],
+      ['Equippable', 'Ghost'],
+      ['Equippable', 'Helmet'],
+      ['Equippable', 'Gauntlets'],
+      ['Equippable', 'Chest Armor'],
+      ['Equippable', 'Leg Armor'],
+      ['Equippable', 'Class Armor'],
+      ['Equippable', 'Artifacts'],
+      ['Equippable', 'Emblems'],
+      ['Equippable', 'Emotes'],
+      ['Equippable', 'Shaders'],
+      ['Equippable', 'Ships'],
+      ['Equippable', 'Sparrow Horn'],
+      ['Equippable', 'Vehicle'],
+      ['Item', 'Ornaments'],
+      ['Item', 'Consumables'],
+      ['Item', 'Materials'],
+      ['Item', 'Mission'],
+      ['Unknown', 'Unknown'],
+  ];
+
   render() {
     const base = this.props.base;
     return <table>
@@ -18,7 +43,7 @@ class ItemTable extends React.Component {
         </tr>
       </thead>
       <tbody>
-        {base.state.buckets.map(([category, bucket]) => <tr>
+        {ItemTable.buckets.map(([category, bucket]) => <tr>
           <th>{bucket}</th>
           {Object.values(base.state.containers).map(({character, itemTree}) => <ItemListTD acc={base} character={character} items={itemTree[category][bucket] || []}/>)}
         </tr>)}
