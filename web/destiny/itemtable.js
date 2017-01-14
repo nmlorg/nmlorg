@@ -109,7 +109,7 @@ class Item extends React.Component {
   render() {
     const item = this.props.item;
     var title = item.itemDef.itemName;
-    if (item.locationName != 'Inventory')
+    if ((item.locationName != 'Inventory') && (item.locationName != 'Vault'))
       title = `${title} (${item.locationName})`;
     var text = '';
     if (item.objectives.length)
