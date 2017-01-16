@@ -11,8 +11,32 @@
 <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 
 <style>
+table {
+  border-spacing: 0;
+  width: 100%;
+}
+
+tfoot, thead {
+  background-color: #c0b283;
+}
+
+tbody:nth-child(even) {
+  background-color: #f4f4f4;
+}
+
+tbody:nth-child(odd) {
+  background-color: #dcd0c0;
+}
+
 td, th {
-  border: 1px solid black;
+  padding: .5em;
+}
+
+td > input,
+td > select {
+  box-sizing: border-box;
+  min-height: 100%;
+  width: 100%;
 }
 </style>
 
@@ -71,27 +95,30 @@ class IngredientTable extends React.Component {
     const rows = this.state.rows.concat([[firstOilName, 0]]);
     const totalWeight = Math.max(1, sum(rows.map(([oilName, weight]) => weight)));
 
-    return <table border="1">
+    return <table>
       <thead>
         <tr>
-          <th>Oil name</th>
-          <th colSpan="2">Oil weight</th>
-          <th colSpan="2">NaOH weight</th>
+          <th colSpan="2">Oil</th>
+          <th colSpan="2">NaOH</th>
         </tr>
       </thead>
-      <tbody>
-        {rows.map(([oilKey, weight], i) => <tr>
-          <td><select onChange={e => {
-                        rows[i][0] = e.target.value;
-                        if (i < this.state.rows.length)
-                          rows.pop();
-                        this.setState({rows});
-                      }}
-                      value={oilKey}>
-            {saponList.map(([oilKey, {oilName, sapRange}]) => <option value={oilKey}>
-              {oilName} ({sapRange})
-            </option>)}
-          </select></td>
+      {rows.map(([oilKey, weight], i) => <tbody>
+        <tr>
+          <td colSpan="4">
+            <select onChange={e => {
+                      rows[i][0] = e.target.value;
+                      if (i < this.state.rows.length)
+                        rows.pop();
+                      this.setState({rows});
+                    }}
+                    value={oilKey}>
+              {saponList.map(([oilKey, {oilName, sapRange}]) => <option value={oilKey}>
+                {oilName} ({sapRange})
+              </option>)}
+            </select>
+          </td>
+        </tr>
+        <tr>
           <td><input onChange={e => {
                        rows[i][1] = Number(e.target.value);
                        if (i < this.state.rows.length)
@@ -100,17 +127,18 @@ class IngredientTable extends React.Component {
                      }}
                      step=".01"
                      type="number"
-                     value={weight}/> oz</td>
+                     value={weight}/></td>
           <td>{Math.round(1000 * weight / totalWeight) / 10}%</td>
           <td>{Math.round(1000 * sapon[oilKey].naoh) / 10}%</td>
-          <td>{Math.round(1000 * weight * include * sapon[oilKey].naoh) / 1000} oz</td>
-        </tr>)}
-        <tr>
-          <th>Total</th>
-          <th colSpan="2">{sum(rows.map(([oilKey, weight]) => weight))} oz</th>
-          <th colSpan="2">{Math.round(1000 * sum(rows.map(([oilKey, weight]) => weight * include * sapon[oilKey].naoh))) / 1000} oz</th>
+          <td>{Math.round(1000 * weight * include * sapon[oilKey].naoh) / 1000}</td>
         </tr>
-      </tbody>
+      </tbody>)}
+      <tfoot>
+        <tr>
+          <th colSpan="2">{sum(rows.map(([oilKey, weight]) => weight))}</th>
+          <th colSpan="2">{Math.round(1000 * sum(rows.map(([oilKey, weight]) => weight * include * sapon[oilKey].naoh))) / 1000}</th>
+        </tr>
+      </tfoot>
     </table>;
   }
 }
