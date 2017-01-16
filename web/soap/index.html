@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soap!</title>
+
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@15/dist/react.min.js"></script>
+<script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+<style>
+td, th {
+  border: 1px solid black;
+}
+</style>
+
+<script type="text/babel">
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+        exclude: 5,
+    };
+    this.componentWillReceiveProps(props);
+  }
+
+  componentWillReceiveProps(props) {
+    this.sapon = {};
+    for (let line of props.sapon.trim().split(/\n/).slice(2)) {
+      const [oilName, sapRange, naoh, koh, productId] = line.split(/\t/);
+      const key = `${oilName.trim()} (${sapRange})`;
+      this.sapon[key] = {oilName, sapRange, naoh, koh, productId};
+    }
+  }
+
+  render() {
+    return <div>
+      Exclude:
+      <input max="100"
+             min="0"
+             onChange={e => this.setState({exclude: Number(e.target.value)})}
+             type="number"
+             value={this.state.exclude}/>%
+      <br/>
+      <IngredientTable exclude={this.state.exclude} sapon={this.sapon}/>
+    </div>;
+  }
+}
+
+
+function sum(ar) {
+  return ar.reduce((a, b) => a + b, 0);
+}
+
+
+class IngredientTable extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+        rows: [],
+    };
+  }
+
+  render() {
+    const include = 1 - this.props.exclude / 100;
+    const sapon = this.props.sapon;
+    const saponList = Object.entries(sapon);
+    const firstOilName = saponList[0][0];
+    const rows = this.state.rows.concat([[firstOilName, 0]]);
+    const totalWeight = Math.max(1, sum(rows.map(([oilName, weight]) => weight)));
+
+    return <table border="1">
+      <thead>
+        <tr>
+          <th>Oil name</th>
+          <th colSpan="2">Oil weight</th>
+          <th colSpan="2">NaOH weight</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map(([oilKey, weight], i) => <tr>
+          <td><select onChange={e => {
+                        rows[i][0] = e.target.value;
+                        if (i < this.state.rows.length)
+                          rows.pop();
+                        this.setState({rows});
+                      }}
+                      value={oilKey}>
+            {saponList.map(([oilKey, {oilName, sapRange}]) => <option value={oilKey}>
+              {oilName} ({sapRange})
+            </option>)}
+          </select></td>
+          <td><input onChange={e => {
+                       rows[i][1] = Number(e.target.value);
+                       if (i < this.state.rows.length)
+                         rows.pop();
+                       this.setState({rows});
+                     }}
+                     step=".01"
+                     type="number"
+                     value={weight}/> oz</td>
+          <td>{Math.round(1000 * weight / totalWeight) / 10}%</td>
+          <td>{Math.round(1000 * sapon[oilKey].naoh) / 10}%</td>
+          <td>{Math.round(1000 * weight * include * sapon[oilKey].naoh) / 1000} oz</td>
+        </tr>)}
+        <tr>
+          <th>Total</th>
+          <th colSpan="2">{sum(rows.map(([oilKey, weight]) => weight))} oz</th>
+          <th colSpan="2">{Math.round(1000 * sum(rows.map(([oilKey, weight]) => weight * include * sapon[oilKey].naoh))) / 1000} oz</th>
+        </tr>
+      </tbody>
+    </table>;
+  }
+}
+
+
+// https://www.fromnaturewithlove.com/downloads/sapon.txt
+fetch('sapon.txt')
+    .then(response => response.text())
+    .then(sapon => ReactDOM.render(<App sapon={sapon}/>, document.getElementById('root')));
+</script>
