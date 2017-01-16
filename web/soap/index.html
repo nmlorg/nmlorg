@@ -33,7 +33,9 @@ td, th {
 }
 
 td > input,
-td > select {
+td > select,
+th > input,
+th > select {
   box-sizing: border-box;
   min-height: 100%;
   width: 100%;
@@ -83,9 +85,12 @@ class IngredientTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+        lye: IngredientTable.lyes[0].toLowerCase(),
         rows: [],
     };
   }
+
+  static lyes = ['NaOH', 'KOH'];
 
   render() {
     const include = 1 - this.props.exclude / 100;
@@ -99,7 +104,11 @@ class IngredientTable extends React.Component {
       <thead>
         <tr>
           <th colSpan="2">Oil</th>
-          <th colSpan="2">NaOH</th>
+          <th colSpan="2">
+            <select onChange={e => this.setState({lye: e.target.value})}>
+              {IngredientTable.lyes.map(lye => <option value={lye.toLowerCase()}>{lye}</option>)}
+            </select>
+          </th>
         </tr>
       </thead>
       {rows.map(([oilKey, weight], i) => <tbody>
@@ -129,14 +138,14 @@ class IngredientTable extends React.Component {
                      type="number"
                      value={weight}/></td>
           <td>{Math.round(1000 * weight / totalWeight) / 10}%</td>
-          <td>{Math.round(1000 * sapon[oilKey].naoh) / 10}%</td>
-          <td>{Math.round(1000 * weight * include * sapon[oilKey].naoh) / 1000}</td>
+          <td>{Math.round(1000 * sapon[oilKey][this.state.lye]) / 10}%</td>
+          <td>{Math.round(1000 * weight * include * sapon[oilKey][this.state.lye]) / 1000}</td>
         </tr>
       </tbody>)}
       <tfoot>
         <tr>
           <th colSpan="2">{sum(rows.map(([oilKey, weight]) => weight))}</th>
-          <th colSpan="2">{Math.round(1000 * sum(rows.map(([oilKey, weight]) => weight * include * sapon[oilKey].naoh))) / 1000}</th>
+          <th colSpan="2">{Math.round(1000 * sum(rows.map(([oilKey, weight]) => weight * include * sapon[oilKey][this.state.lye]))) / 1000}</th>
         </tr>
       </tfoot>
     </table>;
