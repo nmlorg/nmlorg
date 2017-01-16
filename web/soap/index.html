@@ -76,6 +76,12 @@ class App extends React.Component {
 }
 
 
+function round(num, digits) {
+  const mult = Math.pow(10, digits);
+  return Math.round(num * mult) / mult;
+}
+
+
 function sum(ar) {
   return ar.reduce((a, b) => a + b, 0);
 }
@@ -104,7 +110,7 @@ class IngredientTable extends React.Component {
       <thead>
         <tr>
           <th colSpan="2">Oil</th>
-          <th colSpan="2">
+          <th colSpan="3">
             <select onChange={e => this.setState({lye: e.target.value})}>
               {IngredientTable.lyes.map(lye => <option value={lye.toLowerCase()}>{lye}</option>)}
             </select>
@@ -126,6 +132,14 @@ class IngredientTable extends React.Component {
               </option>)}
             </select>
           </td>
+          <td>
+            {i < this.state.rows.length &&
+            <button onClick={e => {
+                      rows.splice(i, 1);
+                      rows.pop();
+                      this.setState({rows});
+                    }}>X</button>}
+          </td>
         </tr>
         <tr>
           <td><input onChange={e => {
@@ -137,15 +151,18 @@ class IngredientTable extends React.Component {
                      step=".01"
                      type="number"
                      value={weight}/></td>
-          <td>{Math.round(1000 * weight / totalWeight) / 10}%</td>
-          <td>{Math.round(1000 * sapon[oilKey][this.state.lye]) / 10}%</td>
-          <td>{Math.round(1000 * weight * include * sapon[oilKey][this.state.lye]) / 1000}</td>
+          <td>{round(100 * weight / totalWeight, 1)}%</td>
+          <td>{round(100 * sapon[oilKey][this.state.lye], 1)}%</td>
+          <td colSpan="2">{round(weight * include * sapon[oilKey][this.state.lye], 2)}</td>
         </tr>
       </tbody>)}
       <tfoot>
         <tr>
           <th colSpan="2">{sum(rows.map(([oilKey, weight]) => weight))}</th>
-          <th colSpan="2">{Math.round(1000 * sum(rows.map(([oilKey, weight]) => weight * include * sapon[oilKey][this.state.lye]))) / 1000}</th>
+          <th colSpan="3">
+            {round(sum(rows.map(([oilKey, weight]) =>
+              weight * include * sapon[oilKey][this.state.lye])), 2)}
+          </th>
         </tr>
       </tfoot>
     </table>;
