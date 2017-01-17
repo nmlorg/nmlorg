@@ -13,6 +13,10 @@
 <script src="https://raw.githubusercontent.com/tc39/proposal-object-values-entries/master/polyfill.js"></script>
 
 <style>
+body {
+  margin: 0;
+}
+
 table {
   border-spacing: 0;
   max-width: 500px;
@@ -86,7 +90,7 @@ class IngredientTable extends React.Component {
     if (!this.state)
       this.state = {
           exclude: 5,
-          lye: IngredientTable.lyes[0].toLowerCase(),
+          lye: IngredientTable.lyes[0],
           rows: [],
       };
   }
@@ -96,6 +100,7 @@ class IngredientTable extends React.Component {
   render() {
     localStorage.setItem('recipe', JSON.stringify(this.state));
 
+    const lyeKey = this.state.lye.toLowerCase();
     const include = 1 - this.state.exclude / 100;
     const sapon = this.props.sapon;
     const saponList = Object.entries(sapon);
@@ -110,7 +115,7 @@ class IngredientTable extends React.Component {
           <th colSpan="3">
             <select onChange={e => this.setState({lye: e.target.value})}
                     value={this.state.lye}>
-              {IngredientTable.lyes.map(lye => <option value={lye.toLowerCase()}>{lye}</option>)}
+              {IngredientTable.lyes.map(lye => <option value={lye}>{lye}</option>)}
             </select>
           </th>
         </tr>
@@ -162,8 +167,8 @@ class IngredientTable extends React.Component {
                      type="number"
                      value={weight}/></td>
           <td>{round(100 * weight / totalWeight, 1)}%</td>
-          <td>{round(100 * sapon[oilKey][this.state.lye], 1)}%</td>
-          <td colSpan="2">{round(weight * include * sapon[oilKey][this.state.lye], 2)}</td>
+          <td>{round(100 * sapon[oilKey][lyeKey], 1)}%</td>
+          <td colSpan="2">{round(weight * include * sapon[oilKey][lyeKey], 2)}</td>
         </tr>
       </tbody>)}
       <tfoot>
@@ -171,7 +176,7 @@ class IngredientTable extends React.Component {
           <th colSpan="2">{sum(rows.map(([oilKey, weight]) => weight))}</th>
           <th colSpan="3">
             {round(sum(rows.map(([oilKey, weight]) =>
-              weight * include * sapon[oilKey][this.state.lye])), 2)}
+              weight * include * sapon[oilKey][lyeKey])), 2)}
           </th>
         </tr>
       </tfoot>
