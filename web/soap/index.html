@@ -120,18 +120,6 @@ class IngredientTable extends React.Component {
           </th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <th colSpan="5">
-            Exclude:
-            <input max="100"
-                   min="0"
-                   onChange={e => this.setState({exclude: Number(e.target.value)})}
-                   type="number"
-                   value={this.state.exclude}/>%
-          </th>
-        </tr>
-      </tbody>
       {rows.map(([oilKey, weight], i) => <tbody>
         <tr>
           <td colSpan="4">
@@ -173,7 +161,15 @@ class IngredientTable extends React.Component {
       </tbody>)}
       <tfoot>
         <tr>
-          <th colSpan="2">{sum(rows.map(([oilKey, weight]) => weight))}</th>
+          <th colSpan="2">
+            {sum(rows.map(([oilKey, weight]) => weight))} (exclude
+            <input max="100"
+                   min="0"
+                   onChange={e => this.setState({exclude: Number(e.target.value)})}
+                   type="number"
+                   value={this.state.exclude}/>
+            %)
+          </th>
           <th colSpan="3">
             {round(sum(rows.map(([oilKey, weight]) =>
               weight * include * sapon[oilKey][lyeKey])), 2)}
