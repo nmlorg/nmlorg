@@ -15,6 +15,7 @@
 <style>
 table {
   border-spacing: 0;
+  max-width: 500px;
   width: 100%;
 }
 
@@ -36,7 +37,6 @@ td, th {
 
 td > input,
 td > select,
-th > input,
 th > select {
   box-sizing: border-box;
   min-height: 100%;
@@ -48,9 +48,6 @@ th > select {
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-        exclude: 5,
-    };
     this.componentWillReceiveProps(props);
   }
 
@@ -64,16 +61,7 @@ class App extends React.Component {
   }
 
   render() {
-    return <div>
-      Exclude:
-      <input max="100"
-             min="0"
-             onChange={e => this.setState({exclude: Number(e.target.value)})}
-             type="number"
-             value={this.state.exclude}/>%
-      <br/>
-      <IngredientTable exclude={this.state.exclude} sapon={this.sapon}/>
-    </div>;
+    return <IngredientTable sapon={this.sapon}/>;
   }
 }
 
@@ -92,16 +80,23 @@ function sum(ar) {
 class IngredientTable extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-        lye: IngredientTable.lyes[0].toLowerCase(),
-        rows: [],
-    };
+    this.state = localStorage.getItem('recipe');
+    if (this.state)
+      this.state = JSON.parse(this.state);
+    if (!this.state)
+      this.state = {
+          exclude: 5,
+          lye: IngredientTable.lyes[0].toLowerCase(),
+          rows: [],
+      };
   }
 
   static lyes = ['NaOH', 'KOH'];
 
   render() {
-    const include = 1 - this.props.exclude / 100;
+    localStorage.setItem('recipe', JSON.stringify(this.state));
+
+    const include = 1 - this.state.exclude / 100;
     const sapon = this.props.sapon;
     const saponList = Object.entries(sapon);
     const firstOilName = saponList[0][0];
@@ -113,12 +108,25 @@ class IngredientTable extends React.Component {
         <tr>
           <th colSpan="2">Oil</th>
           <th colSpan="3">
-            <select onChange={e => this.setState({lye: e.target.value})}>
+            <select onChange={e => this.setState({lye: e.target.value})}
+                    value={this.state.lye}>
               {IngredientTable.lyes.map(lye => <option value={lye.toLowerCase()}>{lye}</option>)}
             </select>
           </th>
         </tr>
       </thead>
+      <tbody>
+        <tr>
+          <th colSpan="5">
+            Exclude:
+            <input max="100"
+                   min="0"
+                   onChange={e => this.setState({exclude: Number(e.target.value)})}
+                   type="number"
+                   value={this.state.exclude}/>%
+          </th>
+        </tr>
+      </tbody>
       {rows.map(([oilKey, weight], i) => <tbody>
         <tr>
           <td colSpan="4">
