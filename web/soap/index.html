@@ -112,7 +112,7 @@ class IngredientTable extends React.Component {
       <thead>
         <tr>
           <th colSpan="2">Oil</th>
-          <th colSpan="3">
+          <th colSpan="2">
             <select onChange={e => this.setState({lye: e.target.value})}
                     value={this.state.lye}>
               {IngredientTable.lyes.map(lye => <option value={lye}>{lye}</option>)}
@@ -122,7 +122,7 @@ class IngredientTable extends React.Component {
       </thead>
       {rows.map(([oilKey, weight], i) => <tbody>
         <tr>
-          <td colSpan="4">
+          <td colSpan="3">
             <select onChange={e => {
                       rows[i][0] = e.target.value;
                       if (i < this.state.rows.length)
@@ -155,8 +155,7 @@ class IngredientTable extends React.Component {
                      type="number"
                      value={weight}/></td>
           <td>{round(100 * weight / totalWeight, 1)}%</td>
-          <td>{round(100 * sapon[oilKey][lyeKey], 1)}%</td>
-          <td colSpan="2">{round(weight * include * sapon[oilKey][lyeKey], 2)}</td>
+          <td colSpan="2">{round(weight * include * sapon[oilKey][lyeKey], 2)} {this.state.lye}</td>
         </tr>
       </tbody>)}
       <tfoot>
@@ -170,7 +169,7 @@ class IngredientTable extends React.Component {
                    value={this.state.exclude}/>
             %)
           </th>
-          <th colSpan="3">
+          <th colSpan="2">
             {round(sum(rows.map(([oilKey, weight]) =>
               weight * include * sapon[oilKey][lyeKey])), 2)}
           </th>
