@@ -75,7 +75,9 @@ class EventsTable extends React.Component {
                 category.categoryTitle, ':',
                 <ul>
                   {category.saleItems.map(item => <li>
-                    {item.item.itemDef.itemName} ({item.costs.map(cost => `${cost.value} ${cost.itemDef.itemName}`).join(' + ')})
+                    {item.item.itemDef.itemName}
+                    {item.item.stackSize > 1 && ` x ${item.item.stackSize}`}:&nbsp;
+                    {item.costs.map(cost => `${cost.value} ${cost.itemDef.itemName}`).join(' + ')}&nbsp;
                     [{findItem(item.item.itemHash).map(item => item.stackSize).reduce((a, b) => a + b, 0)} owned]
                   </li>)}
                 </ul>,
