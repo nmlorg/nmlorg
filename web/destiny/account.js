@@ -379,6 +379,13 @@ bungie.DestinyCharacter = class DestinyCharacter {
             checklists.push(checklist);
           }
 
+          const events = [];
+          for (let advisor of response.data.events) {
+            const event = bungie.derefHashes(advisor);
+            event.expirationDate = new Date(event.expirationDate);
+            events.push(event);
+          }
+
           const quests = [];
           for (let advisor of Object.values(response.data.quests.quests)) {
             const quest = bungie.derefHashes(advisor);
@@ -410,7 +417,7 @@ bungie.DestinyCharacter = class DestinyCharacter {
             recordBooks.push(book);
           }
 
-          return {activities, bounties, checklists, quests, recordBooks};
+          return {activities, bounties, checklists, events, quests, recordBooks};
         });
   }
 
