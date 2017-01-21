@@ -25,6 +25,17 @@ class EventsTable extends React.Component {
 
     const eventList = Object.entries(events).sort().map(([title, data]) => data);
 
+    function findItem(itemHash) {
+      const ret = [];
+      for (let {itemTree} of Object.values(base.state.containers))
+        for (let category of Object.values(itemTree))
+          for (let bucket of Object.values(category))
+            for (let item of bucket)
+              if (item.itemHash == itemHash)
+                ret.push(item);
+      return ret;
+    }
+
     return <table>
       <thead>
         <tr>
@@ -65,6 +76,7 @@ class EventsTable extends React.Component {
                 <ul>
                   {category.saleItems.map(item => <li>
                     {item.item.itemDef.itemName} ({item.costs.map(cost => `${cost.value} ${cost.itemDef.itemName}`).join(' + ')})
+                    [{findItem(item.item.itemHash).map(item => item.stackSize).reduce((a, b) => a + b, 0)} owned]
                   </li>)}
                 </ul>,
               ])}
