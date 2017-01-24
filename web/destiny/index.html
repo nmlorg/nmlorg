@@ -106,11 +106,11 @@ class Account extends React.Component {
     const promises = [];
     account.characters.forEach(character => {
       const container = containers[character.characterId] = {character};
-      promises.push(character.getItemsTree().then(itemTree => container.itemTree = itemTree));
+      promises.push(character.getItems().then(items => container.items = items));
       promises.push(character.getAdvisors().then(advisors => container.advisors = advisors));
     });
     containers[''] = {};
-    promises.push(account.getVaultItemsTree().then(itemTree => containers[''].itemTree = itemTree));
+    promises.push(account.getVaultItems().then(items => containers[''].items = items));
 
     Promise.all(promises).then(() => this.setState({containers}));
   }

@@ -1,3 +1,8 @@
+function filterItems(items, category, bucket) {
+  return items.filter(item => (item.bucketCategory == category) && (item.bucketName == bucket));
+}
+
+
 class ItemTable extends React.Component {
   static buckets = [
       ['Equippable', 'Subclass'],
@@ -26,11 +31,12 @@ class ItemTable extends React.Component {
 
   render() {
     const base = this.props.base;
+    const containers = base.state.containers;
     return <table>
       <thead>
         <tr>
           <td/>
-          {Object.values(base.state.containers).map(({character}) => <td>
+          {Object.values(containers).map(({character}) => <td>
             {character
               ? <Placard background={character.backgroundPath}
                          icon={character.emblemPath}
@@ -45,7 +51,9 @@ class ItemTable extends React.Component {
       <tbody>
         {ItemTable.buckets.map(([category, bucket]) => <tr>
           <th>{bucket}</th>
-          {Object.values(base.state.containers).map(({character, itemTree}) => <ItemListTD acc={base} character={character} items={itemTree[category][bucket] || []}/>)}
+          {Object.values(containers).map(({character, items}) =>
+            <ItemListTD acc={base} character={character}
+                        items={filterItems(items, category, bucket)}/>)}
         </tr>)}
       </tbody>
     </table>;
@@ -129,7 +137,7 @@ class Item extends React.Component {
                     title={title}>
       {item.itemDef.itemDescription}
       {item.transferStatusName == 'CanTransfer' && <div>
-        {Object.values(this.props.acc.state.containers).map(({character, itemTree}) => {
+        {Object.values(this.props.acc.state.containers).map(({character, items}) => {
           const newCharacterId = character && character.characterId;
           if (newCharacterId != item.owner.characterId)
             return <button onClick={e => {
@@ -138,12 +146,9 @@ class Item extends React.Component {
               const oldCharacterId = item.owner.characterId || '';
               item.transfer(newCharacterId, item.stackSize)
                   .then(() => this.props.acc.setState(prev => {
-                    const bucket = prev.containers[oldCharacterId].itemTree[item.bucketCategory][item.bucketName];
+                    const bucket = prev.containers[oldCharacterId].items;
                     bucket.splice(bucket.indexOf(item), 1);
-                    const newCategory = prev.containers[newCharacterId || ''].itemTree[item.bucketCategory];
-                    if (!newCategory[item.bucketName])
-                      newCategory[item.bucketName] = [];
-                    newCategory[item.bucketName].push(item);
+                    prev.containers[newCharacterId || ''].items.push(item);
                     return prev;
                   }));
             }}>Transfer to {character ? `${character.race.raceName} ${character.gender.genderName} ${character.characterClass.className}` : 'Vault'}</button>;

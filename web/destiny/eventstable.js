@@ -27,12 +27,10 @@ class EventsTable extends React.Component {
 
     function findItem(itemHash) {
       const ret = [];
-      for (let {itemTree} of Object.values(base.state.containers))
-        for (let category of Object.values(itemTree))
-          for (let bucket of Object.values(category))
-            for (let item of bucket)
-              if (item.itemHash == itemHash)
-                ret.push(item);
+      for (let {items} of Object.values(base.state.containers))
+        for (let item of items)
+          if (item.itemHash == itemHash)
+            ret.push(item);
       return ret;
     }
 

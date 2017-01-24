@@ -35,10 +35,6 @@ bungie.DestinyAccount = class DestinyAccount {
                                                                     this.userInfo.membershipType)));
   }
 
-  getVaultItemsTree() {
-    return this.getVaultItems().then(items => buildItemsTree(items));
-  }
-
   GetAccount(p_={}) {
     return bungieNetPlatform.destinyService.GetAccount(
         this.userInfo.membershipType, this.userInfo.membershipId, p_);
@@ -428,10 +424,6 @@ bungie.DestinyCharacter = class DestinyCharacter {
                                                                     this.characterId)));
   }
 
-  getItemsTree() {
-    return this.getItems().then(items => buildItemsTree(items));
-  }
-
   GetActivityHistory(p_={}) {
     return bungieNetPlatform.destinyService.GetActivityHistory(
         this.membershipType, this.membershipId, this.characterId, p_);
@@ -523,19 +515,6 @@ const NODE_STATE_NAMES = ['Invalid', 'CanUpgrade', 'NoPoints', 'NoPrerequisites'
                           'Complete', 'Unknown', 'CreationOnly', 'Hidden'];
 const SOURCE_CATEGORIES = ['None', 'Activity', 'Vendor', 'Aggregate'];
 const TRANSFER_STATUSES = ['CanTransfer', 'ItemIsEquipped', 'NotTransferrable', , 'NoRoomInDestination'];
-
-
-function buildItemsTree(items) {
-  const categories = {};
-  for (let category of BUCKET_CATEGORIES)
-    categories[category] = {};
-  for (let item of items) {
-    if (!categories[item.bucketCategory][item.bucketName])
-      categories[item.bucketCategory][item.bucketName] = [];
-    categories[item.bucketCategory][item.bucketName].push(item);
-  }
-  return categories;
-}
 
 
 bungie.DestinyItem = class DestinyItem {
