@@ -508,6 +508,7 @@ bungie.DestinyCharacter = class DestinyCharacter {
 
 
 const BUCKET_CATEGORIES = ['Invisible', 'Item', 'Currency', 'Equippable', 'Ignored', 'Unknown'];
+const CLASS_TYPES = ['Titan', 'Hunter', 'Warlock', 'Unknown'];
 const ITEM_STATES = ['None', 'Locked', 'Tracked'];
 const LOCATIONS = ['Unknown', 'Inventory', 'Vault', 'Vendor', 'Postmaster'];
 const NODE_STATE_NAMES = ['Invalid', 'CanUpgrade', 'NoPoints', 'NoPrerequisites', 'NoSteps',
@@ -524,6 +525,7 @@ bungie.DestinyItem = class DestinyItem {
     this.bucketDef = bungie.DEFS.buckets[this.itemDef.bucketTypeHash];
     this.bucketCategory = this.bucketDef ? BUCKET_CATEGORIES[this.bucketDef.category] : 'Unknown';
     this.bucketName = this.bucketDef ? this.bucketDef.bucketName : 'Unknown';
+    this.classTypeName = CLASS_TYPES[this.itemDef.classType];
     this.owner = {characterId, membershipType};
     this.locationName = LOCATIONS[this.location || 0];
     this.questlineItemDef = bungie.DEFS.items[this.itemDef.questlineItemHash];

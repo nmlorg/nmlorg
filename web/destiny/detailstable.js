@@ -29,22 +29,30 @@ class DetailsTable extends React.Component {
           }));
     }
 
-    function transfer(item, characterId) {
+    function transfer(item, newCharacterId) {
       const oldCharacterId = item.owner.characterId || '';
-      item.transfer(characterId, item.stackSize)
+      item.transfer(newCharacterId, item.stackSize)
           .then(() => base.setState(prev => {
-            const items = prev.containers[oldCharacterId].items;
-            items.splice(items.indexOf(item), 1);
-            prev.containers[characterId || ''].items.push(item);
-            if (!oldCharacterId && (item.cannotEquipReason & 16)) {
-              item.cannotEquipReason &= ~16;
-              if (!item.cannotEquipReason)
-                item.canEquip = true;
-            }
-            if (!characterId) {
+            const oldContainer = prev.containers[oldCharacterId];
+            oldContainer.items.splice(oldContainer.items.indexOf(item), 1);
+
+            const newContainer = prev.containers[newCharacterId || ''];
+            newContainer.items.push(item);
+
+            if (!newCharacterId) {
               item.cannotEquipReason |= 16;
-              item.canEquip = false;
+              item.cannotEquipReason &= ~4;
+            } else {
+              item.cannotEquipReason &= ~16;
+
+              if ((item.classTypeName != 'Unknown') &&
+                  (item.classTypeName != newContainer.character.characterClass.className))
+                item.cannotEquipReason |= 4;
+              else
+                item.cannotEquipReason &= ~4;
             }
+            item.canEquip = !item.cannotEquipReason;
+
             return prev;
           }));
     }
@@ -119,6 +127,8 @@ class DetailsRow extends React.Component {
             <td style={style}>
               <BungieImage src={item.itemDef.icon} style={{height: '1em'}}/>
               &nbsp;{item.itemDef.itemName}
+              {((item.cannotEquipReason & 4) || !item.owner.characterId) &&
+               (item.classTypeName != 'Unknown') && `\u00a0(${item.classTypeName})`}
             </td>,
             <td style={rightStyle}>
               {item.value ? item.value : item.stackSize != 1 && item.stackSize}
