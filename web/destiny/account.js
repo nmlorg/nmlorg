@@ -603,6 +603,14 @@ bungie.DestinyItem = class DestinyItem {
     return this.transfer_(this.owner.characterId, true, stackSize)
         .then(() => {this.owner.characterId = null});
   }
+
+  EquipItem(p_={}) {
+    return bungieNetPlatform.destinyService.EquipItem(Object.assign(p_, {
+        membershipType: this.owner.membershipType,
+        itemId: this.itemInstanceId,
+        characterId: this.owner.characterId,
+    }));
+  }
 };
 
 })();
