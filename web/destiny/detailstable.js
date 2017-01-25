@@ -1,5 +1,6 @@
 const ITEM_COLS = 4;
 
+
 class DetailsTable extends React.Component {
   render() {
     const base = this.props.base;
@@ -116,7 +117,7 @@ class DetailsRow extends React.Component {
               {item.primaryStat && item.primaryStat.value}
             </td>,
             <td style={style}>
-              <img src={`https://www.bungie.net${item.itemDef.icon}`} style={{height: '1em'}}/>
+              <BungieImage src={item.itemDef.icon} style={{height: '1em'}}/>
               &nbsp;{item.itemDef.itemName}
             </td>,
             <td style={rightStyle}>
@@ -128,9 +129,8 @@ class DetailsRow extends React.Component {
                 const icon = character ? character.emblemPath :
                     '/img/theme/destiny/icons/icon_vault.png';
                 if (key != item.owner.characterId)
-                  return <img src={`https://www.bungie.net${icon}`}
-                              style={{cursor: 'pointer', height: '1em'}}
-                              onClick={e => {
+                  return <BungieImage src={icon} style={{cursor: 'pointer', height: '1em'}}
+                                      onClick={e => {
                     e.preventDefault();
                     e.stopPropagation();
                     transfer(item, key);

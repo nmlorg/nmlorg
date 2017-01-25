@@ -158,21 +158,21 @@ class Item extends React.Component {
       {(item.sources.Activity.length > 0) && <p>
         Activity sources:<br/>
         {item.sources.Activity.map(source => source && <div>
-          <img width="12" height="12" src={`https://www.bungie.net${source.icon}`}/>
+          <BungieImage width="12" height="12" src={source.icon}/>
           {source.description}
         </div>)}
       </p>}
       {(item.sources.Vendor.length > 0) && <p>
         Vendor sources:<br/>
         {item.sources.Vendor.map(source => source && <div>
-          <img width="12" height="12" src={`https://www.bungie.net${source.icon}`}/>
+          <BungieImage width="12" height="12" src={source.icon}/>
           {source.description}
         </div>)}
       </p>}
       {(item.sources.Aggregate.length > 0) && <p>
         Requirements:<br/>
         {item.sources.Aggregate.map(source => source && <div>
-          <img width="12" height="12" src={`https://www.bungie.net${source.icon}`}/>
+          <BungieImage width="12" height="12" src={source.icon}/>
           {source.description}
         </div>)}
       </p>}
@@ -206,7 +206,7 @@ class NodeGridNode extends React.Component {
   render() {
     const node = this.props.node;
     return <div className={`grid-node ${node.isActivated ? 'active' : node.hidden ? 'hidden' : node.stateName == 'MustSwap' ? 'unlocked' : ''}`}>
-      <img src={`https://www.bungie.net${node.stepDef.icon}`}/>
+      <BungieImage src={node.stepDef.icon}/>
       <b>{node.stepDef.nodeStepName || node.stepDef.interactionDescription}</b><br/>
       {node.stepDef.nodeStepDescription}
       {['Complete', 'Hidden', 'MustSwap', 'NoGridLevel'].indexOf(node.stateName) == -1 && ` (${node.stateName})`}

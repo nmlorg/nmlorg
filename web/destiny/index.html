@@ -74,7 +74,7 @@ class ChooseAccount extends React.Component {
     if (this.state.r.length > 1) {
       return <ul>
         {this.state.r.map(result => <li>
-          <img src={'https://www.bungie.net' + result.iconPath}/>
+          <BungieImage src={result.iconPath}/>
           <button onClick={e => {
             e.preventDefault();
             this.setState({r: [result]});
@@ -188,6 +188,17 @@ class CharacterPlacard extends React.Component {
                     right={character.level}
                     text={`${character.race.raceName} ${character.gender.genderName}`}
                     title={character.characterClass.className}/>;
+  }
+}
+
+
+class BungieImage extends React.Component {
+  render() {
+    if (!this.props.src)
+      this.props.src = '/img/misc/missing_icon.png';
+    if (this.props.src[0] == '/')
+      this.props.src = 'https://www.bungie.net' + this.props.src;
+    return <img {...this.props}/>;
   }
 }
 
