@@ -38,14 +38,7 @@ class EventsTable extends React.Component {
       <thead>
         <tr>
           <td/>
-          {containers.map(({character}) => <td>
-            <Placard background={character.backgroundPath}
-                     icon={character.emblemPath}
-                     neutral={true}
-                     right={character.level}
-                     text={`${character.race.raceName} ${character.gender.genderName}`}
-                     title={character.characterClass.className}/>
-          </td>)}
+          {containers.map(({character}) => <td><CharacterPlacard character={character}/></td>)}
         </tr>
       </thead>
       {eventList.map(({charData, eventDef, expirationDate, saleItemCategories}) =>

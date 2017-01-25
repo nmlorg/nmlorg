@@ -37,14 +37,7 @@ class ItemTable extends React.Component {
         <tr>
           <td/>
           {Object.values(containers).map(({character}) => <td>
-            {character
-              ? <Placard background={character.backgroundPath}
-                         icon={character.emblemPath}
-                         neutral={true}
-                         right={character.level}
-                         text={`${character.race.raceName} ${character.gender.genderName}`}
-                         title={character.characterClass.className}/>
-              : <Placard neutral={true} title="Vault"/>}
+            <CharacterPlacard character={character}/>
           </td>)}
         </tr>
       </thead>

@@ -161,12 +161,7 @@ class ActivityTable extends React.Component {
         <tr>
           <td/>
           {containers.map(({character}) => <td colSpan={colSpan}>
-            <Placard background={character.backgroundPath}
-                     icon={character.emblemPath}
-                     neutral={true}
-                     right={character.level}
-                     text={`${character.race.raceName} ${character.gender.genderName}`}
-                     title={character.characterClass.className}/>
+            <CharacterPlacard character={character}/>
           </td>)}
         </tr>
       </thead>

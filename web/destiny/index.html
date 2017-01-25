@@ -173,6 +173,21 @@ class Placard extends React.Component {
 }
 
 
+class CharacterPlacard extends React.Component {
+  render() {
+    const character = this.props.character;
+    if (!character)
+      return <Placard neutral={true} title="Vault"/>;
+    return <Placard background={character.backgroundPath}
+                    icon={character.emblemPath}
+                    neutral={true}
+                    right={character.level}
+                    text={`${character.race.raceName} ${character.gender.genderName}`}
+                    title={character.characterClass.className}/>;
+  }
+}
+
+
 bungie.init(API_KEY, API_AUTH_URL)
     .then(bungie.auth.init)
     .then(function() {
