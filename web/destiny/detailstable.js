@@ -100,16 +100,28 @@ function cmp(a, b) {
 
 
 class DetailsRow extends React.Component {
+  constructor(props) {
+    super(props);
+    this.key = `detailstable.${props.category}.${props.bucket}`;
+    this.state = bungie.load(this.key) || {
+        open: false,
+    };
+  }
+
   render() {
+    bungie.store(this.key, this.state);
     const {category, bucket, containerList, equip, transfer} = this.props;
     const itemGrid = containerList.map(({items}) => filterItems(items, category, bucket).sort(cmp));
     const longestList = itemGrid.reduce((a, b) => a.length > b.length ? a : b);
     return <tbody>
       <tr>
         <td colSpan={ITEM_COLS * itemGrid.length}
-            style={{backgroundColor: 'white', color: 'black'}}>{category}: {bucket}</td>
+            onClick={e => this.setState(prev => ({open: !prev.open}))}
+            style={{backgroundColor: 'white', color: 'black', cursor: 'pointer'}}>
+          {category}: {bucket}
+        </td>
       </tr>
-      {longestList.map((_, i) => <tr>
+      {longestList.map((_, i) => <tr style={{display: this.state.open ? '' : 'none'}}>
         {itemGrid.map(items => {
           const item = items[i];
           if (!item)
