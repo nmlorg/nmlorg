@@ -139,6 +139,7 @@ class DetailsRow extends React.Component {
             <td style={style}>
               <Cabinet>
                 <BungieImage src={item.itemDef.icon} style={{height: '1em'}}/>
+                {item.perks && item.perks.map(perk => perk.isActive && <BungieImage src={perk.iconPath} style={{height: '1em'}} title={`${perk.perkDef.displayName}: ${perk.perkDef.displayDescription}`}/>)}
                 &nbsp;{item.itemDef.itemName}
                 {((item.cannotEquipReason & 4) || !item.owner.characterId) &&
                  (item.classTypeName != 'Unknown') && `\u00a0(${item.classTypeName})`}
