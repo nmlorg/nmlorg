@@ -137,10 +137,15 @@ class DetailsRow extends React.Component {
               {item.primaryStat && item.primaryStat.value}
             </td>,
             <td style={style}>
-              <BungieImage src={item.itemDef.icon} style={{height: '1em'}}/>
-              &nbsp;{item.itemDef.itemName}
-              {((item.cannotEquipReason & 4) || !item.owner.characterId) &&
-               (item.classTypeName != 'Unknown') && `\u00a0(${item.classTypeName})`}
+              <Cabinet>
+                <BungieImage src={item.itemDef.icon} style={{height: '1em'}}/>
+                &nbsp;{item.itemDef.itemName}
+                {((item.cannotEquipReason & 4) || !item.owner.characterId) &&
+                 (item.classTypeName != 'Unknown') && `\u00a0(${item.classTypeName})`}
+                <CabinetDrawer>
+                  <ItemDetails item={item}/>
+                </CabinetDrawer>
+              </Cabinet>
             </td>,
             <td style={rightStyle}>
               {item.value ? item.value : item.stackSize != 1 && item.stackSize}
@@ -168,5 +173,27 @@ class DetailsRow extends React.Component {
         })}
       </tr>)}
     </tbody>;
+  }
+}
+
+
+class ItemDetails extends React.Component {
+  render() {
+    const {item} = this.props;
+    return <div>
+      <p style={{whiteSpace: 'normal'}}>{item.itemDef.itemDescription}</p>
+      {item.objectives && !!item.objectives.length && <p>
+        Objectives:
+        {item.objectives.map(objective => <div>
+          {`${objective.isComplete ? '\u2611' : '\u2610'}\u00a0${objective.objectiveDef.displayDescription || item.itemDef.itemDescription} (${objective.progress}/${objective.objectiveDef.completionValue})`}
+        </div>)}
+      </p>}
+      {item.perks && !!item.perks.length && <p>
+        Perks:<br/>
+        {item.perks.map(perk => <div>
+          {`${perk.isActive ? '\u2611' : '\u2610'}\u00a0${perk.perkDef.displayName}: ${perk.perkDef.displayDescription}`}
+        </div>)}
+      </p>}
+    </div>;
   }
 }

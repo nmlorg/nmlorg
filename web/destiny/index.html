@@ -203,6 +203,34 @@ class BungieImage extends React.Component {
 }
 
 
+class Cabinet extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {open: false};
+  }
+
+  render() {
+    return <div onClick={e => this.setState(prev => ({open: !prev.open}))}
+                style={{backgroundColor: 'inherit', position: 'relative'}}>
+      {this.state.open ? this.props.children :
+          this.props.children.filter(child => child.type !== CabinetDrawer)}
+    </div>;
+  }
+}
+
+
+class CabinetDrawer extends React.Component {
+  render() {
+    return <div style={{backgroundColor: 'inherit',
+                        border: '1px solid currentColor',
+                        position: 'absolute',
+                        zIndex: 1}}>
+      {this.props.children}
+    </div>;
+  }
+}
+
+
 bungie.init(API_KEY, API_AUTH_URL)
     .then(bungie.auth.init)
     .then(function() {
