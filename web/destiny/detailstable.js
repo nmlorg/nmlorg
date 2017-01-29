@@ -3,7 +3,7 @@ const ITEM_COLS = 4;
 
 class DetailsTable extends React.Component {
   render() {
-    const base = this.props.base;
+    const {base} = this.props;
     const containerList = Object.values(base.state.containers);
     const buckets = new Set();
     for (let {items} of containerList)
@@ -207,13 +207,6 @@ class ItemDetails extends React.Component {
       {!!item.sources.Vendor.length && <p>
         Vendor sources:<br/>
         {item.sources.Vendor.map(source => source && <div>
-          <BungieImage src={source.icon} style={{height: '1em'}}/>
-          {source.description}
-        </div>)}
-      </p>}
-      {!!item.sources.Aggregate.length && <p>
-        Requirements:<br/>
-        {item.sources.Aggregate.map(source => source && <div>
           <BungieImage src={source.icon} style={{height: '1em'}}/>
           {source.description}
         </div>)}
