@@ -141,6 +141,8 @@ class DetailsRow extends React.Component {
                 <BungieImage src={item.itemDef.icon} style={{height: '1em'}}/>
                 {item.perks && item.perks.map(perk => perk.isActive && <BungieImage src={perk.iconPath} style={{height: '1em'}} title={`${perk.perkDef.displayName}: ${perk.perkDef.displayDescription}`}/>)}
                 &nbsp;{item.itemDef.itemName}
+                {(item.locationName != 'Inventory') && (item.locationName != 'Vault') &&
+                 `\u00a0(${item.locationName})`}
                 {((item.cannotEquipReason & 4) || !item.owner.characterId) &&
                  (item.classTypeName != 'Unknown') && `\u00a0(${item.classTypeName})`}
                 <CabinetDrawer>
