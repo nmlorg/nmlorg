@@ -189,11 +189,13 @@ class ItemDetails extends React.Component {
           {`${objective.isComplete ? '\u2611' : '\u2610'}\u00a0${objective.objectiveDef.displayDescription || item.itemDef.itemDescription} (${objective.progress}/${objective.objectiveDef.completionValue})`}
         </div>)}
       </p>}
-      {item.perks && !!item.perks.length && <p>
+      {item.nodes && !!item.nodes.length && <p>
         Perks:<br/>
-        {item.perks.map(perk => <div>
-          {`${perk.isActive ? '\u2611' : '\u2610'}\u00a0${perk.perkDef.displayName}: ${perk.perkDef.displayDescription}`}
+        {item.nodes.map(node => (node.stateName == 'Complete') && <div>
+          <BungieImage src={node.stepDef.icon} style={{height: '1em'}}/>
+          {node.stepDef.nodeStepName}: {node.stepDef.nodeStepDescription}
         </div>)}
+        <NodeGrid grid={item.nodeGrid}/>
       </p>}
       {!!item.sources.Activity.length && <p>
         Activity sources:<br/>
@@ -216,6 +218,36 @@ class ItemDetails extends React.Component {
           {source.description}
         </div>)}
       </p>}
+      <div><button onClick={e => {e.preventDefault(); e.stopPropagation(); console.log(item)}}>Debug</button></div>
+    </div>;
+  }
+}
+
+
+class NodeGrid extends React.Component {
+  render() {
+    const {grid} = this.props;
+    const numRows = grid.map(column => column.length).reduce((a, b) => a > b ? a : b, 0);
+    const rows = Array.from({length: numRows}, (_, i) => i);
+    return <table>
+      <tbody>
+        {rows.map(rowNum => {
+          const row = [];
+          for (let colNum = 0; colNum < grid.length; colNum++)
+            row.push(<td>{grid[colNum] && grid[colNum][rowNum] && <NodeGridNode node={grid[colNum][rowNum]}/>}</td>);
+          return <tr>{row}</tr>;
+        })}
+      </tbody>
+    </table>;
+  }
+}
+
+
+class NodeGridNode extends React.Component {
+  render() {
+    const {node} = this.props;
+    return <div className={`grid-node ${node.isActivated ? 'active' : node.hidden ? 'hidden' : node.stateName == 'MustSwap' ? 'unlocked' : ''}`}>
+      <BungieImage src={node.stepDef.icon} title={`${node.stepDef.nodeStepName}: ${node.stepDef.nodeStepDescription} (${node.stateName})`}/>
     </div>;
   }
 }

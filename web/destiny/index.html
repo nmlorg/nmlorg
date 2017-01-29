@@ -17,7 +17,6 @@
 <script src="bungieNetPlatform.js"></script>
 <script src="detailstable.js" type="text/babel"></script>
 <script src="eventstable.js" type="text/babel"></script>
-<script src="itemtable.js" type="text/babel"></script>
 
 <link href="dashboard.css" rel="stylesheet">
 
@@ -117,7 +116,6 @@ class Account extends React.Component {
   }
 
   static tabs = [
-      ItemTable,
       DetailsTable,
       ActivityTable,
       EventsTable,
@@ -144,11 +142,6 @@ class Account extends React.Component {
 
 
 class Placard extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
   fixImage(src) {
     return (src && src != '/img/misc/missing_icon.png') ? 'https://www.bungie.net' + src : '';
   }
@@ -157,19 +150,17 @@ class Placard extends React.Component {
     const props = this.props;
     const background = this.fixImage(props.background);
     const icon = this.fixImage(props.icon);
-    const className = 'placard' + (props.active ? ' active' : props.neutral ? ' neutral' : '');
     const style = {};
     if (background) {
       style.backgroundImage = `url(${JSON.stringify(background)})`;
     }
-    return <div className={className} onClick={e => this.setState(prev => ({open: !prev.open}))}>
+    return <div className="placard">
       <div className="content" style={style}>
         {icon ? <img src={icon}/> : ''}
         <div className="title">{props.title}</div>
         <div className="text">{props.text}</div>
         <div className="right">{props.right}</div>
       </div>
-      {this.state.open && props.children ? <div className="drawer">{props.children}</div> : ''}
     </div>;
   }
 }
@@ -180,11 +171,9 @@ class CharacterPlacard extends React.Component {
     const character = this.props.character;
     if (!character)
       return <Placard icon='/img/theme/destiny/icons/icon_vault.png'
-                      neutral={true}
                       title="Vault"/>;
     return <Placard background={character.backgroundPath}
                     icon={character.emblemPath}
-                    neutral={true}
                     right={character.level}
                     text={`${character.race.raceName} ${character.gender.genderName}`}
                     title={character.characterClass.className}/>;

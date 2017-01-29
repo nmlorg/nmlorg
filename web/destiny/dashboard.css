@@ -26,26 +26,8 @@ div.placard {
 
 div.placard > div {
   background-color: rgb(30, 36, 43);
+  border-radius: 5px;
   box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.5);
-}
-
-div.placard.active > div {
-  background-color: rgb(60, 72, 86);
-  box-shadow: 0 0 5px 1px rgba(245, 245, 245, 0.5);
-}
-
-div.placard.neutral > div {
-  background-color: rgb(30, 36, 43);
-}
-
-div.placard > div:first-child {
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-}
-
-div.placard > div:last-child {
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
 }
 
 div.placard > div.content {
@@ -82,23 +64,11 @@ div.placard > div.content > div.right {
   top: 0;
 }
 
-div.placard > div.drawer {
-  border-top-right-radius: 5px;
-  min-height: 59px;
-  min-width: 285px;
-  overflow: hidden;
-  padding: 10px;
-  position: absolute;
-  top: 59px;
-  z-index: 1;
-}
-
 div.grid-node > img {
   background-color: rgb(51, 56, 63);
   border: 5px solid rgb(70, 75, 81);
-  border-radius: 96px;
-  height: 96px;
-  width: 96px;
+  border-radius: 1em;
+  height: 1em;
 }
 
 div.grid-node.active > img {
