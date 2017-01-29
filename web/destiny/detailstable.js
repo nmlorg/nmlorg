@@ -195,6 +195,27 @@ class ItemDetails extends React.Component {
           {`${perk.isActive ? '\u2611' : '\u2610'}\u00a0${perk.perkDef.displayName}: ${perk.perkDef.displayDescription}`}
         </div>)}
       </p>}
+      {!!item.sources.Activity.length && <p>
+        Activity sources:<br/>
+        {item.sources.Activity.map(source => source && <div>
+          <BungieImage src={source.icon} style={{height: '1em'}}/>
+          {source.description}
+        </div>)}
+      </p>}
+      {!!item.sources.Vendor.length && <p>
+        Vendor sources:<br/>
+        {item.sources.Vendor.map(source => source && <div>
+          <BungieImage src={source.icon} style={{height: '1em'}}/>
+          {source.description}
+        </div>)}
+      </p>}
+      {!!item.sources.Aggregate.length && <p>
+        Requirements:<br/>
+        {item.sources.Aggregate.map(source => source && <div>
+          <BungieImage src={source.icon} style={{height: '1em'}}/>
+          {source.description}
+        </div>)}
+      </p>}
     </div>;
   }
 }
