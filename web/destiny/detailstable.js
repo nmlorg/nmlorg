@@ -181,7 +181,15 @@ class DetailsRow extends React.Component {
 class ItemDetails extends React.Component {
   render() {
     const {item} = this.props;
+    const itemNoteKey = (item.itemInstanceId != '0') && 'notes.' + item.itemInstanceId;
     return <div>
+      {itemNoteKey && <p>
+        <textarea defaultValue={bungie.load(itemNoteKey)}
+                  onChange={e => bungie.store(itemNoteKey, e.target.value)}
+                  onClick={e => e.stopPropagation()}
+                  placeholder={`Private notes about item ${item.itemInstanceId}.`}
+                  style={{boxSizing: 'border-box', width: '100%'}}/>
+      </p>}
       <p style={{whiteSpace: 'normal'}}>{item.itemDef.itemDescription}</p>
       {item.objectives && !!item.objectives.length && <p>
         Objectives:
