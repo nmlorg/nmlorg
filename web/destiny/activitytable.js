@@ -23,7 +23,8 @@ class ActivityTable extends React.Component {
 
     for (let {advisors, character} of containers) {
       for (let activity of advisors.activities) {
-        var title = ` ${activity.activityPeriod} ${activity.activityTypeName}: ${activity.activityDef.activityName}`;
+        const groupTitle = ` ${activity.activityPeriod} ${activity.activityTypeName}`;
+        var title = activity.activityDef.activityName;
         if (activity.modifiers.length)
           title = `${title} (${activity.modifiers.map(mod => mod.displayName).sort().join(', ')})`;
         const longTitle = [activity.activityDef.activityName, '',
@@ -34,18 +35,24 @@ class ActivityTable extends React.Component {
         if (activity.challenges.length)
           longTitle.push('', 'Active challenges:',
                          ...activity.challenges.map(skull => `\u2022 ${skull.displayName}: ${skull.description}`));
-        if (!activities[title])
-          activities[title] = {
+        if (!activities[groupTitle])
+          activities[groupTitle] = {};
+        if (!activities[groupTitle][title])
+          activities[groupTitle][title] = {
               activityPerAccount: activity.activityPerAccount,
               charData: {},
               longTitle: longTitle.join('\n'),
               placeTitle: activity.placeDef.placeName,
           };
-        activities[title].charData[character.characterId] = {rewards: activity.rewards, steps: activity.steps};
+        activities[groupTitle][title].charData[character.characterId] = {
+            rewards: activity.rewards,
+            steps: activity.steps,
+        };
       }
 
       for (let bounty of advisors.bounties) {
-        var title = `Bounty (${bounty.activityTypeName.replace(/ Bounty$/, '')}): ${bounty.questDef.itemName}`;
+        const groupTitle = `Bounty (${bounty.activityTypeName.replace(/ Bounty$/, '')})`;
+        var title = bounty.questDef.itemName;
         const longTitle = [bounty.questDef.itemName];
         if (bounty.questDef.itemName != bounty.stepDef.itemName) {
           title = `${title}: ${bounty.stepDef.itemName}`;
@@ -55,8 +62,10 @@ class ActivityTable extends React.Component {
         longTitle.push(bounty.stepDef.itemDescription);
         const placeNames = bounty.stepObjectives.map(step => guessPlaceName(step.objectiveDef.displayDescription));
         placeNames.push(guessPlaceName(bounty.stepDef.itemDescription));
-        if (!activities[title])
-          activities[title] = {
+        if (!activities[groupTitle])
+          activities[groupTitle] = {};
+        if (!activities[groupTitle][title])
+          activities[groupTitle][title] = {
               charData: {},
               longTitle: longTitle.join('\n'),
               placeTitle: Array.from(new Set(placeNames.filter(placeName => placeName))).sort().join(', '),
@@ -67,7 +76,7 @@ class ActivityTable extends React.Component {
             isComplete: step.isComplete,
             progress: step.progress,
         }));
-        activities[title].charData[character.characterId] = {
+        activities[groupTitle][title].charData[character.characterId] = {
             rewards: bounty.rewards,
             sourceDef: bounty.sourceDef,
             steps,
@@ -78,29 +87,35 @@ class ActivityTable extends React.Component {
         for (let entry of checklist.entries) {
           if (entry.state)
             continue;
-          const title = `Checklist: ${checklist.checklistName}: ${entry.name}`;
+          const groupTitle = `Checklist: ${checklist.checklistName}`;
+          const title = entry.name;
           const longTitle = [checklist.checklistName, entry.name];
-          if (!activities[title])
-            activities[title] = {
+          if (!activities[groupTitle])
+            activities[groupTitle] = {};
+          if (!activities[groupTitle][title])
+            activities[groupTitle][title] = {
                 charData: {},
                 link: 'http://www.ign.com/wikis/destiny/Calcified_Fragments#' + entry.name.split(':', 2)[0],
                 longTitle: longTitle.join('\n'),
             };
-          activities[title].charData[character.characterId] = {
+          activities[groupTitle][title].charData[character.characterId] = {
               steps: [{displayName: entry.name, isComplete: entry.state}],
           };
         }
       }
 
       for (let quest of advisors.quests) {
-        const title = `${quest.activityTypeName}: ${quest.questDef.itemName}: ${quest.stepDef.itemName}`;
+        const groupTitle = quest.activityTypeName;
+        const title = `${quest.questDef.itemName}: ${quest.stepDef.itemName}`;
         const longTitle = [quest.questDef.itemName, quest.stepDef.itemName, '', quest.stepDef.itemDescription]
             .join('\n');
         const destinations = quest.stepObjectives.map(step => step.destinationDef).filter(dest => dest);
         const places = destinations.map(dest => bungie.DEFS.places[dest.placeHash]).filter(place => place);
         const placeNames = places.map(place => place.placeName);
-        if (!activities[title])
-          activities[title] = {
+        if (!activities[groupTitle])
+          activities[groupTitle] = {};
+        if (!activities[groupTitle][title])
+          activities[groupTitle][title] = {
               charData: {},
               longTitle,
               placeTitle: Array.from(new Set(placeNames)).sort().join(', '),
@@ -111,14 +126,18 @@ class ActivityTable extends React.Component {
             isComplete: step.isComplete,
             progress: step.progress,
         }));
-        activities[title].charData[character.characterId] = {rewards: quest.rewards, steps};
+        activities[groupTitle][title].charData[character.characterId] = {
+            rewards: quest.rewards,
+            steps,
+        };
       }
 
       for (let book of advisors.recordBooks) {
         for (let record of Object.values(book.records)) {
           if (record.statusName == 'Redeemed')
             continue;
-          var title = `${book.activityTypeName}: ${book.bookDef.displayName}: ${record.recordDef.displayName}`;
+          const groupTitle = `${book.activityTypeName}: ${book.bookDef.displayName}`;
+          var title = record.recordDef.displayName;
           if (record.scramble)
             title = `${title} (Scrambled)`;
           if (record.statusName != 'Incomplete')
@@ -129,8 +148,10 @@ class ActivityTable extends React.Component {
           const destinations = record.objectives.map(step => step.destinationDef).filter(dest => dest);
           const places = destinations.map(dest => bungie.DEFS.places[dest.placeHash]).filter(place => place);
           const placeNames = places.map(place => place.placeName);
-          if (!activities[title])
-            activities[title] = {
+          if (!activities[groupTitle])
+            activities[groupTitle] = {};
+          if (!activities[groupTitle][title])
+            activities[groupTitle][title] = {
                 activityPerAccount: book.activityPerAccount,
                 charData: {},
                 longTitle,
@@ -142,15 +163,16 @@ class ActivityTable extends React.Component {
               isComplete: step.isComplete,
               progress: step.progress,
           }));
-          activities[title].charData[character.characterId] = {steps};
+          activities[groupTitle][title].charData[character.characterId] = {steps};
         }
       }
     }
 
-    const activityList = Object.entries(activities).sort();
+    const activityGroups = Object.entries(activities).sort().map(([k, v]) => ([k, Object.entries(v).sort()]));
     const stepLengths = new Set();
-    for (let [title, {charData}] of activityList)
-      stepLengths.add(Object.values(charData)[0].steps.length);
+    for (let [groupTitle, activityList] of activityGroups)
+      for (let [title, {charData}] of activityList)
+        stepLengths.add(Object.values(charData)[0].steps.length);
     var colSpan = 1;
     for (let stepLength of Array.from(stepLengths).sort().reverse())
       if (colSpan % stepLength)
@@ -165,7 +187,39 @@ class ActivityTable extends React.Component {
           </td>)}
         </tr>
       </thead>
-      {activityList.map(([title, {activityPerAccount, charData, link, longTitle, placeTitle}]) =>
+      {activityGroups.map(([groupTitle, activityList]) =>
+        <ActivityGroup activityList={activityList}
+                       colSpan={colSpan}
+                       containers={containers}
+                       groupTitle={groupTitle}/>
+      )}
+    </table>;
+  }
+}
+
+
+class ActivityGroup extends React.Component {
+  constructor(props) {
+    super(props);
+    this.key = `activitytable.${props.groupTitle}`;
+    this.state = bungie.load(this.key) || {
+        open: false,
+    };
+  }
+
+  render() {
+    bungie.store(this.key, this.state);
+    const {activityList, colSpan, containers, groupTitle} = this.props;
+    return <tbody>
+      <tr>
+        <td colSpan={colSpan * containers.length + 1}
+            onClick={e => this.setState(prev => ({open: !prev.open}))}
+            style={{backgroundColor: 'white', color: 'black', cursor: 'pointer'}}>
+          {groupTitle}
+        </td>
+      </tr>
+      {this.state.open &&
+       activityList.map(([title, {activityPerAccount, charData, link, longTitle, placeTitle}]) =>
         activityPerAccount
           ? <ActivityRow charData={charData} colSpan={colSpan * containers.length}
                          containers={containers.slice(0, 1)} link={link} longTitle={longTitle}
@@ -173,7 +227,7 @@ class ActivityTable extends React.Component {
           : <ActivityRow charData={charData} colSpan={colSpan} containers={containers}
                          link={link} longTitle={longTitle} placeTitle={placeTitle} title={title}/>
       )}
-    </table>;
+    </tbody>;
   }
 }
 
@@ -186,49 +240,51 @@ class ActivityRow extends React.Component {
 
   render() {
     const {charData, colSpan, containers, link, longTitle, placeTitle, title} = this.props;
-    return <tbody onClick={e => {this.setState(prev => ({open: !prev.open}))}}>
-      <tr>
-        <td title={longTitle}>
+    return <tr>
+      <td style={{backgroundColor: 'rgb(30, 36, 43)'}}
+          title={longTitle}>
+        <Cabinet>
           {link ? <a href={link} target="_blank">{title}</a> : title.replace(/ [(].*,.*[)]/, ' (...)')}
           {placeTitle && <div style={{float: 'right'}}>&nbsp;{placeTitle}</div>}
-        </td>
-        {containers.map(({character}) => {
-          const data = charData[character.characterId];
-          if (!data)
-            return <td colSpan={colSpan}/>;
-          if (data.sourceDef)
-            return <th colSpan={colSpan}
-                       style={{backgroundColor: '#bdb76b'}}
-                       title={data.sourceDef.summary.vendorDescription}>
-              <i>({data.sourceDef.summary.vendorName})</i>
-            </th>;
-          const stepSpan = colSpan / data.steps.length;
-          return data.steps.map(step => {
-            const check = step.isComplete ? '\u2611' : step.completionValue > 1 ? `${step.progress} / ${step.completionValue}` : '\u2610';
-            return <th colSpan={stepSpan}
-                       style={{backgroundColor: step.isComplete ? '#696969' : '#1e90ff'}}
-                       title={step.displayName}>{check}</th>;
-          });
-        })}
-      </tr>
-      {this.state.open && <tr>
-        <td rowSpan="2" style={{backgroundColor: 'rgb(30, 36, 43)', whiteSpace: 'pre-wrap'}}>{longTitle}</td>
-        <td style={{backgroundColor: 'rgb(30, 36, 43)'}} colSpan={containers.length * colSpan}>
-          <div>Steps:</div>
-          {Object.values(charData)[0].steps.map(step => <div>&bull; {step.displayName}</div>)}
-        </td>
-      </tr>}
-      {this.state.open && <tr>
-        {containers.map(({character}) => {
-          const data = charData[character.characterId];
-          if (!data)
-            return <td colSpan={colSpan}/>;
-          return <td style={{backgroundColor: 'rgb(30, 36, 43)'}} colSpan={colSpan}>
-            <div>Rewards:</div>
-            {data.rewards && data.rewards.map(reward => <div>&bull; {reward.value || null} {reward.itemDef.itemName}</div>)}
-          </td>;
-        })}
-      </tr>}
-    </tbody>;
+          <CabinetDrawer>
+            <div style={{whiteSpace: 'pre'}}>
+              {longTitle}
+              <p>
+                Steps:
+                {Object.values(charData)[0].steps.map(step => <div>&bull; {step.displayName}</div>)}
+              </p>
+            </div>
+          </CabinetDrawer>
+        </Cabinet>
+      </td>
+      {containers.map(({character}) => {
+        const data = charData[character.characterId];
+        if (!data)
+          return <td colSpan={colSpan}/>;
+        if (data.sourceDef)
+          return <th colSpan={colSpan}
+                     style={{backgroundColor: '#bdb76b'}}
+                     title={data.sourceDef.summary.vendorDescription}>
+            <i>({data.sourceDef.summary.vendorName})</i>
+          </th>;
+        const stepSpan = colSpan / data.steps.length;
+        return data.steps.map(step => {
+          const check = step.isComplete ? '\u2611' : step.completionValue > 1 ? `${step.progress} / ${step.completionValue}` : '\u2610';
+          return <th colSpan={stepSpan}
+                     style={{backgroundColor: step.isComplete ? '#696969' : '#1e90ff'}}
+                     title={step.displayName}>
+            <Cabinet>
+              {check}
+              {data.rewards && !!data.rewards.length && <CabinetDrawer>
+                <div style={{whiteSpace: 'nowrap'}}>
+                  <div>Rewards:</div>
+                  {data.rewards.map(reward => <div>&bull; {reward.value || null} {reward.itemDef.itemName}</div>)}
+                </div>
+              </CabinetDrawer>}
+            </Cabinet>
+          </th>;
+        });
+      })}
+    </tr>;
   }
 }

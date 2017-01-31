@@ -127,7 +127,7 @@ class DetailsRow extends React.Component {
           if (!item)
             return [<td/>, <td/>, <td/>, <td/>];
           const style = {
-            backgroundColor: 'rgb(30, 36, 43)',
+              backgroundColor: 'rgb(30, 36, 43)',
           };
           if (item.isEquipped || (item.stateName == 'Tracked'))
             style.backgroundColor = 'rgb(60, 72, 86)';
