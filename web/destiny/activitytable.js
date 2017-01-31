@@ -199,27 +199,12 @@ class ActivityTable extends React.Component {
 
 
 class ActivityGroup extends React.Component {
-  constructor(props) {
-    super(props);
-    this.key = `activitytable.${props.groupTitle}`;
-    this.state = bungie.load(this.key) || {
-        open: false,
-    };
-  }
-
   render() {
-    bungie.store(this.key, this.state);
     const {activityList, colSpan, containers, groupTitle} = this.props;
-    return <tbody>
-      <tr>
-        <td colSpan={colSpan * containers.length + 1}
-            onClick={e => this.setState(prev => ({open: !prev.open}))}
-            style={{backgroundColor: 'white', color: 'black', cursor: 'pointer'}}>
-          {groupTitle}
-        </td>
-      </tr>
-      {this.state.open &&
-       activityList.map(([title, {activityPerAccount, charData, link, longTitle, placeTitle}]) =>
+    return <CollapsedTBody colSpan={colSpan * containers.length + 1}
+                           persistKey={`activitytable.${groupTitle}`}
+                           title={groupTitle}>
+      {activityList.map(([title, {activityPerAccount, charData, link, longTitle, placeTitle}]) =>
         activityPerAccount
           ? <ActivityRow charData={charData} colSpan={colSpan * containers.length}
                          containers={containers.slice(0, 1)} link={link} longTitle={longTitle}
@@ -227,7 +212,7 @@ class ActivityGroup extends React.Component {
           : <ActivityRow charData={charData} colSpan={colSpan} containers={containers}
                          link={link} longTitle={longTitle} placeTitle={placeTitle} title={title}/>
       )}
-    </tbody>;
+    </CollapsedTBody>;
   }
 }
 

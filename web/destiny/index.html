@@ -220,6 +220,29 @@ class CabinetDrawer extends React.Component {
 }
 
 
+class CollapsedTBody extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = bungie.load(props.persistKey) || {open: false};
+  }
+
+  render() {
+    const {children, colSpan, persistKey, title} = this.props;
+    bungie.store(persistKey, this.state);
+    return <tbody>
+      <tr>
+        <td colSpan={colSpan}
+            onClick={e => this.setState(prev => ({open: !prev.open}))}
+            style={{backgroundColor: 'white', color: 'black', cursor: 'pointer'}}>
+          {title}
+        </td>
+      </tr>
+      {this.state.open && children}
+    </tbody>;
+  }
+}
+
+
 bungie.init(API_KEY, API_AUTH_URL)
     .then(bungie.auth.init)
     .then(function() {
