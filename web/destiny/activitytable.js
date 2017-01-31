@@ -218,11 +218,6 @@ class ActivityGroup extends React.Component {
 
 
 class ActivityRow extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {open: false};
-  }
-
   render() {
     const {charData, colSpan, containers, link, longTitle, placeTitle, title} = this.props;
     return <tr>
