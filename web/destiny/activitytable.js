@@ -25,6 +25,8 @@ class ActivityTable extends React.Component {
       for (let activity of advisors.activities) {
         const groupTitle = ` ${activity.activityPeriod} ${activity.activityTypeName}`;
         var title = activity.activityDef.activityName;
+        if (activity.activityTypeName == 'Arena')
+          title = `${activity.activityDef.activityLevel}: ${title}`;
         if (activity.modifiers.length)
           title = `${title} (${activity.modifiers.map(mod => mod.displayName).sort().join(', ')})`;
         const longTitle = [activity.activityDef.activityName, '',

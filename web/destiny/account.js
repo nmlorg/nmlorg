@@ -272,7 +272,7 @@ bungie.DestinyCharacter = class DestinyCharacter {
           for (let advisor of response.data.arena) {
             const activity = bungie.derefHashes(advisor);
             activity.activityPeriod = 'Weekly';
-            activity.activityTypeName = `Arena (${activity.activityDef.activityLevel})`;
+            activity.activityTypeName = 'Arena';
             activity.skullIndexes = [];
             activity.steps = activity.rounds.map(round => ({
                 displayName: round.enemyRaceDef.raceName,
@@ -284,7 +284,7 @@ bungie.DestinyCharacter = class DestinyCharacter {
           const activity = bungie.derefHashes(response.data.elderChallenge);
           activity.activeRewardIndexes = [];  // TODO: It looks like this might be exposed differently under activity.rewards, but it's empty for me right now.
           activity.activityPeriod = 'Weekly';
-          activity.activityTypeName = `Arena (${activity.activityDef.activityLevel})`;
+          activity.activityTypeName = 'Arena';
           activity.skullIndexes = [];  // TODO: activity.playlistSkullIndexes
           activity.steps = activity.objectives.map(objective => ({
               completionValue: objective.objectiveDef.completionValue,
