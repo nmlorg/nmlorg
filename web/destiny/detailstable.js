@@ -136,8 +136,8 @@ class DetailsRow extends React.Component {
                 </CabinetDrawer>
               </Cabinet>
             </td>,
-            <td style={rightStyle}>
-              {item.value ? item.value : item.stackSize != 1 && item.stackSize}
+            <td style={rightStyle} title={`${item.stackSize} / ${item.itemDef.maxStackSize}`}>
+              {item.stackSize != 1 && item.stackSize}
             </td>,
             <td style={style}>
               {item.transferStatusName == 'CanTransfer' && containerList.map(({character}) => {

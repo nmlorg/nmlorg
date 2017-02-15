@@ -539,6 +539,8 @@ bungie.DestinyItem = class DestinyItem {
         this.sources[category].push(sourceDef);
       }
     }
+    if (!this.stackSize && this.value)
+      this.stackSize = this.value;
     this.stateName = ITEM_STATES[this.state];
     this.transferStatusName = TRANSFER_STATUSES[this.transferStatus];
     if (this.nodes && this.talentGridDef && this.talentGridDef.nodes) {
