@@ -37,21 +37,40 @@ class DetailsTable extends React.Component {
             oldContainer.items.splice(oldContainer.items.indexOf(item), 1);
 
             const newContainer = prev.containers[newCharacterId || ''];
-            newContainer.items.push(item);
 
-            if (!newCharacterId) {
-              item.cannotEquipReason |= 16;
-              item.cannotEquipReason &= ~4;
-            } else {
-              item.cannotEquipReason &= ~16;
-
-              if ((item.classTypeName != 'Unknown') &&
-                  (item.classTypeName != newContainer.character.characterClass.className))
-                item.cannotEquipReason |= 4;
-              else
-                item.cannotEquipReason &= ~4;
+            if (item.itemDef.maxStackSize > 1) {
+              for (let otherItem of newContainer.items) {
+                if (otherItem.itemHash == item.itemHash) {
+                  const available = otherItem.itemDef.maxStackSize - otherItem.stackSize;
+                  if (available >= item.stackSize) {
+                    otherItem.stackSize += item.stackSize;
+                    item.stackSize = 0;
+                    break;
+                  } else if (available) {
+                    otherItem.stackSize += available;
+                    item.stackSize -= available;
+                  }
+                }
+              }
             }
-            item.canEquip = !item.cannotEquipReason;
+
+            if (item.stackSize) {
+              newContainer.items.push(item);
+
+              if (!newCharacterId) {
+                item.cannotEquipReason |= 16;
+                item.cannotEquipReason &= ~4;
+              } else {
+                item.cannotEquipReason &= ~16;
+
+                if ((item.classTypeName != 'Unknown') &&
+                    (item.classTypeName != newContainer.character.characterClass.className))
+                  item.cannotEquipReason |= 4;
+                else
+                  item.cannotEquipReason &= ~4;
+              }
+              item.canEquip = !item.cannotEquipReason;
+            }
 
             return prev;
           }));
