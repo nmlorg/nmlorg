@@ -116,13 +116,13 @@ class Account extends React.Component {
   }
 
   static tabs = [
-      DetailsTable,
-      ActivityTable,
-      EventsTable,
+      [DetailsTable, 'Items'],
+      [ActivityTable, 'Activities'],
+      [EventsTable, 'Special Events'],
   ];
 
   render() {
-    const Tab = Account.tabs[this.state.tab];
+    const [Tab] = Account.tabs[this.state.tab];
     return <div>
       <nav>
         {this.props.account.bungieNetUser.displayName}
@@ -130,9 +130,9 @@ class Account extends React.Component {
         <br/>
         <button onClick={() => this.refresh()}>Refresh</button>
         &bull;
-        {Account.tabs.map((cls, i) => <button disabled={i == this.state.tab ? true : false}
-                                              onClick={e => this.setState({tab: i})}>
-          {cls.name}
+        {Account.tabs.map(([_, tabName], i) => <button disabled={i == this.state.tab ? true : false}
+                                                       onClick={e => this.setState({tab: i})}>
+          {tabName}
         </button>)}
       </nav>
       <Tab base={this}/>
