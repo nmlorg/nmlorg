@@ -168,7 +168,7 @@ class Placard extends React.Component {
 
 class CharacterPlacard extends React.Component {
   render() {
-    const character = this.props.character;
+    const {character} = this.props;
     if (!character)
       return <Placard icon='/img/theme/destiny/icons/icon_vault.png'
                       title="Vault"/>;

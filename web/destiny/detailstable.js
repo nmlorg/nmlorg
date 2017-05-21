@@ -100,7 +100,7 @@ function filterItems(items, category, bucket) {
 function getValues(a) {
   return [
       a.primaryStat ? -a.primaryStat.value : 0,
-      a.itemDef.itemName,
+      a.itemDef.itemName.replace(/^Harrowed /, ''),
       -a.stackSize,
   ];
 }
