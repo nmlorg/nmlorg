@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<div id="viewport" style="background-image: url('http://n.ml.org/spacex/view-of-earth-from-space-03.jpg')">
+<div id="viewport" style="background-image: url('https://www.nasa.gov/sites/default/files/styles/full_width_feature/public/bwhi1apicaaamlo.jpg_large.jpg')">
   <div class="row">
     <div style="height: 20vw; width: 20vw" data-widget="roll-gauge"></div>
     <div style="height: 20vw; width: 20vw" data-widget="pitch-gauge"></div>
@@ -13,9 +13,9 @@
     <div class="col">
       <div class="button-bar button-bar-vert">
         <button data-set="background"
-                data-value="http://n.ml.org/spacex/view-of-earth-from-space-03.jpg">Front View</button>
+                data-value="https://www.nasa.gov/sites/default/files/styles/full_width_feature/public/bwhi1apicaaamlo.jpg_large.jpg">Front View</button>
         <button data-set="background"
-                data-value="http://n.ml.org/spacex/view-of-earth-from-space-04.jpg">Rear View</button>
+                data-value="https://i.ytimg.com/vi/GOAEIMx39-w/maxresdefault.jpg">Rear View</button>
       </div>
       <button data-pattern="Math.round(vehicle.velocity) + ' m\u2215s'"></button>
     </div>
@@ -104,7 +104,7 @@ var viewPort = document.getElementById('viewport');
 var vehicle = new spacex.Vehicle({velocity: 27359});
 var thrust = {'down': 0, 'left': 0, 'right': 0, 'up': 0};
 var target = {'lat': 37.39, 'lon': -122.08, 'z': 382500, 'yaw': 0, 'pitch': 0, 'roll': 0};
-var targeting = {'latlon': false, 'z': false, 'yaw': false, 'pitch': false, 'roll': false};
+var targeting = {'latlon': true, 'z': true, 'yaw': false, 'pitch': false, 'roll': false};
 var widgets = [];
 var widgetMap = {
     'compass': spacex.Compass,
@@ -129,7 +129,7 @@ var buttonValues = {};
 Object.defineProperties(buttonValues, {
     'background': {
         'get': function() {
-          if (viewPort.style.backgroundImage.match(/^url[(]['"]?(.*)['"]?[)]$/))
+          if (viewPort.style.backgroundImage.match(/^url[(]['"]?([^'"]*)['"]?[)]$/))
             return RegExp.$1;
         },
         'set': function(value) {
