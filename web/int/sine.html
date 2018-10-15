@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<style>
+body > div {
+  float: left;
+}
+
+body > div div {
+  border: 1px solid lightgreen;
+  margin: 10px;
+  padding: 10px;
+}
+
+label > input[type="radio"] {
+  display: none;
+}
+
+label > input[type="radio"] + div {
+  border: 1px solid red;
+  cursor: pointer;
+}
+
+label > input[type="radio"]:checked + div {
+  background: lightgreen;
+  border: 1px solid lightgreen;
+  cursor: inherit;
+}
+</style>
+
+<div>
+<canvas></canvas>
+</div>
+
+<div>
+<div>
+Circle radius: <input name="radius" value="300"><br>
+Number of points: <input name="numPoints" value="500"><br>
+<label>Use system cosine: <input type="checkbox" name="systemCosine" checked></label><br>
+Maximum observed error: <span id="maxError"></span>%<br>
+</div>
+
+<label>
+  <input type="radio" name="func" value="builtin" checked>
+  <div>
+    <h4>System function</h4>
+  </div>
+</label>
+
+<label>
+  <input type="radio" name="func" value="taylor">
+  <div>
+    <h4>Taylor series</h4>
+    Number of terms: <input name="taylorTerms" value="1"><br>
+    <label>Squish domain to [0, &Pi;/2]: <input type="checkbox" name="taylorSquish" checked></label><br>
+  </div>
+</label>
+
+<label>
+  <input type="radio" name="func" value="table">
+  <div>
+    <h4>Lookup table</h4>
+    Number of entries: <input name="tableEntries" value="2"><br>
+    <label>Squish domain to [0, &Pi;/2]: <input type="checkbox" name="tableSquish" checked></label><br>
+    <label>Linearly interpolate between table entries: <input type="checkbox" name="tableLinterp" checked></label><br>
+  </div>
+</label>
+
+<div>
+  <pre id="code"></pre>
+</div>
+</div>
+
+<script>
+let canvas = document.getElementsByTagName('canvas')[0];
+let ctx = canvas.getContext('2d');
+let values = {};
+
+for (let input of document.getElementsByTagName('input')) {
+  if (input.name && ((input.type != 'radio') || input.checked))
+    values[input.name] = input.type == 'checkbox' ? input.checked : input.value;
+  input.addEventListener('change', e => {
+    if ((e.target.type != 'radio') || e.target.checked) {
+      values[e.target.name] = e.target.type == 'checkbox' ? e.target.checked : e.target.value;
+      render();
+    }
+  });
+}
+
+
+function getCoords(x, y) {
+  return [(x + 2) * canvas.width / 4, (2 - y) * canvas.height / 4];
+}
+
+
+function domainFixize(sineFunc) {
+  return function(rad) {
+    rad %= 2 * Math.PI;
+    if (rad < 0)
+      rad += 2 * Math.PI;
+    return sineFunc(rad);
+  };
+}
+
+
+function squishize(sineFunc) {
+  return function squish(rad) {
+    if (rad > Math.PI)
+      return -squish(rad - Math.PI);
+    if (rad > Math.PI / 2)
+      rad = Math.PI - rad;
+    return sineFunc(rad);
+  };
+}
+
+
+function render() {
+  canvas.width = canvas.height = values.radius * 4;
+
+  ctx.fillStyle = 'lightgrey';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.beginPath();
+  let [x, y] = getCoords(0, 0);
+  let [width, height] = getCoords(1, 1);
+  ctx.arc(x, y, width - x, 0, 2 * Math.PI);
+  ctx.strokeStyle = 'darkgrey';
+  ctx.lineWidth = 10;
+  ctx.stroke();
+
+  let code = [];
+  let sineFunc = Math.sin;
+  if (values.func == 'taylor') {
+    sineFunc = function(rad) {
+      let ret = rad, numer = rad, denom = 1, sign = -1;
+      for (let i = 1; i < values.taylorTerms; i++) {
+        numer *= rad * rad;
+        denom *= i * 2 * (i * 2 + 1);
+        ret += sign * numer / denom;
+        sign = -sign;
+      }
+      return ret;
+    };
+    if (values.taylorSquish)
+      sineFunc = squishize(sineFunc);
+    sineFunc = domainFixize(sineFunc);
+    code.push(`\
+double sin(double rad) {
+  rad = fmod(rad, 2 * M_PI);
+  if (rad < 0)
+    rad += 2 * M_PI;`);
+    if (values.taylorSquish)
+      code.push(`\
+  if (rad > M_PI)
+    return -sin(rad - M_PI);
+  if (rad > M_PI / 2)
+    rad = M_PI - rad;`);
+    if (values.taylorTerms < 2)
+      code.push('  return rad;');
+    else if (values.taylorTerms < 6) {
+      code.push('  double ret = rad, numer = rad;');
+      let denom = 1;
+      for (let i = 1; i < values.taylorTerms; i++) {
+        denom *= i * 2 * (i * 2 + 1);
+        let op = i % 2 ? '-' : '+';
+        code.push('  numer *= rad * rad;');
+        code.push('  ret ' + op + '= numer / ' + denom + ';');
+      }
+      code.push('  return ret;');
+    } else {
+      code.push(`\
+  double ret = rad, numer = rad, denom = 1;
+  int sign = -1;
+  for (int i = 1; i < ` + values.taylorTerms + `; i++) {
+    numer *= rad * rad;
+    denom *= i * 2 * (i * 2 + 1);
+    ret += sign * numer / denom;
+    sign = -sign;
+  }
+  return ret;`);
+    }
+    code.push('}');
+  } else if (values.func == 'table') {
+    let table = [];
+    let tableDomain = values.tableSquish ? (Math.PI / 2) : (Math.PI * 2);
+    let tableMax = values.tableEntries - 1;
+    for (let i = 0; i <= tableMax; i++)
+      table.push(Math.sin(tableDomain * i / tableMax));
+    sineFunc = function(rad) {
+      let pos = tableMax * rad / tableDomain;
+      let low = Math.floor(pos);
+      if (!values.tableLinterp)
+        return table[low];
+      let frac = pos - low;
+      if (frac < 0.000001)
+        return table[low];
+      return table[low] * (1 - frac) + table[low + 1] * frac;
+    };
+    if (values.tableSquish)
+      sineFunc = squishize(sineFunc);
+    sineFunc = domainFixize(sineFunc);
+    code.push('static const double sin_table_domain = ' + tableDomain + ';');
+    code.push('static const int sin_table_max = ' + tableMax + ';');
+    code.push('static const double sin_table[] = {');
+    for (let value of table)
+      code.push('    ' + value + ',');
+    code.push('};');
+    code.push(`
+double sin(double rad) {
+  rad = fmod(rad, 2 * M_PI);
+  if (rad < 0)
+    rad += 2 * M_PI;`);
+    if (values.tableSquish)
+      code.push(`\
+  if (rad > M_PI)
+    return -sin(rad - M_PI);
+  if (rad > M_PI / 2)
+    rad = M_PI - rad;`);
+    code.push(`\
+  double pos = sin_table_max * rad / sin_table_domain;
+  int low = pos;`);
+    if (!values.tableLinterp)
+      code.push('  return sin_table[low];');
+    else
+      code.push(`\
+  double frac = pos - low;
+  if (frac < 0.000001)
+    return sin_table[low];
+  return sin_table[low] * (1 - frac) + sin_table[low + 1] * frac;`);
+    code.push('}');
+  }
+  document.getElementById('code').textContent = code.join('\n');
+  drawCircle(sineFunc, values.numPoints);
+}
+
+
+function drawCircle(sineFunc, numPoints) {
+  let cosineFunc = values.systemCosine ? Math.cos : rad => sineFunc(rad + Math.PI / 2);
+  let maxError = 0;
+
+  for (let i = 0; i < numPoints; i++) {
+    ctx.beginPath();
+    let rad = i * 2 * Math.PI / numPoints;
+    maxError = Math.max(maxError, Math.abs(sineFunc(rad) - Math.sin(rad)));
+    let [x, y] = getCoords(cosineFunc(rad), sineFunc(rad));
+    ctx.moveTo(x, y);
+    rad = (i + 1) * 2 * Math.PI / numPoints;
+    [x, y] = getCoords(cosineFunc(rad), sineFunc(rad));
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = ['red', 'green', 'blue'][i % 3];
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  document.getElementById('maxError').textContent = 100 * maxError;
+}
+
+
+render();
+</script>
