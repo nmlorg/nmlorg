@@ -216,7 +216,8 @@ class Spreadsheet {
         let value = this.getCell(i, j, preserve_formula);
 
         if (value != '') {
-          for (let k = dataRow.length; k < j - 1; k++)
+          let k;
+          for (k = dataRow.length; k < j - 1; k++)
             dataRow[k] = '';
           dataRow[k] = value;
         }
