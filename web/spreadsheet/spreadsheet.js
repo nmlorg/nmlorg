@@ -192,11 +192,13 @@ class Spreadsheet {
   export(preserve_formula) {
     let body = this.body_;
     let data = [];
+    let lastRow;
 
-    for (let lastRow = body.children.length - 1; lastRow > 0; lastRow--) {
+    for (lastRow = body.children.length - 1; lastRow > 0; lastRow--) {
       let row = body.children[lastRow];
+      let j;
 
-      for (let j = 1; j < row.children.length; j++)
+      for (j = 1; j < row.children.length; j++)
         if (this.getCell(lastRow, j, preserve_formula) != '')
           break;
 
